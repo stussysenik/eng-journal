@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import subprocess
 from pathlib import Path
 
 from .config import Paths
@@ -18,6 +19,54 @@ def discover_latest_gh_audit_report(paths: Paths) -> Path | None:
     if not candidates:
         return None
     return max(candidates, key=lambda path: (path.stat().st_mtime, path.name))
+
+
+def default_gh_audit_workdir(paths: Paths) -> Path:
+    return (paths.repo_root.parent / "gh-audit-work").resolve()
+
+
+def default_gh_audit_output_dir(paths: Paths) -> Path:
+    return (paths.repo_root.parent / "gh-audit-output").resolve()
+
+
+def run_gh_audit_scan(
+    paths: Paths,
+    user: str,
+    workdir: Path | None = None,
+    output_dir: Path | None = None,
+) -> Path:
+    if not paths.gh_audit_dir or not paths.gh_audit_dir.exists():
+        raise FileNotFoundError("No gh-audit repo found. Configure ENG_JOURNAL_GH_AUDIT_DIR or place gh-audit next to eng-journal.")
+
+    workdir = (workdir or default_gh_audit_workdir(paths)).expanduser().resolve()
+    output_dir = (output_dir or default_gh_audit_output_dir(paths)).expanduser().resolve()
+    workdir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    before = set(output_dir.glob("gh-audit-report-*.json"))
+    subprocess.run(
+        [
+            "julia",
+            "--project=.",
+            "bin/ghaudit.jl",
+            "scan",
+            "--user",
+            user,
+            "--workdir",
+            str(workdir),
+            "--output",
+            str(output_dir),
+        ],
+        cwd=paths.gh_audit_dir,
+        check=True,
+    )
+    after = set(output_dir.glob("gh-audit-report-*.json"))
+    candidates = sorted(after - before)
+    if candidates:
+        return max(candidates, key=lambda path: (path.stat().st_mtime, path.name))
+    latest = sorted(after)
+    if latest:
+        return max(latest, key=lambda path: (path.stat().st_mtime, path.name))
+    raise FileNotFoundError(f"No gh-audit JSON report found in {output_dir}")
 
 
 def _leverage_rank(value_per_kloc: float) -> str:

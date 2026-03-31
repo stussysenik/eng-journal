@@ -13,7 +13,14 @@ from .checkpoints import (
     write_checkpoint,
 )
 from .config import default_paths, discover_sources
-from .gh_audit import gh_audit_reference_path, import_gh_audit_reference, load_gh_audit_reference
+from .gh_audit import (
+    default_gh_audit_output_dir,
+    default_gh_audit_workdir,
+    gh_audit_reference_path,
+    import_gh_audit_reference,
+    load_gh_audit_reference,
+    run_gh_audit_scan,
+)
 from .reporting import (
     render_appraisal_markdown,
     render_core_value_markdown,
@@ -169,6 +176,13 @@ def cmd_ingest(paths, start_date: str, end_date: str) -> int:
 def cmd_reference(paths, args) -> int:
     if args.reference_kind == "gh-audit":
         input_path = Path(args.input).expanduser().resolve() if args.input else None
+        if args.scan:
+            input_path = run_gh_audit_scan(
+                paths,
+                args.user,
+                Path(args.workdir).expanduser().resolve() if args.workdir else default_gh_audit_workdir(paths),
+                Path(args.output_dir).expanduser().resolve() if args.output_dir else default_gh_audit_output_dir(paths),
+            )
         target = import_gh_audit_reference(paths, input_path)
         print(target)
         return 0
@@ -343,6 +357,10 @@ def build_parser() -> argparse.ArgumentParser:
     reference_sub = reference.add_subparsers(dest="reference_kind", required=True)
     gh_audit = reference_sub.add_parser("gh-audit", help="Import the latest gh-audit report into eng-journal references")
     gh_audit.add_argument("--input")
+    gh_audit.add_argument("--scan", action="store_true", help="Run a fresh gh-audit scan before importing")
+    gh_audit.add_argument("--user", default="stussysenik")
+    gh_audit.add_argument("--workdir")
+    gh_audit.add_argument("--output-dir")
 
     ingest = subparsers.add_parser("ingest", help="Build a normalized period dataset")
     ingest.add_argument("--start")

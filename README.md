@@ -23,6 +23,7 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 ```bash
 ./bin/journal doctor
 ./bin/journal reference gh-audit
+./bin/journal reference gh-audit --scan --user stussysenik
 ./bin/journal review --start 2025-10-01 --end 2026-03-31
 ./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
 ./bin/journal ingest --start 2025-10-01 --end 2026-03-31
@@ -77,6 +78,14 @@ Codex source precedence is:
 - `eng-journal` stays the usage/ROI/learning system
 - `gh-audit` stays the repo security/replacement-cost/portfolio-reference system
 - the bridge is a normalized import at `references/gh-audit/latest.json`
+- `./bin/journal reference gh-audit --scan` runs a fresh Julia portfolio scan and imports the resulting JSON in one step
+
+The imported reference keeps both:
+
+- `estimated_value_usd`: adjusted reference value after outlier / shallow-scan attenuation
+- `raw_estimated_value_usd`: unadjusted replacement-cost style reference
+
+That makes the impact report safer for applications and summaries because it no longer treats a huge shallow LOC estimate as equal to a smaller deep-scanned repo.
 
 That keeps Julia out of the core ingestion pipeline while still letting repo-level appraisals show up in the job/application impact report.
 
