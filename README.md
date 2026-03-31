@@ -1,5 +1,8 @@
 # eng-journal
 
+![Demo](demo.gif)
+
+
 Standalone engineering journal and ROI analytics for local Claude Code and Codex usage.
 
 The repo ingests raw local activity, normalizes both agents into one period dataset, and produces:
