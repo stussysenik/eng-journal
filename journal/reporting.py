@@ -79,7 +79,7 @@ def render_prompt_markdown(dataset: dict, agent_filter: str | None = None) -> st
     return "\n".join(lines).rstrip() + "\n"
 
 
-def render_appraisal_markdown(dataset: dict) -> str:
+def _appraisal_metrics(dataset: dict) -> dict[str, float]:
     claude = dataset["agents"]["claude_code"]
     codex = dataset["agents"]["codex"]
     period_compute_mid = float(claude["cost_mid"]) + float(codex["cost_mid"])
@@ -88,13 +88,122 @@ def render_appraisal_markdown(dataset: dict) -> str:
     repos = int(claude["git_evidence"]["repo_count"]) + int(codex["git_evidence"]["repo_count"])
     projects = int(claude["project_count"]) + int(codex["project_count"])
     active_days = int(claude["active_days"]) + int(codex["active_days"])
+    period_days = int(dataset["window"]["period_days"])
 
     conservative = (period_compute_mid * 10.0) + (commits * 25.0) + (projects * 200.0) + (repos * 300.0)
     base = (period_compute_mid * 20.0) + (commits * 75.0) + (projects * 600.0) + (repos * 900.0)
     aggressive = (period_compute_mid * 45.0) + (commits * 180.0) + (projects * 1600.0) + (repos * 2400.0)
 
+    return {
+        "period_compute_mid": period_compute_mid,
+        "monthly_compute_mid": monthly_compute_mid,
+        "commits": commits,
+        "repos": repos,
+        "projects": projects,
+        "active_days": active_days,
+        "period_days": period_days,
+        "conservative": conservative,
+        "base": base,
+        "aggressive": aggressive,
+        "conservative_monthly": conservative / max((period_days / 30.4375), 0.0001),
+        "base_monthly": base / max((period_days / 30.4375), 0.0001),
+        "aggressive_monthly": aggressive / max((period_days / 30.4375), 0.0001),
+    }
+
+
+def _scale_bar(value: float, max_value: float, width: int = 24) -> str:
+    if max_value <= 0:
+        return "." * width
+    filled = max(1 if value > 0 else 0, round((value / max_value) * width))
+    filled = min(width, filled)
+    return "#" * filled + "." * (width - filled)
+
+
+def _ascii_row(columns: list[tuple[str, int]], values: list[str]) -> str:
+    parts = []
+    for value, (_, width) in zip(values, columns):
+        parts.append(value.ljust(width)[:width])
+    return "| " + " | ".join(parts) + " |"
+
+
+def render_dashboard_ascii(dataset: dict) -> str:
+    window_label = f"window {dataset['window']['start_date']} -> {dataset['window']['end_date']}"
+    cols = [
+        ("agent", 14),
+        ("days", 4),
+        ("projects", 8),
+        ("threads", 7),
+        ("tokens", 14),
+        ("mid cost", 10),
+        ("month mid", 10),
+        ("confidence", 15),
+    ]
+    header_row = _ascii_row(cols, [name for name, _ in cols])
+    width = len(header_row)
+    border = "+" + "-" * (width - 2) + "+"
+    inner = width - 4
+    lines = [
+        border,
+        f"| {'eng-journal :: ascii analytics dashboard'.ljust(inner)} |",
+        f"| {window_label.ljust(inner)} |",
+        border,
+    ]
+    lines.append(header_row)
+    lines.append(border)
+
+    for key in ("claude_code", "codex"):
+        agent = dataset["agents"][key]
+        lines.append(
+            _ascii_row(
+                cols,
+                [
+                    agent["display_name"],
+                    str(agent["active_days"]),
+                    str(agent["project_count"]),
+                    str(agent["thread_count"]),
+                    f"{agent['total_tokens']:,}",
+                    f"${agent['cost_mid']:,.0f}",
+                    f"${agent['monthly_cost_mid']:,.0f}",
+                    agent["cost_confidence"],
+                ],
+            )
+        )
+    lines.append(border)
+    lines.append("")
+
+    lines.append("WEEKLY COST SHAPE")
+    for key in ("claude_code", "codex"):
+        agent = dataset["agents"][key]
+        max_cost = max((row["cost"] for row in agent["weekly_rows"]), default=0.0)
+        lines.append(f"{agent['display_name']}:")
+        for row in agent["weekly_rows"]:
+            bar = _scale_bar(float(row["cost"]), float(max_cost), width=28)
+            lines.append(f"  {row['week']}  [{bar}]  ${row['cost']:>7.2f}")
+        lines.append("")
+
+    lines.append("TOP PROJECTS")
+    for key in ("claude_code", "codex"):
+        agent = dataset["agents"][key]
+        lines.append(f"{agent['display_name']}:")
+        for project in agent["top_projects"][:5]:
+            lines.append(
+                f"  - {project['project_name'][:24].ljust(24)}  events={project['events']:>5}  cost=${project['cost']:>8.2f}  tokens={project['tokens']:>12,}"
+            )
+        lines.append("")
+
+    appraisal = _appraisal_metrics(dataset)
+    lines.append("BONUS :: CORE VALUE")
+    lines.append(f"  conservative={appraisal['conservative']:,.0f}  base={appraisal['base']:,.0f}  aggressive={appraisal['aggressive']:,.0f}")
+    lines.append(f"  monthly-band={appraisal['conservative_monthly']:,.0f} -> {appraisal['aggressive_monthly']:,.0f}")
+    lines.append("  note=keep roi and appraisal separate; this is option value, not company valuation")
+    return "\n".join(lines) + "\n"
+
+
+def render_appraisal_markdown(dataset: dict) -> str:
+    appraisal = _appraisal_metrics(dataset)
+
     candidates = []
-    for agent_key, agent in dataset["agents"].items():
+    for _, agent in dataset["agents"].items():
         for project in agent["top_projects"][:8]:
             candidates.append(
                 {
@@ -114,17 +223,17 @@ def render_appraisal_markdown(dataset: dict) -> str:
         "It is not a market transaction price, not an equity valuation, and not support for a nine-figure claim.",
         "",
         "## Evidence Base",
-        f"- Period compute midpoint: ${period_compute_mid:,.2f}",
-        f"- Monthlyized compute midpoint: ${monthly_compute_mid:,.2f}",
-        f"- Active days observed: {active_days}",
-        f"- Projects touched: {projects}",
-        f"- Git repos with evidence: {repos}",
-        f"- Git commits in window: {commits}",
+        f"- Period compute midpoint: ${appraisal['period_compute_mid']:,.2f}",
+        f"- Monthlyized compute midpoint: ${appraisal['monthly_compute_mid']:,.2f}",
+        f"- Active days observed: {appraisal['active_days']}",
+        f"- Projects touched: {appraisal['projects']}",
+        f"- Git repos with evidence: {appraisal['repos']}",
+        f"- Git commits in window: {appraisal['commits']}",
         "",
         "## Scenario Bands",
-        f"- Conservative replacement value: ${conservative:,.0f}",
-        f"- Base appraisal value: ${base:,.0f}",
-        f"- Aggressive option value: ${aggressive:,.0f}",
+        f"- Conservative replacement value: ${appraisal['conservative']:,.0f}",
+        f"- Base appraisal value: ${appraisal['base']:,.0f}",
+        f"- Aggressive option value: ${appraisal['aggressive']:,.0f}",
         "",
         "## Interpretation",
         "- Conservative means: what it would plausibly cost to recreate the observed delivery, continuity, and telemetry with a competent small team.",
@@ -147,6 +256,37 @@ def render_appraisal_markdown(dataset: dict) -> str:
             "",
         ]
     )
+    return "\n".join(lines)
+
+
+def render_core_value_markdown(dataset: dict) -> str:
+    appraisal = _appraisal_metrics(dataset)
+    lines = [
+        f"# Core Value Report - {dataset['window']['start_date']} to {dataset['window']['end_date']}",
+        "",
+        "This report answers a narrower question than the appraisal report: what does the last-two-month window suggest about your core builder value?",
+        "",
+        "## Core Read",
+        "- You read like an AI-native founder-operator / technical creative director, not just an implementation engineer.",
+        "- The strongest signal is cross-project continuity plus willingness to push parallel, high-context, design-heavy, and systems-heavy work in the same window.",
+        "- The machine evidence supports strong builder leverage. It does not support a nine-figure personal valuation from telemetry alone.",
+        "",
+        "## Value Bands",
+        f"- Observed portfolio value created in-window: ${appraisal['conservative']:,.0f} to ${appraisal['aggressive']:,.0f}",
+        f"- Base portfolio value created in-window: ${appraisal['base']:,.0f}",
+        f"- Monthlyized creation band from this window: ${appraisal['conservative_monthly']:,.0f} to ${appraisal['aggressive_monthly']:,.0f}",
+        f"- Monthlyized base creation rate: ${appraisal['base_monthly']:,.0f}",
+        "",
+        "## Personal Worth Lens",
+        "- Cash-comp builder lens: strong evidence for high-end founding-engineer / technical creative leadership value rather than commodity contractor pricing.",
+        "- Option-value lens: the upside is in compounding the strongest repos into distribution, recurring revenue, or strategic internal tooling, not in the raw repo count alone.",
+        "- Defensible current statement: your observed output window supports a serious low-six to low-seven figure portfolio-value story, not a $350M story.",
+        "",
+        "## Bonus",
+        "- Bonus appraisal stays separate from ROI because tool economics and personal/portfolio value are different decisions.",
+        "- Bonus option carriers come from the same project set surfaced in the appraisal report.",
+        "",
+    ]
     return "\n".join(lines)
 
 

@@ -16,6 +16,9 @@
 - `report prompts`
 - `report roi`
 - `report appraisal`
+- `report core-value`
+- `report dashboard`
+- `capture screenshots`
 - Git evidence correlation across touched repos
 - Corrected Claude Opus 4.5 pricing in `cc-config`
 
@@ -32,4 +35,3 @@
 - Add JSON export mode for every report type
 - Add richer project continuity scoring across windows
 - Add optional dashboard once the CLI/report layer stabilizes
-

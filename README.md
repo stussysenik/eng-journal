@@ -4,11 +4,13 @@ Standalone engineering journal and ROI analytics for local Claude Code and Codex
 
 The repo ingests raw local activity, normalizes both agents into one period dataset, and produces:
 
+- CHARM-style ASCII dashboards
 - daily Markdown journals
 - weekly rollups
 - prompt-efficiency reports
 - ROI scorecards with subscription sensitivity tables
 - appraisal reports with conservative, base, and aggressive option-value bands
+- core-value reports for the observed builder window
 
 The ingestion layer is Python-only and uses the standard library. The ROI scoring layer runs in Common Lisp through `sbcl`.
 
@@ -17,14 +19,39 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 ```bash
 ./bin/journal doctor
 ./bin/journal ingest --start 2026-02-12 --end 2026-03-31
+./bin/journal report dashboard --start 2026-02-12 --end 2026-03-31
 ./bin/journal report roi --start 2026-02-12 --end 2026-03-31
 ./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31
+./bin/journal report core-value --start 2026-02-12 --end 2026-03-31
 ./bin/journal report weekly --start 2026-02-12 --end 2026-03-31
 ./bin/journal report prompts --start 2026-02-12 --end 2026-03-31 --agent codex
 ./bin/journal report daily --date 2026-03-31
+./bin/journal capture screenshots --start 2026-02-12 --end 2026-03-31
 ```
 
 Generated reports land in `reports/`.
+
+## ASCII Dashboard
+
+```text
++---------------------------------------------------------------------------------------------------------+
+| eng-journal :: ascii analytics dashboard                                                                |
+| window 2026-02-12 -> 2026-03-31                                                                         |
++---------------------------------------------------------------------------------------------------------+
+| agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
++---------------------------------------------------------------------------------------------------------+
+| Claude Code    | 30   | 127      | 7602    | 11,719,242,476 | $6,205     | $3,935     | exact           |
+| Codex          | 19   | 32       | 103     | 909,989,470    | $4,354     | $2,761     | estimated_range |
++---------------------------------------------------------------------------------------------------------+
+```
+
+## Screenshots
+
+ASCII outputs can be rendered into committed terminal-style PNGs:
+
+![ASCII dashboard](assets/screenshots/dashboard-2026-02-12_to_2026-03-31.png)
+
+![Core value report](assets/screenshots/core-value-2026-02-12_to_2026-03-31.png)
 
 ## Data sources
 
@@ -57,4 +84,3 @@ The appraisal report is intentionally separate from the ROI report.
 - Appraisal answers: what are the delivered artifacts, continuity, and option value plausibly worth as a portfolio?
 
 That separation keeps the engineering journal grounded while still giving you a structured way to appraise the work.
-

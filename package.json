@@ -11,8 +11,11 @@
   "scripts": {
     "doctor": "./bin/journal doctor",
     "test": "python3 -m unittest discover -s tests",
+    "report:dashboard": "./bin/journal report dashboard --start 2026-02-12 --end 2026-03-31",
     "report:roi": "./bin/journal report roi --start 2026-02-12 --end 2026-03-31",
     "report:appraisal": "./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31",
+    "report:core-value": "./bin/journal report core-value --start 2026-02-12 --end 2026-03-31",
+    "capture:screenshots": "./bin/journal capture screenshots --start 2026-02-12 --end 2026-03-31",
     "release": "semantic-release"
   },
   "devDependencies": {
@@ -22,4 +25,3 @@
     "semantic-release": "^24.0.0"
   }
 }
-

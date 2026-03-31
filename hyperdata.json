@@ -20,11 +20,13 @@
     "~/.codex/logs_1.sqlite"
   ],
   "reports": [
+    "dashboard",
     "daily",
     "weekly",
     "prompts",
     "roi",
-    "appraisal"
+    "appraisal",
+    "core-value"
   ],
   "valuation_policy": {
     "keep_roi_and_appraisal_separate": true,
@@ -33,11 +35,14 @@
     "appraisal_is_not_company_valuation": true
   },
   "latest_outputs": [
+    "reports/dashboard-2026-02-12_to_2026-03-31.txt",
     "reports/daily-2026-03-31.md",
     "reports/weekly-2026-02-12_to_2026-03-31.md",
     "reports/prompts-codex-2026-02-12_to_2026-03-31.md",
     "reports/roi-2026-02-12_to_2026-03-31.md",
-    "reports/appraisal-2026-02-12_to_2026-03-31.md"
+    "reports/appraisal-2026-02-12_to_2026-03-31.md",
+    "reports/core-value-2026-02-12_to_2026-03-31.md",
+    "assets/screenshots/dashboard-2026-02-12_to_2026-03-31.png",
+    "assets/screenshots/core-value-2026-02-12_to_2026-03-31.png"
   ]
 }
-

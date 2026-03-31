@@ -8,12 +8,15 @@ from .analytics import build_period_dataset, write_period_dataset
 from .config import default_paths
 from .reporting import (
     render_appraisal_markdown,
+    render_core_value_markdown,
+    render_dashboard_ascii,
     render_daily_markdown,
     render_prompt_markdown,
     render_roi_markdown,
     render_weekly_markdown,
     write_report,
 )
+from .screenshots import render_text_screenshot
 
 
 def _default_start() -> str:
@@ -79,9 +82,37 @@ def cmd_report(paths, args) -> int:
         elif args.kind == "appraisal":
             content = render_appraisal_markdown(dataset)
             target = write_report(paths.reports_dir / f"appraisal-{_period_slug(start_date, end_date)}.md", content)
+        elif args.kind == "core-value":
+            content = render_core_value_markdown(dataset)
+            target = write_report(paths.reports_dir / f"core-value-{_period_slug(start_date, end_date)}.md", content)
+        elif args.kind == "dashboard":
+            content = render_dashboard_ascii(dataset)
+            target = write_report(paths.reports_dir / f"dashboard-{_period_slug(start_date, end_date)}.txt", content)
         else:
             raise ValueError(f"Unknown report kind: {args.kind}")
     print(target)
+    return 0
+
+
+def cmd_capture(paths, args) -> int:
+    start_date = args.start or _default_start()
+    end_date = args.end or _default_end()
+    slug = _period_slug(start_date, end_date)
+    dataset = _load_or_build_dataset(paths, start_date, end_date)
+    dashboard_path = write_report(paths.reports_dir / f"dashboard-{slug}.txt", render_dashboard_ascii(dataset))
+    core_value_path = write_report(paths.reports_dir / f"core-value-{slug}.md", render_core_value_markdown(dataset))
+    ascii_png = render_text_screenshot(
+        dashboard_path,
+        paths.repo_root / "assets" / "screenshots" / f"dashboard-{slug}.png",
+        f"./bin/journal report dashboard --start {start_date} --end {end_date}",
+    )
+    core_value_png = render_text_screenshot(
+        core_value_path,
+        paths.repo_root / "assets" / "screenshots" / f"core-value-{slug}.png",
+        f"./bin/journal report core-value --start {start_date} --end {end_date}",
+    )
+    print(ascii_png)
+    print(core_value_png)
     return 0
 
 
@@ -118,6 +149,20 @@ def build_parser() -> argparse.ArgumentParser:
     appraisal.add_argument("--start", default=_default_start())
     appraisal.add_argument("--end", default=_default_end())
 
+    core_value = report_sub.add_parser("core-value", help="Render core builder value report")
+    core_value.add_argument("--start", default=_default_start())
+    core_value.add_argument("--end", default=_default_end())
+
+    dashboard = report_sub.add_parser("dashboard", help="Render ASCII analytics dashboard")
+    dashboard.add_argument("--start", default=_default_start())
+    dashboard.add_argument("--end", default=_default_end())
+
+    capture = subparsers.add_parser("capture", help="Generate screenshot assets")
+    capture_sub = capture.add_subparsers(dest="capture_kind", required=True)
+    screenshots = capture_sub.add_parser("screenshots", help="Render screenshot PNGs from ASCII/text reports")
+    screenshots.add_argument("--start", default=_default_start())
+    screenshots.add_argument("--end", default=_default_end())
+
     return parser
 
 
@@ -134,6 +179,9 @@ def main() -> int:
         return cmd_ingest(paths, args.start, args.end)
     if args.command == "report":
         return cmd_report(paths, args)
+    if args.command == "capture":
+        if args.capture_kind == "screenshots":
+            return cmd_capture(paths, args)
     raise ValueError(f"Unhandled command: {args.command}")
 
 
