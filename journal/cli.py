@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from .analytics import build_period_dataset, write_period_dataset
-from .config import default_paths
+from .config import default_paths, discover_sources
 from .reporting import (
     render_appraisal_markdown,
     render_core_value_markdown,
@@ -41,16 +41,24 @@ def _load_or_build_dataset(paths, start_date: str, end_date: str) -> dict:
 
 
 def cmd_doctor(paths) -> int:
+    sources = discover_sources(paths)
     checks = {
-        "claude_projects": paths.claude_dir.joinpath("projects").exists(),
-        "claude_history": paths.claude_dir.joinpath("history.jsonl").exists(),
-        "codex_history": paths.codex_dir.joinpath("history.jsonl").exists(),
-        "codex_state": paths.codex_dir.joinpath("state_5.sqlite").exists(),
-        "codex_logs": paths.codex_dir.joinpath("logs_1.sqlite").exists(),
+        "claude_projects": sources.claude_projects_dir,
+        "claude_history": sources.claude_history_file,
+        "codex_history": sources.codex_history_file,
+        "codex_state": sources.codex_state_db,
+        "codex_logs": sources.codex_logs_db,
+        "cc_config_logs": sources.cc_config_logs_dir,
+        "cc_config_stats": sources.cc_config_stats_file,
     }
-    for name, ok in checks.items():
-        print(f"{name}: {'ok' if ok else 'missing'}")
-    return 0 if all(checks.values()) else 1
+    for name, path in checks.items():
+        if path:
+            print(f"{name}: ok ({path})")
+        else:
+            print(f"{name}: missing")
+    has_claude = bool(sources.claude_projects_dir or sources.claude_history_file or sources.cc_config_logs_dir)
+    has_codex = bool(sources.codex_state_db or sources.codex_history_file)
+    return 0 if has_claude and has_codex else 1
 
 
 def cmd_ingest(paths, start_date: str, end_date: str) -> int:

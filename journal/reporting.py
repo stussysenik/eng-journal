@@ -171,6 +171,13 @@ def render_dashboard_ascii(dataset: dict) -> str:
     lines.append(border)
     lines.append("")
 
+    lines.append("SOURCE COVERAGE")
+    for key in ("claude_code", "codex"):
+        agent = dataset["agents"][key]
+        coverage = ", ".join(agent.get("source_coverage", [])) or "none"
+        lines.append(f"  {agent['display_name']}: {coverage}")
+    lines.append("")
+
     lines.append("WEEKLY COST SHAPE")
     for key in ("claude_code", "codex"):
         agent = dataset["agents"][key]

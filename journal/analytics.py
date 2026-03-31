@@ -144,11 +144,13 @@ def _summarize_claude(paths: Paths, start_date: str, end_date: str, data: dict) 
     total_cost = round(sum(float(event.get("cost_actual", 0) or 0.0) for event in usage_events), 4)
     total_tokens = sum(int(event.get("total_tokens", 0) or 0) for event in usage_events)
     work_units = len({(event.get("project_name"), event.get("date")) for event in all_events if event.get("project_name") and event.get("date")})
+    cost_confidence = "exact" if usage_events else ("history_only" if all_events else "no_data")
 
     return {
         "name": "claude_code",
         "display_name": "Claude Code",
-        "cost_confidence": "exact",
+        "cost_confidence": cost_confidence,
+        "source_coverage": data.get("source_coverage", []),
         "active_days": len({event.get("date") for event in all_events if event.get("date")}),
         "thread_count": len({thread["thread_id"] for thread in threads}),
         "project_count": len({event.get("project_name") for event in all_events if event.get("project_name")}),
@@ -208,11 +210,13 @@ def _summarize_codex(paths: Paths, start_date: str, end_date: str, data: dict) -
     total_mid = round(sum(float(thread.get("cost_mid", 0.0) or 0.0) for thread in threads), 4)
     total_high = round(sum(float(thread.get("cost_high", 0.0) or 0.0) for thread in threads), 4)
     work_units = len({(thread.get("project_name"), thread.get("date")) for thread in threads if thread.get("project_name") and thread.get("date")})
+    cost_confidence = "estimated_range" if threads else ("history_only" if prompt_events else "no_data")
 
     return {
         "name": "codex",
         "display_name": "Codex",
-        "cost_confidence": "estimated_range",
+        "cost_confidence": cost_confidence,
+        "source_coverage": data.get("source_coverage", []),
         "active_days": len({thread.get("date") for thread in threads if thread.get("date")}),
         "thread_count": len(threads),
         "project_count": len({thread.get("project_name") for thread in threads if thread.get("project_name")}),
@@ -259,8 +263,8 @@ def _summarize_codex(paths: Paths, start_date: str, end_date: str, data: dict) -
 
 
 def build_period_dataset(paths: Paths, start_date: str, end_date: str) -> dict:
-    claude_data = load_claude_window(paths.claude_dir, start_date, end_date)
-    codex_data = load_codex_window(paths.codex_dir, start_date, end_date)
+    claude_data = load_claude_window(paths, start_date, end_date)
+    codex_data = load_codex_window(paths, start_date, end_date)
     claude_summary = _summarize_claude(paths, start_date, end_date, claude_data)
     codex_summary = _summarize_codex(paths, start_date, end_date, codex_data)
     generated_at = dt.datetime.now(dt.UTC).isoformat()

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
+from .config import Paths, discover_sources
 from .pricing import estimate_codex_cost
 from .util import keyword_tags, project_name_from_path, utc_dt_from_unix, within_window
 
@@ -15,10 +16,9 @@ def _connect(path: Path) -> sqlite3.Connection:
     return conn
 
 
-def _load_prompt_history(codex_dir: Path, start_date: str, end_date: str) -> dict[str, list[dict]]:
-    history_path = codex_dir / "history.jsonl"
+def _load_prompt_history(history_path: Path | None, start_date: str, end_date: str) -> dict[str, list[dict]]:
     by_session: dict[str, list[dict]] = defaultdict(list)
-    if not history_path.exists():
+    if not history_path or not history_path.exists():
         return by_session
     with history_path.open(encoding="utf-8") as handle:
         for raw_line in handle:
@@ -35,7 +35,7 @@ def _load_prompt_history(codex_dir: Path, start_date: str, end_date: str) -> dic
             date_str = timestamp.date().isoformat()
             if not within_window(date_str, start_date, end_date):
                 continue
-            by_session[payload.get("session_id", "")].append(
+            by_session[str(payload.get("session_id", "") or "")].append(
                 {
                     "timestamp": timestamp.isoformat(),
                     "date": date_str,
@@ -46,9 +46,30 @@ def _load_prompt_history(codex_dir: Path, start_date: str, end_date: str) -> dic
     return by_session
 
 
-def _load_log_signals(codex_dir: Path, start_date: str, end_date: str) -> dict[str, dict]:
-    log_db = codex_dir / "logs_1.sqlite"
-    if not log_db.exists():
+def _fallback_prompt_events(prompt_history: dict[str, list[dict]]) -> list[dict]:
+    prompt_events: list[dict] = []
+    for session_id, prompts in prompt_history.items():
+        for prompt in prompts:
+            prompt_events.append(
+                {
+                    "agent": "codex",
+                    "provider": "",
+                    "thread_id": session_id,
+                    "timestamp": prompt["timestamp"],
+                    "date": prompt["date"],
+                    "project_path": "",
+                    "project_name": "unknown",
+                    "event_kind": "prompt",
+                    "prompt_text": prompt["prompt_text"],
+                    "prompt_length": len(prompt["prompt_text"]),
+                    "source_kind": "history",
+                }
+            )
+    return prompt_events
+
+
+def _load_log_signals(log_db: Path | None, start_date: str, end_date: str) -> dict[str, dict]:
+    if not log_db or not log_db.exists():
         return {}
     conn = _connect(log_db)
     signals: dict[str, dict] = defaultdict(lambda: {"errors": 0, "warnings": 0, "apply_patch_failures": 0})
@@ -73,14 +94,27 @@ def _load_log_signals(codex_dir: Path, start_date: str, end_date: str) -> dict[s
     return signals
 
 
-def load_codex_window(codex_dir: Path, start_date: str, end_date: str) -> dict:
-    state_path = codex_dir / "state_5.sqlite"
-    if not state_path.exists():
-        return {"threads": [], "prompt_events": [], "thread_events": []}
+def load_codex_window(paths: Paths, start_date: str, end_date: str) -> dict:
+    sources = discover_sources(paths)
+    prompt_history = _load_prompt_history(sources.codex_history_file, start_date, end_date)
+    coverage = []
+    if sources.codex_history_file:
+        coverage.append("history")
+    if sources.codex_state_db:
+        coverage.append("sqlite_thread")
+    if sources.codex_logs_db:
+        coverage.append("native_log")
 
-    prompt_history = _load_prompt_history(codex_dir, start_date, end_date)
-    log_signals = _load_log_signals(codex_dir, start_date, end_date)
-    conn = _connect(state_path)
+    if not sources.codex_state_db:
+        return {
+            "threads": [],
+            "prompt_events": _fallback_prompt_events(prompt_history),
+            "thread_events": [],
+            "source_coverage": coverage,
+        }
+
+    log_signals = _load_log_signals(sources.codex_logs_db, start_date, end_date)
+    conn = _connect(sources.codex_state_db)
 
     threads: list[dict] = []
     thread_events: list[dict] = []
@@ -196,4 +230,5 @@ def load_codex_window(codex_dir: Path, start_date: str, end_date: str) -> dict:
         "threads": threads,
         "thread_events": thread_events,
         "prompt_events": prompt_events,
+        "source_coverage": coverage,
     }

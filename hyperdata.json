@@ -15,10 +15,20 @@
   "data_sources": [
     "~/.claude/projects/**/*.jsonl",
     "~/.claude/history.jsonl",
+    "~/Desktop/cc-config/logs/*.jsonl",
+    "~/Desktop/cc-config/logs/.stats.json",
     "~/.codex/history.jsonl",
-    "~/.codex/state_5.sqlite",
-    "~/.codex/logs_1.sqlite"
+    "~/.codex/state_*.sqlite",
+    "~/.codex/logs_*.sqlite"
   ],
+  "source_discovery": {
+    "env_overrides": [
+      "ENG_JOURNAL_CLAUDE_DIR",
+      "ENG_JOURNAL_CODEX_DIR",
+      "ENG_JOURNAL_CC_CONFIG_DIR"
+    ],
+    "portable": true
+  },
   "reports": [
     "dashboard",
     "daily",
@@ -35,6 +45,7 @@
     "appraisal_is_not_company_valuation": true
   },
   "latest_outputs": [
+    "reports/roi-2026-01-01_to_2026-03-31.md",
     "reports/dashboard-2026-02-12_to_2026-03-31.txt",
     "reports/daily-2026-03-31.md",
     "reports/weekly-2026-02-12_to_2026-03-31.md",

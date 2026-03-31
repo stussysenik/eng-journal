@@ -31,6 +31,26 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 
 Generated reports land in `reports/`.
 
+## Portable Discovery
+
+The loader is no longer tied to one laptop layout. It discovers the latest local sources automatically and also supports explicit overrides:
+
+- `ENG_JOURNAL_CLAUDE_DIR`
+- `ENG_JOURNAL_CODEX_DIR`
+- `ENG_JOURNAL_CC_CONFIG_DIR`
+
+Claude source precedence is:
+
+- native project logs
+- prompt history
+- `cc-config/logs/*.jsonl` fallback and supplemental action coverage
+
+Codex source precedence is:
+
+- latest `state_*.sqlite`
+- `history.jsonl` prompt history
+- latest `logs_*.sqlite` diagnostics
+
 ## ASCII Dashboard
 
 ```text
@@ -40,8 +60,8 @@ Generated reports land in `reports/`.
 +---------------------------------------------------------------------------------------------------------+
 | agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
 +---------------------------------------------------------------------------------------------------------+
-| Claude Code    | 30   | 127      | 7602    | 11,719,242,476 | $6,205     | $3,935     | exact           |
-| Codex          | 19   | 32       | 103     | 909,989,470    | $4,354     | $2,761     | estimated_range |
+| Claude Code    | 33   | 134      | 7602    | 11,719,242,476 | $6,205     | $3,935     | exact           |
+| Codex          | 19   | 34       | 114     | 1,244,895,837  | $5,719     | $3,627     | estimated_range |
 +---------------------------------------------------------------------------------------------------------+
 ```
 
@@ -57,9 +77,11 @@ ASCII outputs can be rendered into committed terminal-style PNGs:
 
 - `~/.claude/projects/**/*.jsonl`
 - `~/.claude/history.jsonl`
+- `~/Desktop/cc-config/logs/*.jsonl`
+- `~/Desktop/cc-config/logs/.stats.json`
 - `~/.codex/history.jsonl`
-- `~/.codex/state_5.sqlite`
-- `~/.codex/logs_1.sqlite`
+- `~/.codex/state_*.sqlite`
+- `~/.codex/logs_*.sqlite`
 
 ## Pricing notes
 

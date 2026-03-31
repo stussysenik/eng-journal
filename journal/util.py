@@ -22,6 +22,19 @@ def utc_dt_from_unix(value: int | float) -> dt.datetime:
     return dt.datetime.fromtimestamp(value, dt.UTC)
 
 
+def utc_dt_from_unixish(value: int | float | str) -> dt.datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return None
+    # Claude history uses millisecond timestamps while several sqlite sources use seconds.
+    if abs(numeric) >= 1_000_000_000_000:
+        numeric /= 1000.0
+    return dt.datetime.fromtimestamp(numeric, dt.UTC)
+
+
 def parse_iso_timestamp(value: str) -> dt.datetime | None:
     if not value:
         return None
@@ -120,4 +133,3 @@ def log_scale(value: int | float) -> float:
     if value <= 0:
         return 0.0
     return math.log(value + 1.0)
-
