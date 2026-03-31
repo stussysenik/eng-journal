@@ -40,8 +40,9 @@ def normalize_gh_audit_report(source_path: Path) -> dict:
         valuation = repo.get("valuation", {}) or {}
         perspectives = repo.get("perspectives", {}) or {}
         estimated_value = float(valuation.get("estimated_value_usd", 0.0) or 0.0)
+        raw_estimated_value = float(valuation.get("raw_estimated_value_usd", estimated_value) or 0.0)
         kloc = float(valuation.get("kloc", 0.0) or 0.0)
-        leverage = estimated_value / max(kloc, 0.0001)
+        leverage = float(valuation.get("leverage_score", 0.0) or 0.0) or (estimated_value / max(kloc, 0.0001))
         repos.append(
             {
                 "name": str(repo.get("name", "") or ""),
@@ -55,12 +56,18 @@ def normalize_gh_audit_report(source_path: Path) -> dict:
                 "kloc": kloc,
                 "disk_kb": int(repo.get("disk_kb", 0) or 0),
                 "estimated_value_usd": estimated_value,
+                "raw_estimated_value_usd": raw_estimated_value,
+                "adjustment_factor": float(valuation.get("adjustment_factor", 1.0) or 1.0),
                 "cocomo_cost_usd": float(valuation.get("cocomo_cost_usd", 0.0) or 0.0),
                 "cocomo_effort_pm": float(valuation.get("cocomo_effort_pm", 0.0) or 0.0),
                 "market_score": float(valuation.get("market_score", 0.0) or 0.0),
                 "portfolio_score": float(valuation.get("portfolio_score", 0.0) or 0.0),
                 "leverage_usd_per_kloc": leverage,
-                "leverage_rank": _leverage_rank(leverage),
+                "leverage_rank": str(valuation.get("leverage_rank", "") or _leverage_rank(leverage)),
+                "confidence_score": float(valuation.get("confidence_score", 0.0) or 0.0),
+                "confidence_label": str(valuation.get("confidence_label", "") or ""),
+                "loc_source": str(valuation.get("loc_source", "") or ""),
+                "warning_flags": list(valuation.get("warning_flags", []) or []),
                 "staff_engineer": float(perspectives.get("staff_engineer", 0.0) or 0.0),
                 "design_engineer": float(perspectives.get("design_engineer", 0.0) or 0.0),
                 "ai_ml_researcher": float(perspectives.get("ai_ml_researcher", 0.0) or 0.0),
@@ -83,11 +90,15 @@ def normalize_gh_audit_report(source_path: Path) -> dict:
             "total_repos": int(payload.get("total_repos", 0) or 0),
             "total_findings": int(payload.get("total_findings", 0) or 0),
             "total_portfolio_value_usd": float(payload.get("total_portfolio_value_usd", 0.0) or 0.0),
+            "raw_total_portfolio_value_usd": float(
+                payload.get("raw_total_portfolio_value_usd", payload.get("total_portfolio_value_usd", 0.0)) or 0.0
+            ),
             "safe_count": int(payload.get("safe_count", 0) or 0),
             "needs_fixes_count": int(payload.get("needs_fixes_count", 0) or 0),
             "too_sensitive_count": int(payload.get("too_sensitive_count", 0) or 0),
             "nda_count": int(payload.get("nda_count", 0) or 0),
             "critical_count": int(payload.get("critical_count", 0) or 0),
+            "average_confidence_score": float(payload.get("average_confidence_score", 0.0) or 0.0),
             "deep_scanned_count": deep_scanned_count,
             "loc_outlier_count": len(loc_outliers),
             "value_outlier_count": len(value_outliers),
@@ -96,7 +107,8 @@ def normalize_gh_audit_report(source_path: Path) -> dict:
         },
         "method_caveats": [
             "gh-audit is best treated as a repo replacement-cost and portfolio-reference engine, not a company valuation engine.",
-            "LOC-sensitive COCOMO math can overstate value on generated, vendored, binary-heavy, or data-heavy repos.",
+            "Adjusted gh-audit values attenuate shallow or outlier-heavy LOC estimates, but they are still valuation references rather than price discovery.",
+            "LOC-sensitive COCOMO math can still overstate value on generated, vendored, binary-heavy, or data-heavy repos.",
             "Market and portfolio scores are heuristic rankings, not investor-grade price discovery.",
             "Portfolio totals can over-count overlapping codebases and shared internal scaffolding.",
         ],

@@ -537,11 +537,14 @@ def _matched_gh_audit_repos(dataset: dict, gh_audit_reference: dict) -> list[dic
                 "classification": repo_ref["classification"],
                 "language": repo_ref["language"],
                 "estimated_value_usd": repo_ref["estimated_value_usd"],
+                "raw_estimated_value_usd": repo_ref.get("raw_estimated_value_usd", repo_ref["estimated_value_usd"]),
                 "cocomo_cost_usd": repo_ref["cocomo_cost_usd"],
                 "market_score": repo_ref["market_score"],
                 "portfolio_score": repo_ref["portfolio_score"],
                 "leverage_rank": repo_ref["leverage_rank"],
                 "leverage_usd_per_kloc": repo_ref["leverage_usd_per_kloc"],
+                "confidence_label": repo_ref.get("confidence_label", ""),
+                "loc_source": repo_ref.get("loc_source", ""),
                 "staff_engineer": repo_ref["staff_engineer"],
                 "design_engineer": repo_ref["design_engineer"],
                 "ai_ml_researcher": repo_ref["ai_ml_researcher"],
@@ -617,6 +620,7 @@ def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> st
     portfolio = gh_audit_reference["portfolio"]
     matched = _matched_gh_audit_repos(dataset, gh_audit_reference)
     matched_value = sum(item["estimated_value_usd"] for item in matched)
+    matched_raw_value = sum(item["raw_estimated_value_usd"] for item in matched)
     matched_safe = sum(1 for item in matched if item["classification"] == "SAFE")
     matched_nda = sum(1 for item in matched if "NDA" in item["classification"])
 
@@ -625,10 +629,12 @@ def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> st
             "## gh-audit Reference",
             f"- Source report: `{gh_audit_reference['source_report_path']}`",
             f"- Source timestamp: {gh_audit_reference['source_timestamp'] or 'n/a'}",
-            f"- Portfolio reference: {portfolio['total_repos']} repos, ${portfolio['total_portfolio_value_usd']:,.0f} raw total, {portfolio['safe_count']} SAFE, {portfolio['nda_count']} NDA_REQUIRED",
+            f"- Portfolio reference: {portfolio['total_repos']} repos, ${portfolio['total_portfolio_value_usd']:,.0f} adjusted total, ${portfolio.get('raw_total_portfolio_value_usd', portfolio['total_portfolio_value_usd']):,.0f} raw total, {portfolio['safe_count']} SAFE, {portfolio['nda_count']} NDA_REQUIRED",
+            f"- Average valuation confidence: {portfolio.get('average_confidence_score', 0.0) * 100:.1f}%",
             f"- Method flags: {portfolio['loc_outlier_count']} LOC outliers, {portfolio['value_outlier_count']} value outliers, {portfolio['deep_scanned_count']} deep-scanned repos",
             f"- Repos touched in this verified window that match gh-audit by name: {len(matched)}",
-            f"- Raw gh-audit reference across matched repos: ${matched_value:,.0f}",
+            f"- Adjusted gh-audit reference across matched repos: ${matched_value:,.0f}",
+            f"- Raw gh-audit reference across matched repos: ${matched_raw_value:,.0f}",
             f"- Matched classifications: {matched_safe} SAFE, {matched_nda} NDA-related",
             "",
             "## Matched Repo References",
@@ -637,7 +643,8 @@ def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> st
     for item in matched[:12]:
         lines.append(
             f"- {item['name']}: {item['commit_count']} commits, {item['events']} top-project events, "
-            f"${item['estimated_value_usd']:,.0f} ref value, {item['leverage_rank']} leverage, "
+            f"${item['estimated_value_usd']:,.0f} adjusted ref value (${item['raw_estimated_value_usd']:,.0f} raw), {item['leverage_rank']} leverage, "
+            f"{item['confidence_label'] or 'n/a'} confidence via {item['loc_source'] or 'unknown'}, "
             f"{item['classification']}, staff/design/ai {item['staff_engineer']:.0f}/{item['design_engineer']:.0f}/{item['ai_ml_researcher']:.0f}"
         )
 
@@ -653,7 +660,7 @@ def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> st
             f"- Built and evolved a multi-repo portfolio across {len(unique_repos)} verified repos / {total_commits} commits, with standardized external repo references available for {len(matched)} repos including {top_names}."
         )
         lines.append(
-            f"- Worked on repos that gh-audit currently tags mostly as SAFE and appraises at ${matched_value:,.0f} raw replacement-cost reference across the matched set; treat that as a repo-asset signal, not a compensation or company valuation claim."
+            f"- Worked on repos that gh-audit currently tags mostly as SAFE and appraises at ${matched_value:,.0f} adjusted replacement-cost reference across the matched set (${matched_raw_value:,.0f} raw); treat that as a repo-asset signal, not a compensation or company valuation claim."
         )
     lines.append(
         f"- Ran a measured AI-assisted engineering workflow with {claude['thread_count'] + codex['thread_count']} total threads in-window, explicit review/checkpointing, and quantified prompt-pattern lift instead of anecdotal prompting."

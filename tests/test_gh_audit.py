@@ -18,7 +18,9 @@ class GHAuditTests(unittest.TestCase):
                         "timestamp": "2026-03-31_000000",
                         "total_repos": 1,
                         "total_findings": 0,
-                        "total_portfolio_value_usd": 120000.0,
+                        "total_portfolio_value_usd": 96000.0,
+                        "raw_total_portfolio_value_usd": 120000.0,
+                        "average_confidence_score": 0.82,
                         "safe_count": 1,
                         "needs_fixes_count": 0,
                         "too_sensitive_count": 0,
@@ -37,11 +39,19 @@ class GHAuditTests(unittest.TestCase):
                                 "disk_kb": 100,
                                 "valuation": {
                                     "kloc": 3.2,
-                                    "estimated_value_usd": 120000.0,
+                                    "estimated_value_usd": 96000.0,
+                                    "raw_estimated_value_usd": 120000.0,
+                                    "adjustment_factor": 0.8,
                                     "cocomo_cost_usd": 150000.0,
                                     "cocomo_effort_pm": 5.0,
                                     "market_score": 60.0,
                                     "portfolio_score": 35.0,
+                                    "leverage_score": 30000.0,
+                                    "leverage_rank": "Gold",
+                                    "confidence_score": 0.82,
+                                    "confidence_label": "medium",
+                                    "loc_source": "disk_estimate",
+                                    "warning_flags": ["disk_loc_estimate"],
                                 },
                                 "perspectives": {
                                     "staff_engineer": 40,
@@ -60,9 +70,11 @@ class GHAuditTests(unittest.TestCase):
             normalized = normalize_gh_audit_report(source)
             self.assertEqual(normalized["portfolio"]["total_repos"], 1)
             self.assertEqual(normalized["portfolio"]["deep_scanned_count"], 1)
+            self.assertEqual(normalized["portfolio"]["raw_total_portfolio_value_usd"], 120000.0)
             self.assertEqual(normalized["repos"][0]["name"], "demo-repo")
             self.assertEqual(normalized["repos"][0]["leverage_rank"], "Gold")
-            self.assertAlmostEqual(normalized["repos"][0]["leverage_usd_per_kloc"], 37500.0)
+            self.assertAlmostEqual(normalized["repos"][0]["leverage_usd_per_kloc"], 30000.0)
+            self.assertEqual(normalized["repos"][0]["confidence_label"], "medium")
 
 
 if __name__ == "__main__":
