@@ -42,6 +42,36 @@ def _period_slug(start_date: str, end_date: str) -> str:
     return f"{start_date}_to_{end_date}"
 
 
+def _latest_verified_window(paths) -> tuple[str, str] | None:
+    if not paths.checkpoints_dir.exists():
+        return None
+    candidates: list[tuple[str, str, str]] = []
+    for manifest_path in paths.checkpoints_dir.glob("*/manifest.json"):
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        window = manifest.get("window", {})
+        start_date = window.get("start_date")
+        end_date = window.get("end_date")
+        verified_at = manifest.get("verified_at", "")
+        if start_date and end_date and verified_at:
+            candidates.append((verified_at, start_date, end_date))
+    if not candidates:
+        return None
+    _, start_date, end_date = max(candidates)
+    return start_date, end_date
+
+
+def _resolve_window(paths, start_date: str | None, end_date: str | None) -> tuple[str, str]:
+    if start_date and end_date:
+        return start_date, end_date
+    latest_verified = _latest_verified_window(paths)
+    default_start = start_date or (latest_verified[0] if latest_verified else _default_start())
+    default_end = end_date or (latest_verified[1] if latest_verified else _default_end())
+    return default_start, default_end
+
+
 def _dataset_matches_current_schema(dataset: dict) -> bool:
     agents = dataset.get("agents", {})
     if not agents:
@@ -50,6 +80,10 @@ def _dataset_matches_current_schema(dataset: dict) -> bool:
         if "first_activity_date" not in agent or "last_activity_date" not in agent or "event_count" not in agent:
             return False
         if "directive_signals" not in agent.get("prompt_metrics", {}):
+            return False
+        if "prompt_effectiveness" not in agent or "prompt_daily_rows" not in agent:
+            return False
+        if "source_bounds" not in agent:
             return False
     return True
 
@@ -128,8 +162,7 @@ def cmd_ingest(paths, start_date: str, end_date: str) -> int:
 
 
 def cmd_stats(paths, args) -> int:
-    start_date = args.start or _default_start()
-    end_date = args.end or _default_end()
+    start_date, end_date = _resolve_window(paths, args.start, args.end)
     dataset = _load_review_dataset(paths, start_date, end_date, refresh=args.refresh)
     slug = _period_slug(start_date, end_date)
     suffix = f"-{args.agent}" if args.agent else ""
@@ -144,8 +177,7 @@ def cmd_stats(paths, args) -> int:
 
 
 def cmd_review(paths, args) -> int:
-    start_date = args.start or _default_start()
-    end_date = args.end or _default_end()
+    start_date, end_date = _resolve_window(paths, args.start, args.end)
     artifact_paths = _review_artifact_paths(paths, start_date, end_date)
     manifest = load_checkpoint_manifest(paths, start_date, end_date)
     existing_outputs = [
@@ -227,8 +259,7 @@ def cmd_report(paths, args) -> int:
         content = render_daily_markdown(dataset, args.date)
         target = write_report(paths.reports_dir / f"daily-{args.date}.md", content)
     else:
-        start_date = args.start or _default_start()
-        end_date = args.end or _default_end()
+        start_date, end_date = _resolve_window(paths, args.start, args.end)
         dataset = _load_or_build_dataset(paths, start_date, end_date)
         if args.kind == "weekly":
             content = render_weekly_markdown(dataset)
@@ -256,8 +287,7 @@ def cmd_report(paths, args) -> int:
 
 
 def cmd_capture(paths, args) -> int:
-    start_date = args.start or _default_start()
-    end_date = args.end or _default_end()
+    start_date, end_date = _resolve_window(paths, args.start, args.end)
     slug = _period_slug(start_date, end_date)
     dataset = _load_or_build_dataset(paths, start_date, end_date)
     dashboard_path = write_report(paths.reports_dir / f"dashboard-{slug}.txt", render_dashboard_ascii(dataset))
@@ -284,19 +314,19 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("doctor", help="Check local data sources")
 
     ingest = subparsers.add_parser("ingest", help="Build a normalized period dataset")
-    ingest.add_argument("--start", default=_default_start())
-    ingest.add_argument("--end", default=_default_end())
+    ingest.add_argument("--start")
+    ingest.add_argument("--end")
 
     stats = subparsers.add_parser("stats", help="Render reusable stats snapshots")
-    stats.add_argument("--start", default=_default_start())
-    stats.add_argument("--end", default=_default_end())
+    stats.add_argument("--start")
+    stats.add_argument("--end")
     stats.add_argument("--agent", choices=["claude_code", "codex"])
     stats.add_argument("--format", choices=["markdown", "json"], default="markdown")
     stats.add_argument("--refresh", action="store_true")
 
     review = subparsers.add_parser("review", help="Freeze a verified review window and generate durable outputs")
-    review.add_argument("--start", default=_default_start())
-    review.add_argument("--end", default=_default_end())
+    review.add_argument("--start")
+    review.add_argument("--end")
     review.add_argument("--refresh", action="store_true")
 
     report = subparsers.add_parser("report", help="Render Markdown reports")
@@ -306,35 +336,35 @@ def build_parser() -> argparse.ArgumentParser:
     daily.add_argument("--date", required=True)
 
     weekly = report_sub.add_parser("weekly", help="Render weekly rollup")
-    weekly.add_argument("--start", default=_default_start())
-    weekly.add_argument("--end", default=_default_end())
+    weekly.add_argument("--start")
+    weekly.add_argument("--end")
 
     prompts = report_sub.add_parser("prompts", help="Render prompt report")
-    prompts.add_argument("--start", default=_default_start())
-    prompts.add_argument("--end", default=_default_end())
+    prompts.add_argument("--start")
+    prompts.add_argument("--end")
     prompts.add_argument("--agent", choices=["claude_code", "codex"])
 
     roi = report_sub.add_parser("roi", help="Render ROI scorecard through SBCL")
-    roi.add_argument("--start", default=_default_start())
-    roi.add_argument("--end", default=_default_end())
+    roi.add_argument("--start")
+    roi.add_argument("--end")
 
     appraisal = report_sub.add_parser("appraisal", help="Render portfolio appraisal report")
-    appraisal.add_argument("--start", default=_default_start())
-    appraisal.add_argument("--end", default=_default_end())
+    appraisal.add_argument("--start")
+    appraisal.add_argument("--end")
 
     core_value = report_sub.add_parser("core-value", help="Render core builder value report")
-    core_value.add_argument("--start", default=_default_start())
-    core_value.add_argument("--end", default=_default_end())
+    core_value.add_argument("--start")
+    core_value.add_argument("--end")
 
     dashboard = report_sub.add_parser("dashboard", help="Render ASCII analytics dashboard")
-    dashboard.add_argument("--start", default=_default_start())
-    dashboard.add_argument("--end", default=_default_end())
+    dashboard.add_argument("--start")
+    dashboard.add_argument("--end")
 
     capture = subparsers.add_parser("capture", help="Generate screenshot assets")
     capture_sub = capture.add_subparsers(dest="capture_kind", required=True)
     screenshots = capture_sub.add_parser("screenshots", help="Render screenshot PNGs from ASCII/text reports")
-    screenshots.add_argument("--start", default=_default_start())
-    screenshots.add_argument("--end", default=_default_end())
+    screenshots.add_argument("--start")
+    screenshots.add_argument("--end")
 
     return parser
 
@@ -350,7 +380,8 @@ def main() -> int:
     if args.command == "doctor":
         return cmd_doctor(paths)
     if args.command == "ingest":
-        return cmd_ingest(paths, args.start, args.end)
+        start_date, end_date = _resolve_window(paths, args.start, args.end)
+        return cmd_ingest(paths, start_date, end_date)
     if args.command == "stats":
         return cmd_stats(paths, args)
     if args.command == "review":

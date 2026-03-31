@@ -21,6 +21,20 @@ class AnalyticsTests(unittest.TestCase):
         self.assertEqual(signals["parallel_agents"], 1)
         self.assertEqual(signals["implement_direct"], 1)
 
+    def test_prompt_summary_splits_control_and_substantive_prompts(self) -> None:
+        summary = summarize_prompt_events(
+            [
+                {"prompt_text": "/usage", "prompt_length": 6},
+                {"prompt_text": "yes", "prompt_length": 3},
+                {"prompt_text": "Please verify the whole diff and then implement the fix.", "prompt_length": 57},
+                {"prompt_text": "Please verify the whole diff and then implement the fix.", "prompt_length": 57},
+            ]
+        )
+        self.assertEqual(summary["control_prompt_count"], 2)
+        self.assertEqual(summary["substantive_prompt_count"], 2)
+        self.assertEqual(summary["duplicate_prompt_instances"], 1)
+        self.assertEqual(summary["substantive_duplicate_instances"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

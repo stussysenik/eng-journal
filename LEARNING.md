@@ -10,21 +10,23 @@ This file explains how verified review windows are structured so the same math a
 5. `review` is the checkpointing command. `stats` is the quick metrics command. `report` remains the lower-level renderer.
 
 ## Latest Verified Window
-- Window: 2026-01-01 to 2026-03-31
-- Review: `reports/review-2026-01-01_to_2026-03-31.md`
-- Stats: `reports/stats-2026-01-01_to_2026-03-31.md`
-- Checkpoint: `checkpoints/2026-01-01_to_2026-03-31/manifest.json`
+- Window: 2025-10-01 to 2026-03-31
+- Review: `reports/review-2025-10-01_to_2026-03-31.md`
+- Stats: `reports/stats-2025-10-01_to_2026-03-31.md`
+- Checkpoint: `checkpoints/2025-10-01_to_2026-03-31/manifest.json`
 
 ## Current Learnings
-- Claude Code value is strongest in execution breadth and continuity: 151 projects, 7744 threads, exact cost accounting, and heavy repo/file movement.
-- Codex value is strongest in concentrated deep threads: 129 threads, 1,735,284,986 tokens, and 50 subagent threads.
+- Claude Code value is strongest in execution breadth and continuity: 158 projects, 7744 threads, exact cost accounting, and heavy repo/file movement.
+- Codex value is strongest in concentrated deep threads: 137 threads, 2,230,568,770 tokens, and 58 subagent threads.
+- The learning/report layer is auto-generated from the verified window, including prompt-effectiveness and daily prompt rows.
 - Interview-before-action prompts appear 30 times in Claude and 10 times in Codex.
-- Verification-first prompts appear 1005 times in Claude and 26 times in Codex.
-- Parallel/subagent directives appear 481 times in Claude and 32 times in Codex.
+- Verification-first prompts appear 1129 times in Claude and 27 times in Codex.
+- Parallel/subagent directives appear 481 times in Claude and 35 times in Codex.
 
 ## Keep
 - Preserve source coverage and checkpoint verified windows instead of re-deriving them ad hoc.
 - Treat review files as durable base-zero summaries and stats files as machine-readable checkpoints.
+- Keep prompt-effectiveness and per-day prompt rows generated from the same verified dataset as the headline reports.
 - Keep ROI and appraisal separate from learning and workflow analysis.
 
 ## Tighten

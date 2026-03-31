@@ -16,6 +16,76 @@ def _iter_claude_log_files(projects_dir: Path | None) -> list[Path]:
     return sorted(projects_dir.glob("**/*.jsonl"))
 
 
+def _bounds_dict(first_ts: dt.datetime | None, last_ts: dt.datetime | None) -> dict:
+    return {
+        "first_date": first_ts.date().isoformat() if first_ts else "",
+        "last_date": last_ts.date().isoformat() if last_ts else "",
+    }
+
+
+def _native_log_bounds(projects_dir: Path | None) -> dict:
+    first_ts = None
+    last_ts = None
+    for log_file in _iter_claude_log_files(projects_dir):
+        try:
+            with log_file.open(encoding="utf-8") as handle:
+                for raw_line in handle:
+                    if not raw_line.strip():
+                        continue
+                    try:
+                        data = json.loads(raw_line)
+                    except json.JSONDecodeError:
+                        continue
+                    timestamp = parse_iso_timestamp(data.get("timestamp", ""))
+                    if not timestamp:
+                        continue
+                    if first_ts is None or timestamp < first_ts:
+                        first_ts = timestamp
+                    if last_ts is None or timestamp > last_ts:
+                        last_ts = timestamp
+        except OSError:
+            continue
+    return _bounds_dict(first_ts, last_ts)
+
+
+def _history_bounds(history_path: Path | None) -> dict:
+    first_ts = None
+    last_ts = None
+    if not history_path or not history_path.exists():
+        return _bounds_dict(None, None)
+    try:
+        with history_path.open(encoding="utf-8") as handle:
+            for raw_line in handle:
+                if not raw_line.strip():
+                    continue
+                try:
+                    payload = json.loads(raw_line)
+                except json.JSONDecodeError:
+                    continue
+                timestamp = utc_dt_from_unixish(payload.get("timestamp"))
+                if not timestamp:
+                    continue
+                if first_ts is None or timestamp < first_ts:
+                    first_ts = timestamp
+                if last_ts is None or timestamp > last_ts:
+                    last_ts = timestamp
+    except OSError:
+        return _bounds_dict(None, None)
+    return _bounds_dict(first_ts, last_ts)
+
+
+def _journal_log_bounds(logs_dir: Path | None) -> dict:
+    if not logs_dir or not logs_dir.exists():
+        return _bounds_dict(None, None)
+    dates = sorted(path.stem for path in logs_dir.glob("*.jsonl") if path.stem.count("-") == 2)
+    if not dates:
+        return _bounds_dict(None, None)
+    return {
+        "first_date": dates[0],
+        "last_date": dates[-1],
+    }
+
+
 def _parse_tool_event(item: dict, base: dict) -> dict | None:
     tool_name = item.get("name", "")
     inputs = item.get("input", {}) or {}
@@ -422,4 +492,9 @@ def load_claude_window(paths: Paths, start_date: str, end_date: str) -> dict:
         "usage_events": usage_events,
         "tool_events": tool_events,
         "source_coverage": coverage,
+        "source_bounds": {
+            "native_log": _native_log_bounds(sources.claude_projects_dir),
+            "history": _history_bounds(sources.claude_history_file),
+            "journal_log": _journal_log_bounds(sources.cc_config_logs_dir),
+        },
     }

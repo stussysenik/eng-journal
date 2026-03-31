@@ -1,11 +1,11 @@
 {
   "window": {
-    "start_date": "2026-01-01",
+    "start_date": "2025-10-01",
     "end_date": "2026-03-31",
-    "period_days": 90,
-    "month_fraction": 2.9568788501026693
+    "period_days": 182,
+    "month_fraction": 5.979466119096509
   },
-  "generated_at": "2026-03-31T19:15:54.940146+00:00",
+  "generated_at": "2026-03-31T19:17:55.957273+00:00",
   "agents": {
     "claude_code": {
       "display_name": "Claude Code",
@@ -29,44 +29,60 @@
         }
       },
       "cost_confidence": "exact",
-      "active_days": 53,
-      "first_activity_date": "2026-01-15",
+      "active_days": 87,
+      "first_activity_date": "2025-10-01",
       "last_activity_date": "2026-03-31",
-      "event_count": 353857,
+      "event_count": 355385,
       "thread_count": 7744,
-      "project_count": 151,
-      "work_unit_count": 325,
-      "total_tokens": 12186775160,
-      "cost_low": 6683.7014,
-      "cost_mid": 6683.7014,
-      "cost_high": 6683.7014,
-      "monthly_cost_low": 2260.3907,
-      "monthly_cost_mid": 2260.3907,
-      "monthly_cost_high": 2260.3907,
+      "project_count": 158,
+      "work_unit_count": 367,
+      "total_tokens": 12189757627,
+      "cost_low": 6684.6885,
+      "cost_mid": 6684.6885,
+      "cost_high": 6684.6885,
+      "monthly_cost_low": 1117.9407,
+      "monthly_cost_mid": 1117.9407,
+      "monthly_cost_high": 1117.9407,
       "prompt_metrics": {
-        "total_prompts": 14849,
-        "avg_prompt_length": 8510.3,
-        "mega_prompt_count": 7764,
-        "control_prompt_count": 470,
-        "substantive_prompt_count": 14379,
-        "duplicate_prompt_instances": 4210,
-        "substantive_duplicate_instances": 4031,
+        "total_prompts": 16344,
+        "avg_prompt_length": 7763.1,
+        "mega_prompt_count": 7928,
+        "control_prompt_count": 583,
+        "substantive_prompt_count": 15761,
+        "duplicate_prompt_instances": 4302,
+        "substantive_duplicate_instances": 4074,
         "duplicates": [
           {
             "count": 23,
             "prompt": "/usage"
           },
           {
+            "count": 19,
+            "prompt": "yes"
+          },
+          {
+            "count": 19,
+            "prompt": "/openspec:apply"
+          },
+          {
             "count": 17,
             "prompt": "/rate-limit-options"
           },
           {
-            "count": 16,
-            "prompt": "yes"
+            "count": 14,
+            "prompt": "/openspec:proposal"
+          },
+          {
+            "count": 11,
+            "prompt": "Let's do it"
           },
           {
             "count": 10,
-            "prompt": "Let's do it"
+            "prompt": "/mcp"
+          },
+          {
+            "count": 10,
+            "prompt": "hi"
           },
           {
             "count": 10,
@@ -75,22 +91,6 @@
           {
             "count": 9,
             "prompt": "here you go"
-          },
-          {
-            "count": 8,
-            "prompt": "/login"
-          },
-          {
-            "count": 8,
-            "prompt": "[SUGGESTION MODE: Suggest what the user might naturally type next into Claude Code.] FIRST: Look at the user's recent messages and original request. Your job..."
-          },
-          {
-            "count": 7,
-            "prompt": "[Image: original 2560x1426, displayed at 2000x1114. Multiply coordinates by 1.28 to map to original image.]"
-          },
-          {
-            "count": 7,
-            "prompt": "[Pasted text #1 +6 lines]"
           }
         ],
         "longest": [
@@ -148,53 +148,53 @@
         "tags": [
           {
             "name": "design",
-            "count": 9796
-          },
-          {
-            "name": "build",
-            "count": 9313
+            "count": 10137
           },
           {
             "name": "plan",
-            "count": 9187
+            "count": 9793
+          },
+          {
+            "name": "build",
+            "count": 9714
           },
           {
             "name": "research",
-            "count": 8075
-          },
-          {
-            "name": "test",
-            "count": 2324
+            "count": 8227
           },
           {
             "name": "debug",
-            "count": 2246
+            "count": 2894
+          },
+          {
+            "name": "test",
+            "count": 2570
           },
           {
             "name": "agents",
-            "count": 1085
+            "count": 1208
           },
           {
             "name": "refactor",
-            "count": 308
+            "count": 311
           }
         ],
         "directive_signals": [
           {
             "name": "verification_first",
-            "count": 1005
+            "count": 1129
           },
           {
             "name": "parallel_agents",
             "count": 481
           },
           {
-            "name": "system_directive",
-            "count": 42
+            "name": "step_by_step",
+            "count": 287
           },
           {
-            "name": "step_by_step",
-            "count": 39
+            "name": "system_directive",
+            "count": 42
           },
           {
             "name": "interview_before_action",
@@ -208,25 +208,25 @@
       },
       "prompt_effectiveness": {
         "baseline": {
-          "days": 53,
-          "avg_projects": 5.36,
-          "avg_threads": 155.28,
-          "avg_execution_total": 3185.11,
-          "avg_mega_prompts": 146.49
+          "days": 87,
+          "avg_projects": 3.75,
+          "avg_threads": 94.6,
+          "avg_execution_total": 1940.52,
+          "avg_mega_prompts": 91.13
         },
         "patterns": [
           {
             "name": "verification_first",
-            "days": 41,
-            "prompt_count": 1005,
-            "avg_projects": 6.37,
-            "avg_threads": 199.56,
-            "avg_execution_total": 4023.24,
-            "avg_mega_prompts": 188.95,
-            "projects_delta_vs_baseline": 1.01,
-            "threads_delta_vs_baseline": 44.28,
-            "execution_delta_vs_baseline": 838.13,
-            "mega_delta_vs_baseline": 42.46
+            "days": 60,
+            "prompt_count": 1129,
+            "avg_projects": 4.73,
+            "avg_threads": 136.37,
+            "avg_execution_total": 2749.45,
+            "avg_mega_prompts": 131.67,
+            "projects_delta_vs_baseline": 0.99,
+            "threads_delta_vs_baseline": 41.77,
+            "execution_delta_vs_baseline": 808.93,
+            "mega_delta_vs_baseline": 40.54
           },
           {
             "name": "parallel_agents",
@@ -234,12 +234,25 @@
             "prompt_count": 481,
             "avg_projects": 7.09,
             "avg_threads": 244.94,
-            "avg_execution_total": 4696.61,
+            "avg_execution_total": 4697.03,
             "avg_mega_prompts": 232.88,
-            "projects_delta_vs_baseline": 1.73,
-            "threads_delta_vs_baseline": 89.66,
-            "execution_delta_vs_baseline": 1511.49,
-            "mega_delta_vs_baseline": 86.39
+            "projects_delta_vs_baseline": 3.34,
+            "threads_delta_vs_baseline": 150.34,
+            "execution_delta_vs_baseline": 2756.51,
+            "mega_delta_vs_baseline": 141.75
+          },
+          {
+            "name": "step_by_step",
+            "days": 33,
+            "prompt_count": 287,
+            "avg_projects": 3.0,
+            "avg_threads": 221.3,
+            "avg_execution_total": 1839.52,
+            "avg_mega_prompts": 220.0,
+            "projects_delta_vs_baseline": -0.75,
+            "threads_delta_vs_baseline": 126.71,
+            "execution_delta_vs_baseline": -101.0,
+            "mega_delta_vs_baseline": 128.87
           },
           {
             "name": "system_directive",
@@ -249,23 +262,10 @@
             "avg_threads": 567.92,
             "avg_execution_total": 7350.62,
             "avg_mega_prompts": 549.23,
-            "projects_delta_vs_baseline": 4.95,
-            "threads_delta_vs_baseline": 412.64,
-            "execution_delta_vs_baseline": 4165.5,
-            "mega_delta_vs_baseline": 402.74
-          },
-          {
-            "name": "step_by_step",
-            "days": 9,
-            "prompt_count": 39,
-            "avg_projects": 7.44,
-            "avg_threads": 811.44,
-            "avg_execution_total": 6744.89,
-            "avg_mega_prompts": 788.78,
-            "projects_delta_vs_baseline": 2.09,
-            "threads_delta_vs_baseline": 656.16,
-            "execution_delta_vs_baseline": 3559.78,
-            "mega_delta_vs_baseline": 642.29
+            "projects_delta_vs_baseline": 6.56,
+            "threads_delta_vs_baseline": 473.33,
+            "execution_delta_vs_baseline": 5410.1,
+            "mega_delta_vs_baseline": 458.1
           },
           {
             "name": "interview_before_action",
@@ -273,12 +273,12 @@
             "prompt_count": 30,
             "avg_projects": 14.5,
             "avg_threads": 1681.5,
-            "avg_execution_total": 11576.5,
+            "avg_execution_total": 11580.0,
             "avg_mega_prompts": 1676.75,
-            "projects_delta_vs_baseline": 9.14,
-            "threads_delta_vs_baseline": 1526.22,
-            "execution_delta_vs_baseline": 8391.39,
-            "mega_delta_vs_baseline": 1530.26
+            "projects_delta_vs_baseline": 10.75,
+            "threads_delta_vs_baseline": 1586.9,
+            "execution_delta_vs_baseline": 9639.48,
+            "mega_delta_vs_baseline": 1585.62
           },
           {
             "name": "implement_direct",
@@ -288,10 +288,10 @@
             "avg_threads": 33.0,
             "avg_execution_total": 16923.0,
             "avg_mega_prompts": 36.0,
-            "projects_delta_vs_baseline": 18.64,
-            "threads_delta_vs_baseline": -122.28,
-            "execution_delta_vs_baseline": 13737.89,
-            "mega_delta_vs_baseline": -110.49
+            "projects_delta_vs_baseline": 20.25,
+            "threads_delta_vs_baseline": -61.6,
+            "execution_delta_vs_baseline": 14982.48,
+            "mega_delta_vs_baseline": -55.13
           }
         ],
         "high_output_days": [
@@ -737,29 +737,29 @@
               "interview_before_action": 5
             },
             "execution": {
-              "ran_command": 1744,
-              "read_file": 1766,
+              "ran_command": 1746,
+              "read_file": 1768,
               "searched_code": 368,
               "created_file": 245,
               "modified_file": 503,
-              "tool_use": 332,
+              "tool_use": 333,
               "web_fetch": 8,
               "web_search": 21,
-              "task_planned": 242,
-              "task_updated": 103,
-              "task_completed": 124,
+              "task_planned": 249,
+              "task_updated": 104,
+              "task_completed": 125,
               "research": 739,
               "command": 1482,
               "git_operation": 37,
               "web_research": 29
             },
-            "cost": 285.476,
+            "cost": 286.4632,
             "project_count": 9,
             "thread_count": 27,
             "avg_prompt_length": 615.3,
             "duplicate_prompt_instances": 16,
             "substantive_prompt_count": 308,
-            "execution_total": 7743,
+            "execution_total": 7757,
             "top_projects": [
               "portfolio-forever",
               "s3nik",
@@ -774,6 +774,889 @@
         ]
       },
       "prompt_daily_rows": [
+        {
+          "date": "2025-10-01",
+          "agent": "claude_code",
+          "prompt_count": 29,
+          "mega_prompt_count": 8,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "step_by_step": 8,
+            "verification_first": 8
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 666.5,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 29,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "build",
+            "plan"
+          ]
+        },
+        {
+          "date": "2025-10-02",
+          "agent": "claude_code",
+          "prompt_count": 36,
+          "mega_prompt_count": 6,
+          "control_prompt_count": 1,
+          "directive_signals": {
+            "step_by_step": 6,
+            "verification_first": 6
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 487.7,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 35,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "design",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-03",
+          "agent": "claude_code",
+          "prompt_count": 38,
+          "mega_prompt_count": 16,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "step_by_step": 16,
+            "verification_first": 16
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 835.3,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 38,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "design",
+            "plan"
+          ]
+        },
+        {
+          "date": "2025-10-04",
+          "agent": "claude_code",
+          "prompt_count": 50,
+          "mega_prompt_count": 24,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "step_by_step": 20,
+            "verification_first": 20
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 922.4,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 50,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "design",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-05",
+          "agent": "claude_code",
+          "prompt_count": 44,
+          "mega_prompt_count": 23,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "step_by_step": 23,
+            "verification_first": 23
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 975.1,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 42,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "build",
+            "design"
+          ]
+        },
+        {
+          "date": "2025-10-06",
+          "agent": "claude_code",
+          "prompt_count": 37,
+          "mega_prompt_count": 16,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "step_by_step": 16,
+            "verification_first": 16
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 859.9,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 37,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "build",
+            "plan"
+          ]
+        },
+        {
+          "date": "2025-10-07",
+          "agent": "claude_code",
+          "prompt_count": 59,
+          "mega_prompt_count": 19,
+          "control_prompt_count": 1,
+          "directive_signals": {
+            "step_by_step": 21,
+            "verification_first": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 533.7,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 58,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex",
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "design",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-08",
+          "agent": "claude_code",
+          "prompt_count": 16,
+          "mega_prompt_count": 4,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "step_by_step": 5
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 444.1,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 16,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex",
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-09",
+          "agent": "claude_code",
+          "prompt_count": 36,
+          "mega_prompt_count": 2,
+          "control_prompt_count": 1,
+          "directive_signals": {
+            "step_by_step": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 209.0,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 35,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards",
+            "breakdex"
+          ],
+          "top_tags": [
+            "build",
+            "design",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-10-10",
+          "agent": "claude_code",
+          "prompt_count": 64,
+          "mega_prompt_count": 2,
+          "control_prompt_count": 0,
+          "directive_signals": {
+            "verification_first": 1,
+            "step_by_step": 4
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 227.6,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 64,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "plan",
+            "build",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-10-11",
+          "agent": "claude_code",
+          "prompt_count": 45,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 3,
+          "directive_signals": {
+            "step_by_step": 8
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 243.2,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 42,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "design"
+          ]
+        },
+        {
+          "date": "2025-10-12",
+          "agent": "claude_code",
+          "prompt_count": 72,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 7,
+          "directive_signals": {
+            "step_by_step": 12
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 163.8,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 65,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "design",
+            "debug",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-13",
+          "agent": "claude_code",
+          "prompt_count": 115,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 18,
+          "directive_signals": {
+            "step_by_step": 14,
+            "verification_first": 1
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 152.6,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 97,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex",
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "plan",
+            "build",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-10-14",
+          "agent": "claude_code",
+          "prompt_count": 47,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 4,
+          "directive_signals": {
+            "step_by_step": 6
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 227.2,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 43,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-15",
+          "agent": "claude_code",
+          "prompt_count": 87,
+          "mega_prompt_count": 1,
+          "control_prompt_count": 8,
+          "directive_signals": {
+            "step_by_step": 11,
+            "verification_first": 1
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 224.7,
+          "duplicate_prompt_instances": 3,
+          "substantive_prompt_count": 79,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards",
+            "breakdex"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-16",
+          "agent": "claude_code",
+          "prompt_count": 47,
+          "mega_prompt_count": 2,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "step_by_step": 11
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 335.9,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 45,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "research"
+          ]
+        },
+        {
+          "date": "2025-10-17",
+          "agent": "claude_code",
+          "prompt_count": 107,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 7,
+          "directive_signals": {
+            "verification_first": 2,
+            "step_by_step": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 150.5,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 100,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-18",
+          "agent": "claude_code",
+          "prompt_count": 129,
+          "mega_prompt_count": 15,
+          "control_prompt_count": 14,
+          "directive_signals": {
+            "step_by_step": 20,
+            "verification_first": 10
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 305.5,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 115,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "design"
+          ]
+        },
+        {
+          "date": "2025-10-19",
+          "agent": "claude_code",
+          "prompt_count": 70,
+          "mega_prompt_count": 8,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "step_by_step": 14,
+            "verification_first": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 336.5,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 68,
+          "execution_total": 0,
+          "top_projects": [
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "research"
+          ]
+        },
+        {
+          "date": "2025-10-20",
+          "agent": "claude_code",
+          "prompt_count": 65,
+          "mega_prompt_count": 7,
+          "control_prompt_count": 5,
+          "directive_signals": {
+            "verification_first": 2,
+            "step_by_step": 9
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 331.3,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 60,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-21",
+          "agent": "claude_code",
+          "prompt_count": 77,
+          "mega_prompt_count": 7,
+          "control_prompt_count": 7,
+          "directive_signals": {
+            "step_by_step": 9,
+            "verification_first": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 365.7,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 70,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "test"
+          ]
+        },
+        {
+          "date": "2025-10-24",
+          "agent": "claude_code",
+          "prompt_count": 15,
+          "mega_prompt_count": 1,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "step_by_step": 1,
+            "verification_first": 2
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 278.1,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 13,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-25",
+          "agent": "claude_code",
+          "prompt_count": 53,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 4,
+          "directive_signals": {
+            "step_by_step": 7,
+            "verification_first": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 2,
+          "thread_count": 0,
+          "avg_prompt_length": 215.1,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 49,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex",
+            "BreakingFlashcards"
+          ],
+          "top_tags": [
+            "debug",
+            "plan",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-26",
+          "agent": "claude_code",
+          "prompt_count": 19,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 3,
+          "directive_signals": {
+            "step_by_step": 1
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 3,
+          "thread_count": 0,
+          "avg_prompt_length": 190.8,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 16,
+          "execution_total": 0,
+          "top_projects": [
+            "breakdex",
+            "BreakingFlashcards",
+            "breaking-computer-vision"
+          ],
+          "top_tags": [
+            "plan",
+            "debug",
+            "build"
+          ]
+        },
+        {
+          "date": "2025-10-27",
+          "agent": "claude_code",
+          "prompt_count": 21,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 3,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 144.6,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 18,
+          "execution_total": 0,
+          "top_projects": [
+            "breaking-computer-vision"
+          ],
+          "top_tags": [
+            "plan",
+            "build",
+            "design"
+          ]
+        },
+        {
+          "date": "2025-10-28",
+          "agent": "claude_code",
+          "prompt_count": 25,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 4,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 304.8,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 21,
+          "execution_total": 0,
+          "top_projects": [
+            "breaking-computer-vision"
+          ],
+          "top_tags": [
+            "plan",
+            "research",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-10-29",
+          "agent": "claude_code",
+          "prompt_count": 14,
+          "mega_prompt_count": 1,
+          "control_prompt_count": 3,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 267.9,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 11,
+          "execution_total": 0,
+          "top_projects": [
+            "breaking-computer-vision"
+          ],
+          "top_tags": [
+            "plan",
+            "build",
+            "design"
+          ]
+        },
+        {
+          "date": "2025-11-01",
+          "agent": "claude_code",
+          "prompt_count": 23,
+          "mega_prompt_count": 1,
+          "control_prompt_count": 2,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 158.3,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 21,
+          "execution_total": 0,
+          "top_projects": [
+            "breaking-computer-vision"
+          ],
+          "top_tags": [
+            "research",
+            "plan",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-11-02",
+          "agent": "claude_code",
+          "prompt_count": 1,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 0,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 215.0,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 1,
+          "execution_total": 0,
+          "top_projects": [
+            "breaking-computer-vision"
+          ],
+          "top_tags": []
+        },
+        {
+          "date": "2025-11-13",
+          "agent": "claude_code",
+          "prompt_count": 29,
+          "mega_prompt_count": 1,
+          "control_prompt_count": 5,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 152.4,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 24,
+          "execution_total": 0,
+          "top_projects": [
+            "breakphysics"
+          ],
+          "top_tags": [
+            "build",
+            "plan",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-11-15",
+          "agent": "claude_code",
+          "prompt_count": 1,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 0,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 122.0,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 1,
+          "execution_total": 0,
+          "top_projects": [
+            "halo_forensics"
+          ],
+          "top_tags": [
+            "build"
+          ]
+        },
+        {
+          "date": "2025-11-16",
+          "agent": "claude_code",
+          "prompt_count": 14,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "verification_first": 1
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 105.4,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 12,
+          "execution_total": 0,
+          "top_projects": [
+            "src"
+          ],
+          "top_tags": [
+            "debug",
+            "test",
+            "plan"
+          ]
+        },
+        {
+          "date": "2025-11-24",
+          "agent": "claude_code",
+          "prompt_count": 9,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 2,
+          "directive_signals": {
+            "verification_first": 3
+          },
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 116.8,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 7,
+          "execution_total": 0,
+          "top_projects": [
+            "zimtohrli"
+          ],
+          "top_tags": [
+            "test",
+            "plan",
+            "debug"
+          ]
+        },
+        {
+          "date": "2025-12-15",
+          "agent": "claude_code",
+          "prompt_count": 1,
+          "mega_prompt_count": 0,
+          "control_prompt_count": 1,
+          "directive_signals": {},
+          "execution": {},
+          "cost": 0.0,
+          "project_count": 1,
+          "thread_count": 0,
+          "avg_prompt_length": 3.0,
+          "duplicate_prompt_instances": 0,
+          "substantive_prompt_count": 0,
+          "execution_total": 0,
+          "top_projects": [
+            "bboy_filter"
+          ],
+          "top_tags": []
+        },
         {
           "date": "2026-01-15",
           "agent": "claude_code",
@@ -2907,29 +3790,29 @@
             "interview_before_action": 5
           },
           "execution": {
-            "ran_command": 1744,
-            "read_file": 1766,
+            "ran_command": 1746,
+            "read_file": 1768,
             "searched_code": 368,
             "created_file": 245,
             "modified_file": 503,
-            "tool_use": 332,
+            "tool_use": 333,
             "web_fetch": 8,
             "web_search": 21,
-            "task_planned": 242,
-            "task_updated": 103,
-            "task_completed": 124,
+            "task_planned": 249,
+            "task_updated": 104,
+            "task_completed": 125,
             "research": 739,
             "command": 1482,
             "git_operation": 37,
             "web_research": 29
           },
-          "cost": 285.476,
+          "cost": 286.4632,
           "project_count": 9,
           "thread_count": 27,
           "avg_prompt_length": 615.3,
           "duplicate_prompt_instances": 16,
           "substantive_prompt_count": 308,
-          "execution_total": 7743,
+          "execution_total": 7757,
           "top_projects": [
             "portfolio-forever",
             "s3nik",
@@ -2945,9 +3828,9 @@
       "execution_metrics": {
         "created_file": 6486,
         "modified_file": 8663,
-        "read_file": 38898,
+        "read_file": 38900,
         "delegated": 2062,
-        "ran_command": 28793,
+        "ran_command": 28795,
         "web_search": 4535
       },
       "friction_metrics": {
@@ -2958,15 +3841,15 @@
       },
       "git_evidence": {
         "repo_count": 69,
-        "commit_count": 1904
+        "commit_count": 1910
       },
       "derived": {
-        "tokens_per_thread": 1573705.47,
-        "tokens_per_project": 80707120.26,
-        "prompts_per_active_day": 280.17,
-        "mega_prompt_rate": 0.5229,
-        "duplicate_prompt_rate": 0.2835,
-        "cost_per_work_unit_mid": 20.5652
+        "tokens_per_thread": 1574090.6,
+        "tokens_per_project": 77150364.73,
+        "prompts_per_active_day": 187.86,
+        "mega_prompt_rate": 0.4851,
+        "duplicate_prompt_rate": 0.2632,
+        "cost_per_work_unit_mid": 18.2144
       },
       "top_projects": [
         {
@@ -2977,9 +3860,9 @@
         },
         {
           "project_name": "portfolio-forever",
-          "events": 11711,
-          "cost": 495.104743,
-          "tokens": 1086062199
+          "events": 11723,
+          "cost": 495.6465370000001,
+          "tokens": 1087622628
         },
         {
           "project_name": "mit-ocw-reels",
@@ -3098,19 +3981,19 @@
       "thread_count": 137,
       "project_count": 35,
       "work_unit_count": 48,
-      "total_tokens": 2223461275,
-      "cost_low": 4854.9333,
-      "cost_mid": 9709.8665,
-      "cost_high": 29129.5995,
-      "monthly_cost_low": 1641.9115,
-      "monthly_cost_mid": 3283.8229,
-      "monthly_cost_high": 9851.4687,
+      "total_tokens": 2230568770,
+      "cost_low": 4872.702,
+      "cost_mid": 9745.404,
+      "cost_high": 29236.212,
+      "monthly_cost_low": 814.9059,
+      "monthly_cost_mid": 1629.8117,
+      "monthly_cost_high": 4889.4352,
       "prompt_metrics": {
-        "total_prompts": 479,
-        "avg_prompt_length": 1468.4,
+        "total_prompts": 480,
+        "avg_prompt_length": 1465.8,
         "mega_prompt_count": 73,
         "control_prompt_count": 9,
-        "substantive_prompt_count": 470,
+        "substantive_prompt_count": 471,
         "duplicate_prompt_instances": 83,
         "substantive_duplicate_instances": 81,
         "duplicates": [
@@ -3360,7 +4243,7 @@
           {
             "date": "2026-03-31",
             "agent": "codex",
-            "prompt_count": 199,
+            "prompt_count": 200,
             "mega_prompt_count": 27,
             "control_prompt_count": 1,
             "directive_signals": {
@@ -3372,12 +4255,12 @@
               "step_by_step": 1
             },
             "execution": {},
-            "cost": 7002.0075,
+            "cost": 7037.545,
             "project_count": 9,
             "thread_count": 68,
-            "avg_prompt_length": 596.2,
+            "avg_prompt_length": 594.5,
             "duplicate_prompt_instances": 61,
-            "substantive_prompt_count": 198,
+            "substantive_prompt_count": 199,
             "execution_total": 0,
             "top_projects": [
               "s3nik",
@@ -4147,7 +5030,7 @@
         {
           "date": "2026-03-31",
           "agent": "codex",
-          "prompt_count": 199,
+          "prompt_count": 200,
           "mega_prompt_count": 27,
           "control_prompt_count": 1,
           "directive_signals": {
@@ -4159,12 +5042,12 @@
             "step_by_step": 1
           },
           "execution": {},
-          "cost": 7002.0075,
+          "cost": 7037.545,
           "project_count": 9,
           "thread_count": 68,
-          "avg_prompt_length": 596.2,
+          "avg_prompt_length": 594.5,
           "duplicate_prompt_instances": 61,
-          "substantive_prompt_count": 198,
+          "substantive_prompt_count": 199,
           "execution_total": 0,
           "top_projects": [
             "s3nik",
@@ -4187,47 +5070,47 @@
         "web_search": 0
       },
       "friction_metrics": {
-        "error_count": 215,
-        "warning_count": 35,
+        "error_count": 338,
+        "warning_count": 34,
         "apply_patch_failures": 2,
         "subagent_threads": 58
       },
       "git_evidence": {
         "repo_count": 24,
-        "commit_count": 1899
+        "commit_count": 2076
       },
       "derived": {
-        "tokens_per_thread": 16229644.34,
-        "tokens_per_project": 63527465.0,
-        "prompts_per_active_day": 25.21,
-        "mega_prompt_rate": 0.1524,
-        "duplicate_prompt_rate": 0.1733,
-        "cost_per_work_unit_mid": 202.2889
+        "tokens_per_thread": 16281523.87,
+        "tokens_per_project": 63730536.29,
+        "prompts_per_active_day": 25.26,
+        "mega_prompt_rate": 0.1521,
+        "duplicate_prompt_rate": 0.1729,
+        "cost_per_work_unit_mid": 203.0293
       },
       "top_projects": [
         {
           "project_name": "s3nik",
           "events": 35,
-          "cost": 3125.0881690000006,
-          "tokens": 744702718
+          "cost": 3127.6854390000008,
+          "tokens": 745222172
         },
         {
           "project_name": "claude-code-elixir",
           "events": 17,
-          "cost": 2022.5800860000002,
-          "tokens": 521430456
+          "cost": 2031.0317160000002,
+          "tokens": 523120782
         },
         {
           "project_name": "breakdex-flutter",
           "events": 14,
-          "cost": 1793.862104,
-          "tokens": 361722174
+          "cost": 1806.4773739999998,
+          "tokens": 364245228
         },
         {
           "project_name": "redwood-mymind-clone-web",
           "events": 6,
-          "cost": 650.649449,
-          "tokens": 172068586
+          "cost": 653.202934,
+          "tokens": 172579283
         },
         {
           "project_name": "MusicBrowser",
@@ -4265,8 +5148,8 @@
         {
           "project_name": "claude-code-elixir",
           "thread_id": "019d4485-d033-7501-85c5-9520e65fff86",
-          "tokens_total": 74968877,
-          "usage_cost": 374.8444,
+          "tokens_total": 76659203,
+          "usage_cost": 383.296,
           "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
         },
         {
@@ -4300,16 +5183,16 @@
         {
           "project_name": "s3nik",
           "thread_id": "019d454c-8abb-7021-a5aa-ef10ea8e3570",
-          "tokens_total": 52291001,
-          "usage_cost": 261.455,
+          "tokens_total": 52589857,
+          "usage_cost": 262.9493,
           "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
         },
         {
-          "project_name": "s3nik",
-          "thread_id": "019d44b2-2cb3-74e0-aa2f-f915944a6dfa",
-          "tokens_total": 51599459,
-          "usage_cost": 257.9973,
-          "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "019d44f1-0979-7452-8166-4247c8282580",
+          "tokens_total": 51631514,
+          "usage_cost": 258.1576,
+          "title": "use chrome-devtools and test on mobile why the links cannot be archived and also figure out why posts and links don't..."
         }
       ]
     }

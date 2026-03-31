@@ -1,11 +1,11 @@
 +---------------------------------------------------------------------------------------------------------+
 | eng-journal :: ascii analytics dashboard                                                                |
-| window 2026-01-01 -> 2026-03-31                                                                         |
+| window 2025-10-01 -> 2026-03-31                                                                         |
 +---------------------------------------------------------------------------------------------------------+
 | agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
 +---------------------------------------------------------------------------------------------------------+
-| Claude Code    | 53   | 151      | 7744    | 12,186,775,160 | $6,684     | $2,260     | exact           |
-| Codex          | 19   | 35       | 137     | 2,223,461,275  | $9,710     | $3,284     | estimated_range |
+| Claude Code    | 87   | 158      | 7744    | 12,189,757,627 | $6,685     | $1,118     | exact           |
+| Codex          | 19   | 35       | 137     | 2,230,568,770  | $9,745     | $1,630     | estimated_range |
 +---------------------------------------------------------------------------------------------------------+
 
 SOURCE COVERAGE
@@ -24,34 +24,34 @@ Claude Code:
   2026-W11  [###########.................]  $ 807.86
   2026-W12  [############################]  $1996.70
   2026-W13  [###########################.]  $1902.25
-  2026-W14  [#######.....................]  $ 464.18
+  2026-W14  [#######.....................]  $ 465.16
 
 Codex:
   2026-W07  [#...........................]  $  26.80
   2026-W08  [#...........................]  $  31.51
   2026-W09  [#...........................]  $  86.94
-  2026-W10  [########....................]  $1883.31
+  2026-W10  [#######.....................]  $1883.31
   2026-W11  [###.........................]  $ 657.05
   2026-W12  [#...........................]  $   9.01
   2026-W13  [#...........................]  $  13.23
-  2026-W14  [############################]  $7002.01
+  2026-W14  [############################]  $7037.55
 
 TOP PROJECTS
 Claude Code:
   - breakdex-flutter          events=22723  cost=$  848.70  tokens=1,544,823,253
-  - portfolio-forever         events=11711  cost=$  495.10  tokens=1,086,062,199
+  - portfolio-forever         events=11723  cost=$  495.65  tokens=1,087,622,628
   - mit-ocw-reels             events=11685  cost=$  485.17  tokens=1,024,486,407
   - autoresearch-playground   events=10660  cost=$  433.51  tokens= 887,387,417
   - mymind-clone-web          events= 8518  cost=$  356.82  tokens= 460,627,282
 
 Codex:
-  - s3nik                     events=   35  cost=$ 3125.09  tokens= 744,702,718
-  - claude-code-elixir        events=   17  cost=$ 2022.58  tokens= 521,430,456
-  - breakdex-flutter          events=   14  cost=$ 1793.86  tokens= 361,722,174
-  - redwood-mymind-clone-web  events=    6  cost=$  650.65  tokens= 172,068,586
+  - s3nik                     events=   35  cost=$ 3127.69  tokens= 745,222,172
+  - claude-code-elixir        events=   17  cost=$ 2031.03  tokens= 523,120,782
+  - breakdex-flutter          events=   14  cost=$ 1806.48  tokens= 364,245,228
+  - redwood-mymind-clone-web  events=    6  cost=$  653.20  tokens= 172,579,283
   - MusicBrowser              events=    4  cost=$  392.26  tokens=  78,452,798
 
 BONUS :: CORE VALUE
-  conservative=324,111  base=808,396  aggressive=1,943,051
-  monthly-band=109,612 -> 657,129
+  conservative=330,451  base=827,052  aggressive=1,988,834
+  monthly-band=55,264 -> 332,611
   note=keep roi and appraisal separate; this is option value, not company valuation

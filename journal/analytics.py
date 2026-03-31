@@ -21,33 +21,69 @@ DIRECTIVE_SIGNAL_PATTERNS = {
     "implement_direct": ("implement the plan", "execute all edits now"),
 }
 
+CONTROL_PROMPT_PREFIXES = ("/", "[image:", "[pasted text", "[suggestion mode:")
+CONTROL_PROMPT_EXACT = {
+    "ok",
+    "okay",
+    "yes",
+    "no",
+    "continue",
+    "here you go",
+    "let's do it",
+}
+
 
 def _top_counter(counter: Counter, limit: int = 8) -> list[dict]:
     return [{"name": name, "count": count} for name, count in counter.most_common(limit)]
+
+
+def _signal_names(text: str) -> list[str]:
+    lowered = text.lower()
+    return [
+        signal_name
+        for signal_name, patterns in DIRECTIVE_SIGNAL_PATTERNS.items()
+        if any(pattern in lowered for pattern in patterns)
+    ]
+
+
+def _is_control_prompt(text: str) -> bool:
+    lowered = text.strip().lower()
+    if not lowered:
+        return True
+    if lowered in CONTROL_PROMPT_EXACT:
+        return True
+    if lowered.startswith(CONTROL_PROMPT_PREFIXES):
+        return True
+    return len(lowered) <= 4
 
 
 def summarize_prompt_events(prompt_events: list[dict]) -> dict:
     prompt_lengths = [event.get("prompt_length", 0) for event in prompt_events if event.get("prompt_text")]
     duplicate_counter: Counter[str] = Counter()
     duplicate_texts: dict[str, str] = {}
+    substantive_duplicate_counter: Counter[str] = Counter()
     tag_counter: Counter[str] = Counter()
     directive_counts: Counter[str] = Counter()
+    control_prompt_count = 0
 
     for event in prompt_events:
         text = (event.get("prompt_text") or "").strip()
         if not text:
             continue
-        lowered = text.lower()
         key = dedupe_key(text)
         duplicate_counter[key] += 1
         duplicate_texts.setdefault(key, text)
+        if _is_control_prompt(text):
+            control_prompt_count += 1
+        else:
+            substantive_duplicate_counter[key] += 1
         for tag in keyword_tags(text):
             tag_counter[tag] += 1
-        for signal_name, patterns in DIRECTIVE_SIGNAL_PATTERNS.items():
-            if any(pattern in lowered for pattern in patterns):
-                directive_counts[signal_name] += 1
+        for signal_name in _signal_names(text):
+            directive_counts[signal_name] += 1
 
     duplicate_instances = sum(max(count - 1, 0) for count in duplicate_counter.values())
+    substantive_duplicate_instances = sum(max(count - 1, 0) for count in substantive_duplicate_counter.values())
     duplicates = [
         {"count": count, "prompt": compact_text(duplicate_texts[key], 160)}
         for key, count in duplicate_counter.most_common()
@@ -67,7 +103,10 @@ def summarize_prompt_events(prompt_events: list[dict]) -> dict:
         "total_prompts": len(prompt_events),
         "avg_prompt_length": round(mean(prompt_lengths), 1),
         "mega_prompt_count": mega_count,
+        "control_prompt_count": control_prompt_count,
+        "substantive_prompt_count": len(prompt_events) - control_prompt_count,
         "duplicate_prompt_instances": duplicate_instances,
+        "substantive_duplicate_instances": substantive_duplicate_instances,
         "duplicates": duplicates,
         "longest": longest,
         "tags": _top_counter(tag_counter),
@@ -128,6 +167,139 @@ def _daily_rows(agent: str, events: list[dict], cost_field: str | None = None) -
     ]
 
 
+def _daily_prompt_rows(
+    agent: str,
+    prompt_events: list[dict],
+    cost_rows: list[dict],
+    tool_events: list[dict] | None = None,
+) -> list[dict]:
+    per_day: dict[str, dict] = {}
+    cost_by_date = {row["date"]: row for row in cost_rows}
+
+    for event in prompt_events:
+        date = event.get("date")
+        if not date:
+            continue
+        row = per_day.setdefault(
+            date,
+            {
+                "date": date,
+                "agent": agent,
+                "prompt_count": 0,
+                "mega_prompt_count": 0,
+                "control_prompt_count": 0,
+                "prompt_lengths": [],
+                "threads": set(),
+                "projects": Counter(),
+                "tags": Counter(),
+                "directive_signals": Counter(),
+                "duplicates": Counter(),
+                "execution": Counter(),
+                "cost": 0.0,
+            },
+        )
+        text = event.get("prompt_text", "") or ""
+        row["prompt_count"] += 1
+        row["prompt_lengths"].append(int(event.get("prompt_length", 0) or len(text)))
+        if is_mega_prompt(text):
+            row["mega_prompt_count"] += 1
+        if _is_control_prompt(text):
+            row["control_prompt_count"] += 1
+        thread_id = event.get("thread_id")
+        if thread_id:
+            row["threads"].add(thread_id)
+        project_name = event.get("project_name") or "unknown"
+        row["projects"][project_name] += 1
+        for tag in keyword_tags(text):
+            row["tags"][tag] += 1
+        for signal_name in _signal_names(text):
+            row["directive_signals"][signal_name] += 1
+        row["duplicates"][dedupe_key(text)] += 1
+
+    for event in tool_events or []:
+        date = event.get("date")
+        if not date or date not in per_day:
+            continue
+        action = event.get("action", "")
+        if action:
+            per_day[date]["execution"][action] += 1
+
+    for row in per_day.values():
+        duplicate_instances = sum(max(count - 1, 0) for count in row["duplicates"].values())
+        top_projects = [name for name, _ in row["projects"].most_common(3)]
+        top_tags = [name for name, _ in row["tags"].most_common(3)]
+        execution_total = sum(row["execution"].values())
+        cost_row = cost_by_date.get(row["date"], {})
+        row["cost"] = round(float(cost_row.get("cost", 0.0) or 0.0), 4)
+        row["project_count"] = len(row["projects"])
+        row["thread_count"] = len(row["threads"])
+        row["avg_prompt_length"] = round(mean(row["prompt_lengths"]), 1)
+        row["duplicate_prompt_instances"] = duplicate_instances
+        row["substantive_prompt_count"] = row["prompt_count"] - row["control_prompt_count"]
+        row["execution_total"] = execution_total
+        row["top_projects"] = top_projects
+        row["top_tags"] = top_tags
+        row["directive_signals"] = dict(row["directive_signals"])
+        row["execution"] = dict(row["execution"])
+        del row["prompt_lengths"]
+        del row["threads"]
+        del row["projects"]
+        del row["tags"]
+        del row["duplicates"]
+    return [per_day[key] for key in sorted(per_day)]
+
+
+def _prompt_effectiveness(prompt_metrics: dict, prompt_daily_rows: list[dict]) -> dict:
+    baseline_days = len(prompt_daily_rows)
+    baseline_projects = mean([row["project_count"] for row in prompt_daily_rows])
+    baseline_threads = mean([row["thread_count"] for row in prompt_daily_rows])
+    baseline_execution = mean([row["execution_total"] for row in prompt_daily_rows])
+    baseline_megas = mean([row["mega_prompt_count"] for row in prompt_daily_rows])
+    patterns = []
+    signal_names = [item["name"] for item in prompt_metrics.get("directive_signals", [])]
+
+    for signal_name in signal_names:
+        matching = [row for row in prompt_daily_rows if row["directive_signals"].get(signal_name, 0) > 0]
+        if not matching:
+            continue
+        avg_projects = mean([row["project_count"] for row in matching])
+        avg_threads = mean([row["thread_count"] for row in matching])
+        avg_execution = mean([row["execution_total"] for row in matching])
+        avg_megas = mean([row["mega_prompt_count"] for row in matching])
+        patterns.append(
+            {
+                "name": signal_name,
+                "days": len(matching),
+                "prompt_count": sum(row["directive_signals"].get(signal_name, 0) for row in matching),
+                "avg_projects": round(avg_projects, 2),
+                "avg_threads": round(avg_threads, 2),
+                "avg_execution_total": round(avg_execution, 2),
+                "avg_mega_prompts": round(avg_megas, 2),
+                "projects_delta_vs_baseline": round(avg_projects - baseline_projects, 2),
+                "threads_delta_vs_baseline": round(avg_threads - baseline_threads, 2),
+                "execution_delta_vs_baseline": round(avg_execution - baseline_execution, 2),
+                "mega_delta_vs_baseline": round(avg_megas - baseline_megas, 2),
+            }
+        )
+
+    high_output_days = sorted(
+        prompt_daily_rows,
+        key=lambda row: (row["execution_total"], row["project_count"], row["thread_count"], row["prompt_count"]),
+        reverse=True,
+    )[:10]
+    return {
+        "baseline": {
+            "days": baseline_days,
+            "avg_projects": round(baseline_projects, 2),
+            "avg_threads": round(baseline_threads, 2),
+            "avg_execution_total": round(baseline_execution, 2),
+            "avg_mega_prompts": round(baseline_megas, 2),
+        },
+        "patterns": patterns,
+        "high_output_days": high_output_days,
+    }
+
+
 def _weekly_rows(daily_rows: list[dict]) -> list[dict]:
     grouped: dict[str, dict] = {}
     for row in daily_rows:
@@ -162,12 +334,16 @@ def _summarize_claude(paths: Paths, start_date: str, end_date: str, data: dict) 
     work_units = len({(event.get("project_name"), event.get("date")) for event in all_events if event.get("project_name") and event.get("date")})
     cost_confidence = "exact" if usage_events else ("history_only" if all_events else "no_data")
     activity_dates = sorted({event.get("date") for event in all_events if event.get("date")})
+    daily_rows = _daily_rows("claude_code", usage_events or all_events, cost_field="cost_actual")
+    prompt_daily_rows = _daily_prompt_rows("claude_code", prompt_events, daily_rows, tool_events)
+    prompt_effectiveness = _prompt_effectiveness(prompt_metrics, prompt_daily_rows)
 
     return {
         "name": "claude_code",
         "display_name": "Claude Code",
         "cost_confidence": cost_confidence,
         "source_coverage": data.get("source_coverage", []),
+        "source_bounds": data.get("source_bounds", {}),
         "active_days": len(activity_dates),
         "first_activity_date": activity_dates[0] if activity_dates else "",
         "last_activity_date": activity_dates[-1] if activity_dates else "",
@@ -201,8 +377,10 @@ def _summarize_claude(paths: Paths, start_date: str, end_date: str, data: dict) 
         },
         "git_evidence": git_evidence,
         "top_projects": _summarize_projects_from_events(usage_events or all_events, cost_field="cost_actual", token_field="total_tokens"),
-        "daily_rows": _daily_rows("claude_code", usage_events or all_events, cost_field="cost_actual"),
-        "weekly_rows": _weekly_rows(_daily_rows("claude_code", usage_events or all_events, cost_field="cost_actual")),
+        "daily_rows": daily_rows,
+        "prompt_daily_rows": prompt_daily_rows,
+        "prompt_effectiveness": prompt_effectiveness,
+        "weekly_rows": _weekly_rows(daily_rows),
         "sample_threads": [
             {
                 "project_name": thread.get("project_name", "unknown"),
@@ -232,12 +410,16 @@ def _summarize_codex(paths: Paths, start_date: str, end_date: str, data: dict) -
     work_units = len({(thread.get("project_name"), thread.get("date")) for thread in threads if thread.get("project_name") and thread.get("date")})
     cost_confidence = "estimated_range" if threads else ("history_only" if prompt_events else "no_data")
     activity_dates = sorted({thread.get("date") for thread in threads if thread.get("date")})
+    daily_rows = _daily_rows("codex", thread_events, cost_field="cost_mid")
+    prompt_daily_rows = _daily_prompt_rows("codex", prompt_events, daily_rows, None)
+    prompt_effectiveness = _prompt_effectiveness(prompt_metrics, prompt_daily_rows)
 
     return {
         "name": "codex",
         "display_name": "Codex",
         "cost_confidence": cost_confidence,
         "source_coverage": data.get("source_coverage", []),
+        "source_bounds": data.get("source_bounds", {}),
         "active_days": len(activity_dates),
         "first_activity_date": activity_dates[0] if activity_dates else "",
         "last_activity_date": activity_dates[-1] if activity_dates else "",
@@ -271,8 +453,10 @@ def _summarize_codex(paths: Paths, start_date: str, end_date: str, data: dict) -
         },
         "git_evidence": git_evidence,
         "top_projects": _summarize_projects_from_events(thread_events, cost_field="cost_mid", token_field="tokens_used"),
-        "daily_rows": _daily_rows("codex", thread_events, cost_field="cost_mid"),
-        "weekly_rows": _weekly_rows(_daily_rows("codex", thread_events, cost_field="cost_mid")),
+        "daily_rows": daily_rows,
+        "prompt_daily_rows": prompt_daily_rows,
+        "prompt_effectiveness": prompt_effectiveness,
+        "weekly_rows": _weekly_rows(daily_rows),
         "sample_threads": [
             {
                 "project_name": thread.get("project_name", "unknown"),

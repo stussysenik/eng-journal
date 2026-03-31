@@ -16,6 +16,60 @@ def _connect(path: Path) -> sqlite3.Connection:
     return conn
 
 
+def _bounds_dict(first_ts, last_ts) -> dict:
+    return {
+        "first_date": first_ts.date().isoformat() if first_ts else "",
+        "last_date": last_ts.date().isoformat() if last_ts else "",
+    }
+
+
+def _history_bounds(history_path: Path | None) -> dict:
+    if not history_path or not history_path.exists():
+        return _bounds_dict(None, None)
+    first_ts = None
+    last_ts = None
+    with history_path.open(encoding="utf-8") as handle:
+        for raw_line in handle:
+            if not raw_line.strip():
+                continue
+            try:
+                payload = json.loads(raw_line)
+            except json.JSONDecodeError:
+                continue
+            ts = payload.get("ts")
+            if ts is None:
+                continue
+            timestamp = utc_dt_from_unix(int(ts))
+            if first_ts is None or timestamp < first_ts:
+                first_ts = timestamp
+            if last_ts is None or timestamp > last_ts:
+                last_ts = timestamp
+    return _bounds_dict(first_ts, last_ts)
+
+
+def _sqlite_bounds(db_path: Path | None, table: str, ts_column: str, end_column: str | None = None) -> dict:
+    if not db_path or not db_path.exists():
+        return _bounds_dict(None, None)
+    conn = _connect(db_path)
+    try:
+        if end_column:
+            row = conn.execute(
+                f"select min({ts_column}) as first_ts, max({end_column}) as last_ts from {table}"
+            ).fetchone()
+        else:
+            row = conn.execute(
+                f"select min({ts_column}) as first_ts, max({ts_column}) as last_ts from {table}"
+            ).fetchone()
+    finally:
+        conn.close()
+    first_raw = row["first_ts"] if row else None
+    last_raw = row["last_ts"] if row else None
+    return _bounds_dict(
+        utc_dt_from_unix(int(first_raw)) if first_raw is not None else None,
+        utc_dt_from_unix(int(last_raw)) if last_raw is not None else None,
+    )
+
+
 def _load_prompt_history(history_path: Path | None, start_date: str, end_date: str) -> dict[str, list[dict]]:
     by_session: dict[str, list[dict]] = defaultdict(list)
     if not history_path or not history_path.exists():
@@ -111,6 +165,11 @@ def load_codex_window(paths: Paths, start_date: str, end_date: str) -> dict:
             "prompt_events": _fallback_prompt_events(prompt_history),
             "thread_events": [],
             "source_coverage": coverage,
+            "source_bounds": {
+                "history": _history_bounds(sources.codex_history_file),
+                "sqlite_thread": _bounds_dict(None, None),
+                "native_log": _bounds_dict(None, None),
+            },
         }
 
     log_signals = _load_log_signals(sources.codex_logs_db, start_date, end_date)
@@ -231,4 +290,9 @@ def load_codex_window(paths: Paths, start_date: str, end_date: str) -> dict:
         "thread_events": thread_events,
         "prompt_events": prompt_events,
         "source_coverage": coverage,
+        "source_bounds": {
+            "history": _history_bounds(sources.codex_history_file),
+            "sqlite_thread": _sqlite_bounds(sources.codex_state_db, "threads", "created_at", "updated_at"),
+            "native_log": _sqlite_bounds(sources.codex_logs_db, "logs", "ts"),
+        },
     }

@@ -15,11 +15,33 @@ def render_daily_markdown(dataset: dict, date_str: str) -> str:
         lines.append("No activity found for this date.")
         return "\n".join(lines) + "\n"
     for row in rows:
-        lines.append(f"## {row['agent']}")
+        agent = dataset["agents"][row["agent"]]
+        prompt_day = next((item for item in agent.get("prompt_daily_rows", []) if item["date"] == date_str), None)
+        lines.append(f"## {agent['display_name']}")
         lines.append(f"- Events: {row['events']}")
         lines.append(f"- Threads: {row['thread_count']}")
         lines.append(f"- Projects: {row['project_count']}")
         lines.append(f"- Cost proxy: ${row['cost']:.2f}")
+        if prompt_day:
+            lines.append(
+                f"- Prompts: {prompt_day['prompt_count']} total, {prompt_day['substantive_prompt_count']} substantive, "
+                f"{prompt_day['mega_prompt_count']} mega, {prompt_day['duplicate_prompt_instances']} duplicate instances"
+            )
+            lines.append(f"- Average prompt length: {prompt_day['avg_prompt_length']:.1f} chars")
+            if prompt_day["top_projects"]:
+                lines.append("- Top projects: " + ", ".join(prompt_day["top_projects"]))
+            if prompt_day["top_tags"]:
+                lines.append("- Top tags: " + ", ".join(prompt_day["top_tags"]))
+            if prompt_day["directive_signals"]:
+                lines.append(
+                    "- Directive signals: "
+                    + ", ".join(f"{name} ({count})" for name, count in sorted(prompt_day["directive_signals"].items()))
+                )
+            if prompt_day["execution"]:
+                lines.append(
+                    "- Execution: "
+                    + ", ".join(f"{name} ({count})" for name, count in sorted(prompt_day["execution"].items()))
+                )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -54,11 +76,51 @@ def render_prompt_markdown(dataset: dict, agent_filter: str | None = None) -> st
         lines.append(f"- Total prompts: {prompt_metrics['total_prompts']}")
         lines.append(f"- Average length: {prompt_metrics['avg_prompt_length']:.1f} chars")
         lines.append(f"- Mega prompts: {prompt_metrics['mega_prompt_count']}")
+        lines.append(
+            f"- Control prompts: {prompt_metrics.get('control_prompt_count', 0)} | "
+            f"Substantive prompts: {prompt_metrics.get('substantive_prompt_count', 0)}"
+        )
         lines.append(f"- Duplicate prompt instances: {prompt_metrics['duplicate_prompt_instances']}")
+        if "substantive_duplicate_instances" in prompt_metrics:
+            lines.append(f"- Substantive duplicate instances: {prompt_metrics['substantive_duplicate_instances']}")
         if prompt_metrics["tags"]:
             lines.append("- Top semantic tags: " + ", ".join(f"{item['name']} ({item['count']})" for item in prompt_metrics["tags"]))
         if prompt_metrics.get("directive_signals"):
             lines.append("- Directive signals: " + ", ".join(f"{item['name']} ({item['count']})" for item in prompt_metrics["directive_signals"]))
+        lines.append("")
+        lines.append("### What Worked")
+        effectiveness = agent.get("prompt_effectiveness", {})
+        baseline = effectiveness.get("baseline", {})
+        if baseline:
+            lines.append(
+                f"- Baseline active day: {baseline['avg_projects']:.2f} projects, {baseline['avg_threads']:.2f} threads, "
+                f"{baseline['avg_execution_total']:.2f} execution actions, {baseline['avg_mega_prompts']:.2f} mega prompts"
+            )
+        patterns = effectiveness.get("patterns", [])
+        if patterns:
+            for item in sorted(patterns, key=lambda entry: (entry["execution_delta_vs_baseline"], entry["projects_delta_vs_baseline"]), reverse=True):
+                lines.append(
+                    f"- {item['name']}: {item['days']} days / {item['prompt_count']} prompts, "
+                    f"{item['avg_projects']:.2f} projects/day ({item['projects_delta_vs_baseline']:+.2f}), "
+                    f"{item['avg_execution_total']:.2f} execution/day ({item['execution_delta_vs_baseline']:+.2f})"
+                )
+        else:
+            lines.append("- No directive-signal effectiveness patterns detected.")
+        lines.append("")
+        lines.append("### Highest-Output Prompt Days")
+        high_output_days = effectiveness.get("high_output_days", [])
+        if high_output_days:
+            for row in high_output_days[:10]:
+                signal_summary = ", ".join(
+                    f"{name} ({count})" for name, count in sorted(row.get("directive_signals", {}).items())
+                ) or "none"
+                lines.append(
+                    f"- {row['date']}: {row['prompt_count']} prompts, {row['project_count']} projects, "
+                    f"{row['execution_total']} execution actions, top projects {', '.join(row['top_projects']) or 'none'}, "
+                    f"signals {signal_summary}"
+                )
+        else:
+            lines.append("- No prompt-daily rows available.")
         lines.append("")
         lines.append("### Repeated prompts")
         if prompt_metrics["duplicates"]:
@@ -85,6 +147,17 @@ def _signal_counts(prompt_metrics: dict) -> dict[str, int]:
     return {item["name"]: item["count"] for item in prompt_metrics.get("directive_signals", [])}
 
 
+def _format_source_bounds(source_bounds: dict[str, dict]) -> str:
+    parts = []
+    for source_name, bounds in source_bounds.items():
+        first_date = bounds.get("first_date", "")
+        last_date = bounds.get("last_date", "")
+        if not first_date and not last_date:
+            continue
+        parts.append(f"{source_name} {first_date or 'n/a'} to {last_date or 'n/a'}")
+    return ", ".join(parts) if parts else "none"
+
+
 def stats_payload(dataset: dict, agent_filter: str | None = None) -> dict:
     payload = {
         "window": dataset["window"],
@@ -100,6 +173,7 @@ def stats_payload(dataset: dict, agent_filter: str | None = None) -> dict:
         payload["agents"][agent_name] = {
             "display_name": agent["display_name"],
             "source_coverage": agent.get("source_coverage", []),
+            "source_bounds": agent.get("source_bounds", {}),
             "cost_confidence": agent["cost_confidence"],
             "active_days": agent["active_days"],
             "first_activity_date": agent.get("first_activity_date", ""),
@@ -116,6 +190,8 @@ def stats_payload(dataset: dict, agent_filter: str | None = None) -> dict:
             "monthly_cost_mid": agent["monthly_cost_mid"],
             "monthly_cost_high": agent["monthly_cost_high"],
             "prompt_metrics": prompt_metrics,
+            "prompt_effectiveness": agent.get("prompt_effectiveness", {}),
+            "prompt_daily_rows": agent.get("prompt_daily_rows", []),
             "execution_metrics": execution_metrics,
             "friction_metrics": friction_metrics,
             "git_evidence": {
@@ -145,6 +221,7 @@ def render_stats_markdown(dataset: dict, agent_filter: str | None = None) -> str
     for _, agent in payload["agents"].items():
         lines.append(f"## {agent['display_name']}")
         lines.append("- Source coverage: " + (", ".join(agent["source_coverage"]) or "none"))
+        lines.append("- Source availability: " + _format_source_bounds(agent.get("source_bounds", {})))
         lines.append(f"- Cost confidence: {agent['cost_confidence']}")
         lines.append(
             f"- Activity span: {agent['first_activity_date'] or 'n/a'} to {agent['last_activity_date'] or 'n/a'} "
@@ -162,10 +239,27 @@ def render_stats_markdown(dataset: dict, agent_filter: str | None = None) -> str
             f"{agent['prompt_metrics']['mega_prompt_count']} mega, "
             f"{agent['prompt_metrics']['duplicate_prompt_instances']} duplicate instances"
         )
+        lines.append(
+            f"- Prompt mix: {agent['prompt_metrics'].get('control_prompt_count', 0)} control, "
+            f"{agent['prompt_metrics'].get('substantive_prompt_count', 0)} substantive, "
+            f"{agent['prompt_metrics'].get('substantive_duplicate_instances', 0)} substantive duplicates"
+        )
         if agent["prompt_metrics"].get("directive_signals"):
             lines.append(
                 "- Directive signals: "
                 + ", ".join(f"{item['name']} ({item['count']})" for item in agent["prompt_metrics"]["directive_signals"])
+            )
+        patterns = agent.get("prompt_effectiveness", {}).get("patterns", [])
+        if patterns:
+            top_pattern = sorted(
+                patterns,
+                key=lambda item: (item["execution_delta_vs_baseline"], item["projects_delta_vs_baseline"]),
+                reverse=True,
+            )[0]
+            lines.append(
+                f"- Prompt signal with strongest output lift: {top_pattern['name']} on {top_pattern['days']} days, "
+                f"{top_pattern['avg_projects']:.2f} projects/day ({top_pattern['projects_delta_vs_baseline']:+.2f}), "
+                f"{top_pattern['avg_execution_total']:.2f} execution/day ({top_pattern['execution_delta_vs_baseline']:+.2f})"
             )
         lines.append(
             f"- Derived: {agent['derived']['tokens_per_thread']:,.0f} tokens/thread, "
@@ -248,6 +342,7 @@ def render_review_markdown(dataset: dict) -> str:
     for agent_name, agent in dataset["agents"].items():
         lines.append(
             f"- {agent['display_name']}: source coverage {', '.join(agent.get('source_coverage', [])) or 'none'}, "
+            f"source availability {_format_source_bounds(agent.get('source_bounds', {}))}, "
             f"cost confidence {agent['cost_confidence']}, active span {agent.get('first_activity_date', 'n/a')} to {agent.get('last_activity_date', 'n/a')}"
         )
     lines.extend(["", "## Agent Reviews"])
@@ -266,8 +361,29 @@ def render_review_markdown(dataset: dict) -> str:
             )
         lines.append("Strong signals:")
         lines.extend(_agent_strength_lines(agent_name, agent))
+        patterns = agent.get("prompt_effectiveness", {}).get("patterns", [])
+        if patterns:
+            lines.append("Prompt patterns that worked:")
+            for item in sorted(
+                patterns,
+                key=lambda entry: (entry["execution_delta_vs_baseline"], entry["projects_delta_vs_baseline"]),
+                reverse=True,
+            )[:3]:
+                lines.append(
+                    f"- {item['name']}: {item['days']} days, {item['avg_projects']:.2f} projects/day "
+                    f"({item['projects_delta_vs_baseline']:+.2f} vs baseline), "
+                    f"{item['avg_execution_total']:.2f} execution/day ({item['execution_delta_vs_baseline']:+.2f})"
+                )
         lines.append("Tighten next:")
         lines.extend(_agent_tighten_lines(agent))
+        high_output_days = agent.get("prompt_effectiveness", {}).get("high_output_days", [])
+        if high_output_days:
+            lines.append("Highest-output days:")
+            for row in high_output_days[:3]:
+                lines.append(
+                    f"- {row['date']}: {row['prompt_count']} prompts, {row['project_count']} projects, "
+                    f"{row['execution_total']} execution actions, top projects {', '.join(row['top_projects']) or 'none'}"
+                )
         lines.append("Representative threads:")
         for thread in agent["sample_threads"][:5]:
             title = thread.get("title", "")
@@ -322,6 +438,7 @@ def render_learning_markdown(
         "## Current Learnings",
         f"- Claude Code value is strongest in execution breadth and continuity: {claude['project_count']} projects, {claude['thread_count']} threads, exact cost accounting, and heavy repo/file movement.",
         f"- Codex value is strongest in concentrated deep threads: {codex['thread_count']} threads, {codex['total_tokens']:,} tokens, and {codex['friction_metrics']['subagent_threads']} subagent threads.",
+        f"- The learning/report layer is auto-generated from the verified window, including prompt-effectiveness and daily prompt rows.",
         f"- Interview-before-action prompts appear {claude_signals.get('interview_before_action', 0)} times in Claude and {codex_signals.get('interview_before_action', 0)} times in Codex.",
         f"- Verification-first prompts appear {claude_signals.get('verification_first', 0)} times in Claude and {codex_signals.get('verification_first', 0)} times in Codex.",
         f"- Parallel/subagent directives appear {claude_signals.get('parallel_agents', 0)} times in Claude and {codex_signals.get('parallel_agents', 0)} times in Codex.",
@@ -329,6 +446,7 @@ def render_learning_markdown(
         "## Keep",
         "- Preserve source coverage and checkpoint verified windows instead of re-deriving them ad hoc.",
         "- Treat review files as durable base-zero summaries and stats files as machine-readable checkpoints.",
+        "- Keep prompt-effectiveness and per-day prompt rows generated from the same verified dataset as the headline reports.",
         "- Keep ROI and appraisal separate from learning and workflow analysis.",
         "",
         "## Tighten",

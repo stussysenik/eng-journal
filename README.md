@@ -10,6 +10,7 @@ The repo ingests raw local activity, normalizes both agents into one period data
 - daily Markdown journals
 - weekly rollups
 - prompt-efficiency reports
+- prompt-effectiveness summaries and high-output day breakdowns
 - ROI scorecards with subscription sensitivity tables
 - appraisal reports with conservative, base, and aggressive option-value bands
 - core-value reports for the observed builder window
@@ -20,15 +21,15 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 
 ```bash
 ./bin/journal doctor
-./bin/journal review --start 2026-01-01 --end 2026-03-31
-./bin/journal stats --start 2026-01-01 --end 2026-03-31 --format markdown
-./bin/journal ingest --start 2026-01-01 --end 2026-03-31
-./bin/journal report dashboard --start 2026-01-01 --end 2026-03-31
-./bin/journal report roi --start 2026-01-01 --end 2026-03-31
+./bin/journal review --start 2025-10-01 --end 2026-03-31
+./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
+./bin/journal ingest --start 2025-10-01 --end 2026-03-31
+./bin/journal report dashboard --start 2025-10-01 --end 2026-03-31
+./bin/journal report roi --start 2025-10-01 --end 2026-03-31
 ./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31
 ./bin/journal report core-value --start 2026-02-12 --end 2026-03-31
 ./bin/journal report weekly --start 2026-02-12 --end 2026-03-31
-./bin/journal report prompts --start 2026-01-01 --end 2026-03-31 --agent codex
+./bin/journal report prompts --start 2025-10-01 --end 2026-03-31 --agent claude_code
 ./bin/journal report daily --date 2026-03-31
 ./bin/journal capture screenshots --start 2026-02-12 --end 2026-03-31
 ```
@@ -41,6 +42,9 @@ Generated reports land in `reports/`.
 - writes the base-zero review, stats, dashboard, ROI, and prompt reports
 - freezes the window into `checkpoints/<window>/`
 - updates `LEARNING.md` so the repo keeps the current verified learnings
+- auto-maintains the latest verified window so later `review`, `stats`, `report`, and `capture` calls default to that checkpoint
+
+The default window is no longer just a hardcoded date pair. If a verified checkpoint exists, the CLI uses that latest verified window automatically.
 
 ## Portable Discovery
 
@@ -67,12 +71,12 @@ Codex source precedence is:
 ```text
 +---------------------------------------------------------------------------------------------------------+
 | eng-journal :: ascii analytics dashboard                                                                |
-| window 2026-01-01 -> 2026-03-31                                                                         |
+| window 2025-10-01 -> 2026-03-31                                                                         |
 +---------------------------------------------------------------------------------------------------------+
 | agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
 +---------------------------------------------------------------------------------------------------------+
-| Claude Code    | 53   | 151      | 7744    | 12,175,250,867 | $6,676     | $2,258     | exact           |
-| Codex          | 19   | 34       | 128     | 1,705,537,774  | $7,353     | $2,487     | estimated_range |
+| Claude Code    | 87   | 158      | 7744    | 12,178,728,869 | $6,681     | $1,117     | exact           |
+| Codex          | 19   | 35       | 137     | 2,208,553,386  | $9,635     | $1,611     | estimated_range |
 +---------------------------------------------------------------------------------------------------------+
 ```
 
@@ -118,6 +122,7 @@ Subscription payback is shown as a sensitivity table because local auth does not
 - `PROGRESS.md`: current implementation status and next gaps
 - `hyperdata.json`: structured repo metadata, current windows, report inventory, and appraisal framing
 - `CHANGELOG.md`: semantic-release changelog target
+- `checkpoints/<window>/manifest.json`: auto-maintained source-of-truth for the latest verified window
 
 ## Valuation Scope
 
