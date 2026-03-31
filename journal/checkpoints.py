@@ -17,11 +17,15 @@ def checkpoint_root(paths: Paths, start_date: str, end_date: str) -> Path:
 
 
 def checkpoint_dataset_path(paths: Paths, start_date: str, end_date: str) -> Path:
-    return checkpoint_root(paths, start_date, end_date) / "dataset.json"
+    return paths.local_checkpoints_dir / period_slug(start_date, end_date) / "dataset.json"
 
 
 def checkpoint_manifest_path(paths: Paths, start_date: str, end_date: str) -> Path:
     return checkpoint_root(paths, start_date, end_date) / "manifest.json"
+
+
+def legacy_checkpoint_dataset_path(paths: Paths, start_date: str, end_date: str) -> Path:
+    return checkpoint_root(paths, start_date, end_date) / "dataset.json"
 
 
 def load_checkpoint_manifest(paths: Paths, start_date: str, end_date: str) -> dict | None:
@@ -33,9 +37,12 @@ def load_checkpoint_manifest(paths: Paths, start_date: str, end_date: str) -> di
 
 def load_checkpoint_dataset(paths: Paths, start_date: str, end_date: str) -> dict | None:
     dataset_path = checkpoint_dataset_path(paths, start_date, end_date)
-    if not dataset_path.exists():
-        return None
-    return json.loads(dataset_path.read_text(encoding="utf-8"))
+    if dataset_path.exists():
+        return json.loads(dataset_path.read_text(encoding="utf-8"))
+    legacy_path = legacy_checkpoint_dataset_path(paths, start_date, end_date)
+    if legacy_path.exists():
+        return json.loads(legacy_path.read_text(encoding="utf-8"))
+    return None
 
 
 def _path_metadata(path: Path | None, repo_root: Path) -> dict | None:
@@ -73,12 +80,13 @@ def _artifact_descriptor(repo_root: Path, path: Path) -> dict:
 
 
 def write_checkpoint(paths: Paths, start_date: str, end_date: str, dataset: dict, artifacts: dict[str, Path]) -> Path:
-    root = checkpoint_root(paths, start_date, end_date)
-    root.mkdir(parents=True, exist_ok=True)
     dataset_path = checkpoint_dataset_path(paths, start_date, end_date)
+    dataset_path.parent.mkdir(parents=True, exist_ok=True)
     dataset_text = json.dumps(dataset, indent=2)
     dataset_path.write_text(dataset_text, encoding="utf-8")
 
+    root = checkpoint_root(paths, start_date, end_date)
+    root.mkdir(parents=True, exist_ok=True)
     manifest = {
         "window": dataset["window"],
         "verified_at": dt.datetime.now(dt.UTC).isoformat(),
@@ -86,6 +94,7 @@ def write_checkpoint(paths: Paths, start_date: str, end_date: str, dataset: dict
             "path": str(dataset_path.relative_to(paths.repo_root)),
             "sha256": sha256_text(dataset_text),
             "generated_at": dataset.get("generated_at", ""),
+            "storage": "local_cache",
         },
         "sources": current_source_snapshot(paths),
         "artifacts": {name: _artifact_descriptor(paths.repo_root, path) for name, path in artifacts.items()},

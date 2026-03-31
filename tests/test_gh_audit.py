@@ -88,6 +88,8 @@ class GHAuditTests(unittest.TestCase):
             paths = Paths(
                 repo_root=root / "eng-journal",
                 cache_dir=root / ".cache",
+                local_reports_dir=root / ".cache" / "reports",
+                local_checkpoints_dir=root / ".cache" / "checkpoints",
                 reports_dir=root / "reports",
                 checkpoints_dir=root / "checkpoints",
                 references_dir=root / "references",

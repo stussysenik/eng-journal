@@ -15,6 +15,8 @@ class Scenario:
 class Paths:
     repo_root: Path
     cache_dir: Path
+    local_reports_dir: Path
+    local_checkpoints_dir: Path
     reports_dir: Path
     checkpoints_dir: Path
     references_dir: Path
@@ -96,6 +98,8 @@ def default_paths(repo_root: Path | None = None) -> Paths:
     return Paths(
         repo_root=root,
         cache_dir=root / ".cache",
+        local_reports_dir=root / ".cache" / "reports",
+        local_checkpoints_dir=root / ".cache" / "checkpoints",
         reports_dir=root / "reports",
         checkpoints_dir=root / "checkpoints",
         references_dir=root / "references",

@@ -14,10 +14,10 @@ This report tracks the local auto-refresh loop for gh-audit imports and review r
 
 ## Last Refresh
 - Status: ok
-- Started at: 2026-03-31T20:42:25.891964+00:00
-- Completed at: 2026-03-31T20:44:48.938860+00:00
+- Started at: 2026-03-31T22:00:09.441962+00:00
+- Completed at: 2026-03-31T22:01:15.932847+00:00
 - Window: 2025-10-01 to 2026-03-31
-- gh-audit scan: yes
-- gh-audit source: `/Users/s3nik/Desktop/gh-audit-output/gh-audit-report-2026-03-31_2242244.json`
-- Imported reference: `/Users/s3nik/Desktop/eng-journal/references/gh-audit/latest.json`
+- gh-audit scan: no
+- Retention: keep latest 1 window(s)
+- Pruned paths: 0
 - Scheduler report: `/Users/s3nik/Desktop/eng-journal/reports/scheduler-status.md`

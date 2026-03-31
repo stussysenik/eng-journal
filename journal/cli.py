@@ -52,6 +52,7 @@ from .scheduler import (
     write_refresh_state,
 )
 from .screenshots import render_text_screenshot
+from .storage import prune_storage, storage_status
 
 
 def _default_start() -> str:
@@ -146,7 +147,7 @@ def _review_artifact_paths(paths, start_date: str, end_date: str) -> dict[str, P
     return {
         "review": paths.reports_dir / f"review-{slug}.md",
         "stats_markdown": paths.reports_dir / f"stats-{slug}.md",
-        "stats_json": paths.reports_dir / f"stats-{slug}.json",
+        "stats_json": paths.local_reports_dir / f"stats-{slug}.json",
         "impact": paths.reports_dir / f"impact-{slug}.md",
         "dashboard": paths.reports_dir / f"dashboard-{slug}.txt",
         "roi": paths.reports_dir / f"roi-{slug}.md",
@@ -261,8 +262,11 @@ def cmd_refresh(paths, args) -> int:
             state_payload["reference_path"] = str(reference_path)
         review_args = argparse.Namespace(start=start_date, end=end_date, refresh=True)
         rc = cmd_review(paths, review_args)
+        removed = [] if args.no_prune else prune_storage(paths, args.keep_windows)
         state_payload["status"] = "ok"
         state_payload["completed_at"] = dt.datetime.now(dt.UTC).isoformat()
+        state_payload["pruned_paths"] = [str(path) for path in removed]
+        state_payload["keep_windows"] = args.keep_windows
         scheduler_report_path = paths.reports_dir / "scheduler-status.md"
         state_payload["scheduler_report_path"] = str(scheduler_report_path)
         write_refresh_state(paths, state_payload)
@@ -343,7 +347,7 @@ def cmd_stats(paths, args) -> int:
     suffix = f"-{args.agent}" if args.agent else ""
     if args.format == "json":
         content = json.dumps(stats_payload(dataset, args.agent), indent=2) + "\n"
-        target = write_report(paths.reports_dir / f"stats{suffix}-{slug}.json", content)
+        target = write_report(paths.local_reports_dir / f"stats{suffix}-{slug}.json", content)
     else:
         content = render_stats_markdown(dataset, args.agent)
         target = write_report(paths.reports_dir / f"stats{suffix}-{slug}.md", content)
@@ -480,6 +484,18 @@ def cmd_report(paths, args) -> int:
     return 0
 
 
+def cmd_storage(paths, args) -> int:
+    if args.storage_action == "status":
+        print(json.dumps(storage_status(paths, args.keep_windows), indent=2))
+        return 0
+    if args.storage_action == "prune":
+        removed = prune_storage(paths, args.keep_windows)
+        for path in removed:
+            print(path)
+        return 0
+    raise ValueError(f"Unhandled storage action: {args.storage_action}")
+
+
 def cmd_capture(paths, args) -> int:
     start_date, end_date = _resolve_window(paths, args.start, args.end)
     slug = _period_slug(start_date, end_date)
@@ -539,6 +555,8 @@ def build_parser() -> argparse.ArgumentParser:
     refresh.add_argument("--user", default="stussysenik")
     refresh.add_argument("--workdir")
     refresh.add_argument("--output-dir")
+    refresh.add_argument("--keep-windows", type=int, default=1)
+    refresh.add_argument("--no-prune", action="store_true")
 
     schedule = subparsers.add_parser("schedule", help="Install or inspect local scheduled refresh jobs")
     schedule.add_argument("schedule_action", choices=["install", "status", "remove"])
@@ -552,6 +570,10 @@ def build_parser() -> argparse.ArgumentParser:
     schedule.add_argument("--user", default="stussysenik")
     schedule.add_argument("--workdir")
     schedule.add_argument("--output-dir")
+
+    storage = subparsers.add_parser("storage", help="Inspect or prune durable vs local report storage")
+    storage.add_argument("storage_action", choices=["status", "prune"])
+    storage.add_argument("--keep-windows", type=int, default=1)
 
     report = subparsers.add_parser("report", help="Render Markdown reports")
     report_sub = report.add_subparsers(dest="kind", required=True)
@@ -602,6 +624,8 @@ def main() -> int:
     args = parser.parse_args()
     paths = default_paths()
     paths.cache_dir.mkdir(exist_ok=True)
+    paths.local_reports_dir.mkdir(parents=True, exist_ok=True)
+    paths.local_checkpoints_dir.mkdir(parents=True, exist_ok=True)
     paths.reports_dir.mkdir(exist_ok=True)
     paths.checkpoints_dir.mkdir(exist_ok=True)
     paths.references_dir.mkdir(exist_ok=True)
@@ -626,6 +650,8 @@ def main() -> int:
             return cmd_capture(paths, args)
     if args.command == "schedule":
         return cmd_schedule(paths, args)
+    if args.command == "storage":
+        return cmd_storage(paths, args)
     raise ValueError(f"Unhandled command: {args.command}")
 
 

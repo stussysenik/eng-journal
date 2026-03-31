@@ -7,6 +7,7 @@
 - Reports currently ship as Markdown through the CLI.
 - Verified windows can now be checkpointed and reused through `review`.
 - Prompt-effectiveness and per-day prompt rows are auto-generated inside the verified dataset and reports.
+- Storage policy now splits tracked summaries from local-only machine artifacts, with explicit `storage status` / `storage prune`.
 - gh-audit repo references can now be imported and used for repo-level impact summaries.
 - ROI scoring runs through SBCL and uses current public pricing references captured in code.
 - The current verified review window is `2025-10-01` through `2026-03-31`.
@@ -23,6 +24,7 @@
 - `report core-value`
 - `report dashboard`
 - `review` verified window checkpointing
+- `refresh` retention with automatic pruning to the latest durable window
 - `stats` reusable metrics snapshots
 - `reference gh-audit` normalized repo-reference import
 - `capture screenshots`
@@ -34,6 +36,7 @@
 - Daily report enrichment with prompt mix, directive signals, top projects, and execution breakdowns
 - `report impact` with job/application framing plus matched gh-audit repo references
 - Root `LEARNING.md` updated from the latest verified review
+- Local checkpoint datasets now live in `.cache/checkpoints/<window>/dataset.json`
 - Git evidence correlation across touched repos
 - Corrected Claude Opus 4.5 pricing in `cc-config`
 

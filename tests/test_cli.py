@@ -39,6 +39,8 @@ class CliWindowTests(unittest.TestCase):
             paths = Paths(
                 repo_root=root,
                 cache_dir=root / ".cache",
+                local_reports_dir=root / ".cache" / "reports",
+                local_checkpoints_dir=root / ".cache" / "checkpoints",
                 reports_dir=root / "reports",
                 checkpoints_dir=checkpoints_dir,
                 references_dir=root / "references",

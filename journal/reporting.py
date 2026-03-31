@@ -727,6 +727,10 @@ def render_scheduler_status_markdown(schedule_status: dict, refresh_state: dict 
         window = refresh_state["window"]
         lines.append(f"- Window: {window.get('start_date', 'n/a')} to {window.get('end_date', 'n/a')}")
     lines.append(f"- gh-audit scan: {'yes' if refresh_state.get('scan_gh_audit') else 'no'}")
+    if "keep_windows" in refresh_state:
+        lines.append(f"- Retention: keep latest {refresh_state.get('keep_windows')} window(s)")
+    if "pruned_paths" in refresh_state:
+        lines.append(f"- Pruned paths: {len(refresh_state.get('pruned_paths') or [])}")
     if refresh_state.get("gh_audit_source_path"):
         lines.append(f"- gh-audit source: `{refresh_state['gh_audit_source_path']}`")
     if refresh_state.get("reference_path"):

@@ -27,6 +27,8 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 ./bin/journal refresh --scan-gh-audit --user stussysenik
 ./bin/journal schedule install --cadence daily --hour 3 --minute 17
 ./bin/journal schedule status
+./bin/journal storage status
+./bin/journal storage prune --keep-windows 1
 ./bin/journal report scheduler-status
 ./bin/journal review --start 2025-10-01 --end 2026-03-31
 ./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
@@ -60,6 +62,7 @@ The default window is no longer just a hardcoded date pair. If a verified checkp
 - optionally runs a fresh `gh-audit` Julia scan and imports the newest JSON reference
 - rebuilds the verified review window with `--refresh`
 - updates the impact report so the job-facing layer stays current
+- prunes older windows by default and keeps only the latest durable window unless you override `--keep-windows` or pass `--no-prune`
 
 `schedule` installs a local recurring refresh:
 
@@ -67,6 +70,12 @@ The default window is no longer just a hardcoded date pair. If a verified checkp
 - `cron` on other systems when `--runner auto`
 - supports `install`, `status`, and `remove`
 - keeps `reports/scheduler-status.md` current with the installed schedule and last refresh result
+
+`storage` is the retention command:
+
+- `storage status` shows tracked vs local-only storage by window
+- `storage prune --keep-windows 1` removes older report/checkpoint windows
+- this is the explicit broom if you want to collapse the repo back to one durable window immediately
 
 ## Portable Discovery
 
@@ -127,10 +136,30 @@ That keeps Julia out of the core ingestion pipeline while still letting repo-lev
 
 Verified windows are frozen into:
 
-- `checkpoints/<window>/dataset.json`
 - `checkpoints/<window>/manifest.json`
+- `.cache/checkpoints/<window>/dataset.json`
 
-That gives the repo a durable base summary layer. Mutable cache files in `.cache/` can refresh; verified checkpoints are the canonical reviewed snapshots.
+That gives the repo a durable base summary layer without forcing heavy machine-readable datasets into git. Mutable cache files in `.cache/` can refresh; tracked manifests and summaries remain the canonical reviewed snapshots.
+
+## Storage Policy
+
+Tracked and intended for git:
+
+- `reports/*.md`
+- `reports/*.txt`
+- `reports/scheduler-status.md`
+- `checkpoints/<window>/manifest.json`
+- `references/gh-audit/latest.json`
+- `LEARNING.md`
+
+Local-only and ignored:
+
+- `.cache/<window>.json`
+- `.cache/reports/*.json`
+- `.cache/checkpoints/<window>/dataset.json`
+- raw `gh-audit-output/*.json`
+
+The intent is simple: human-facing verified summaries stay in the repo, while bulky machine-readable intermediates stay local.
 
 ## Screenshots
 
@@ -167,6 +196,8 @@ Subscription payback is shown as a sensitivity table because local auth does not
 - `hyperdata.json`: structured repo metadata, current windows, report inventory, and appraisal framing
 - `CHANGELOG.md`: semantic-release changelog target
 - `checkpoints/<window>/manifest.json`: auto-maintained source-of-truth for the latest verified window
+- `.cache/checkpoints/<window>/dataset.json`: local-only verified dataset backing fast reloads
+- `.cache/reports/stats-<window>.json`: local-only machine-readable stats snapshot
 - `references/gh-audit/latest.json`: normalized external repo-asset reference imported from `gh-audit`
 
 ## Valuation Scope
