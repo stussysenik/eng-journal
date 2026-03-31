@@ -25,7 +25,8 @@
     "env_overrides": [
       "ENG_JOURNAL_CLAUDE_DIR",
       "ENG_JOURNAL_CODEX_DIR",
-      "ENG_JOURNAL_CC_CONFIG_DIR"
+      "ENG_JOURNAL_CC_CONFIG_DIR",
+      "ENG_JOURNAL_GH_AUDIT_DIR"
     ],
     "portable": true
   },
@@ -37,6 +38,7 @@
   "reports": [
     "review",
     "stats",
+    "impact",
     "dashboard",
     "daily",
     "weekly",
@@ -45,19 +47,30 @@
     "appraisal",
     "core-value"
   ],
+  "external_references": {
+    "gh_audit": {
+      "integration": "normalized_import",
+      "path": "references/gh-audit/latest.json",
+      "role": "repo_asset_reference",
+      "language": "julia"
+    }
+  },
   "valuation_policy": {
     "keep_roi_and_appraisal_separate": true,
+    "keep_external_repo_asset_reference_separate": true,
     "roi_question": "Are Claude Code and Codex paying back subscription and compute-equivalent cost?",
     "appraisal_question": "What are the delivered artifacts and portfolio options plausibly worth under explicit scenario bands?",
     "appraisal_is_not_company_valuation": true
   },
   "latest_outputs": [
     "LEARNING.md",
+    "references/gh-audit/latest.json",
     "checkpoints/2025-10-01_to_2026-03-31/manifest.json",
     "checkpoints/2025-10-01_to_2026-03-31/dataset.json",
     "reports/review-2025-10-01_to_2026-03-31.md",
     "reports/stats-2025-10-01_to_2026-03-31.md",
     "reports/stats-2025-10-01_to_2026-03-31.json",
+    "reports/impact-2025-10-01_to_2026-03-31.md",
     "reports/roi-2025-10-01_to_2026-03-31.md",
     "reports/prompts-claude_code-2025-10-01_to_2026-03-31.md",
     "reports/prompts-codex-2025-10-01_to_2026-03-31.md",

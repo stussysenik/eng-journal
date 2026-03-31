@@ -14,6 +14,8 @@ This file explains how verified review windows are structured so the same math a
 - Review: `reports/review-2025-10-01_to_2026-03-31.md`
 - Stats: `reports/stats-2025-10-01_to_2026-03-31.md`
 - Checkpoint: `checkpoints/2025-10-01_to_2026-03-31/manifest.json`
+- Impact: `reports/impact-2025-10-01_to_2026-03-31.md`
+- gh-audit reference: `references/gh-audit/latest.json`
 
 ## Current Learnings
 - Claude Code value is strongest in execution breadth and continuity: 158 projects, 7744 threads, exact cost accounting, and heavy repo/file movement.

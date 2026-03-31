@@ -412,6 +412,8 @@ def render_learning_markdown(
     review_relpath: str,
     stats_relpath: str,
     checkpoint_relpath: str,
+    impact_relpath: str = "",
+    gh_audit_reference_relpath: str = "",
 ) -> str:
     claude = dataset["agents"]["claude_code"]
     codex = dataset["agents"]["codex"]
@@ -434,6 +436,8 @@ def render_learning_markdown(
         f"- Review: `{review_relpath}`",
         f"- Stats: `{stats_relpath}`",
         f"- Checkpoint: `{checkpoint_relpath}`",
+        *([f"- Impact: `{impact_relpath}`"] if impact_relpath else []),
+        *([f"- gh-audit reference: `{gh_audit_reference_relpath}`"] if gh_audit_reference_relpath else []),
         "",
         "## Current Learnings",
         f"- Claude Code value is strongest in execution breadth and continuity: {claude['project_count']} projects, {claude['thread_count']} threads, exact cost accounting, and heavy repo/file movement.",
@@ -455,6 +459,223 @@ def render_learning_markdown(
         "- Add more structured execution signals for Codex if future local logs expose them.",
         "",
     ]
+    return "\n".join(lines)
+
+
+def _combined_git_repos(dataset: dict) -> list[dict]:
+    by_name: dict[str, dict] = {}
+    for agent in dataset["agents"].values():
+        for repo in agent["git_evidence"].get("repos", []):
+            repo_name = Path(repo.get("repo_root", "")).name or "unknown"
+            row = by_name.setdefault(
+                repo_name,
+                {
+                    "name": repo_name,
+                    "commit_count": 0,
+                    "agents": set(),
+                },
+            )
+            row["commit_count"] = max(row["commit_count"], int(repo.get("commit_count", 0) or 0))
+            row["agents"].add(agent["display_name"])
+    return [
+        {
+            "name": name,
+            "commit_count": item["commit_count"],
+            "agents": sorted(item["agents"]),
+        }
+        for name, item in by_name.items()
+    ]
+
+
+def _combined_project_activity(dataset: dict) -> dict[str, dict]:
+    lookup: dict[str, dict] = {}
+    for agent in dataset["agents"].values():
+        for project in agent["top_projects"]:
+            name = project["project_name"]
+            item = lookup.setdefault(
+                name,
+                {
+                    "project_name": name,
+                    "events": 0,
+                    "cost": 0.0,
+                    "tokens": 0,
+                    "agents": set(),
+                },
+            )
+            item["events"] += int(project.get("events", 0) or 0)
+            item["cost"] += float(project.get("cost", 0.0) or 0.0)
+            item["tokens"] += int(project.get("tokens", 0) or 0)
+            item["agents"].add(agent["display_name"])
+    return lookup
+
+
+def _matched_gh_audit_repos(dataset: dict, gh_audit_reference: dict) -> list[dict]:
+    project_lookup = _combined_project_activity(dataset)
+    git_lookup = {repo["name"]: repo for repo in _combined_git_repos(dataset)}
+    reference_lookup = {repo["name"]: repo for repo in gh_audit_reference.get("repos", [])}
+    matched_names = sorted(set(project_lookup) | set(git_lookup))
+    matches = []
+    for name in matched_names:
+        repo_ref = reference_lookup.get(name)
+        if not repo_ref:
+            continue
+        activity = project_lookup.get(
+            name,
+            {
+                "project_name": name,
+                "events": 0,
+                "cost": 0.0,
+                "tokens": 0,
+                "agents": set(),
+            },
+        )
+        git_repo = git_lookup.get(name, {"commit_count": 0, "agents": []})
+        agents = set(activity.get("agents", set())) | set(git_repo.get("agents", []))
+        matches.append(
+            {
+                "name": name,
+                "classification": repo_ref["classification"],
+                "language": repo_ref["language"],
+                "estimated_value_usd": repo_ref["estimated_value_usd"],
+                "cocomo_cost_usd": repo_ref["cocomo_cost_usd"],
+                "market_score": repo_ref["market_score"],
+                "portfolio_score": repo_ref["portfolio_score"],
+                "leverage_rank": repo_ref["leverage_rank"],
+                "leverage_usd_per_kloc": repo_ref["leverage_usd_per_kloc"],
+                "staff_engineer": repo_ref["staff_engineer"],
+                "design_engineer": repo_ref["design_engineer"],
+                "ai_ml_researcher": repo_ref["ai_ml_researcher"],
+                "finding_count": repo_ref["finding_count"],
+                "deep_scanned": repo_ref["deep_scanned"],
+                "events": activity.get("events", 0),
+                "window_cost": activity.get("cost", 0.0),
+                "window_tokens": activity.get("tokens", 0),
+                "commit_count": git_repo.get("commit_count", 0),
+                "agents": sorted(agents),
+            }
+        )
+    matches.sort(key=lambda item: (item["commit_count"], item["events"], item["estimated_value_usd"]), reverse=True)
+    return matches
+
+
+def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> str:
+    claude = dataset["agents"]["claude_code"]
+    codex = dataset["agents"]["codex"]
+    unique_repos = _combined_git_repos(dataset)
+    total_commits = sum(repo["commit_count"] for repo in unique_repos)
+    lines = [
+        f"# Impact Report - {dataset['window']['start_date']} to {dataset['window']['end_date']}",
+        "",
+        "This report combines the verified eng-journal window with repo-level gh-audit references.",
+        "It is intended for portfolio summaries, job applications, and impact framing.",
+        "",
+        "## Window Scale",
+        f"- Claude Code: {claude['active_days']} active days, {claude['project_count']} projects, {claude['thread_count']} threads, {claude['git_evidence']['commit_count']} git commits with evidence",
+        f"- Codex: {codex['active_days']} active days, {codex['project_count']} projects, {codex['thread_count']} threads, {codex['git_evidence']['commit_count']} git commits with evidence",
+        f"- Unique repos with git evidence across the window: {len(unique_repos)}",
+        f"- Total unique-commit evidence across those repos: {total_commits}",
+        "",
+    ]
+
+    claude_patterns = claude.get("prompt_effectiveness", {}).get("patterns", [])
+    codex_patterns = codex.get("prompt_effectiveness", {}).get("patterns", [])
+    claude_best = (
+        sorted(claude_patterns, key=lambda item: (item["execution_delta_vs_baseline"], item["projects_delta_vs_baseline"]), reverse=True)[0]
+        if claude_patterns
+        else None
+    )
+    codex_best = (
+        sorted(codex_patterns, key=lambda item: (item["projects_delta_vs_baseline"], item["execution_delta_vs_baseline"]), reverse=True)[0]
+        if codex_patterns
+        else None
+    )
+
+    lines.extend(
+        [
+            "## Application Framing",
+            f"- Operated as an AI-native engineering lead across {len(unique_repos)} repos and {total_commits} git commits in a verified window, with Claude Code acting as the breadth/execution engine and Codex as the deep-thread engine.",
+            f"- Shipped across product, design-system, research, and infrastructure-heavy repos rather than a single narrow stack: Claude alone touched {claude['project_count']} projects with exact usage accounting.",
+            f"- Verified prompt strategy was not random. Claude's strongest measured output lifts came from `{claude_best['name']}` and Codex's best project-spread signal came from `{codex_best['name']}`."
+            if claude_best and codex_best
+            else "- Verified prompt strategy is tracked in the review and prompt reports, with highest-output days and directive-signal lift now quantified.",
+            f"- Strongest repo clusters in the window included {', '.join(project['project_name'] for project in claude['top_projects'][:4])}.",
+            "",
+        ]
+    )
+
+    if not gh_audit_reference:
+        lines.extend(
+            [
+                "## gh-audit Reference",
+                "- No normalized gh-audit reference is imported yet.",
+                "- Run `./bin/journal reference gh-audit` to import the latest portfolio report into `references/gh-audit/latest.json`.",
+                "",
+            ]
+        )
+        return "\n".join(lines)
+
+    portfolio = gh_audit_reference["portfolio"]
+    matched = _matched_gh_audit_repos(dataset, gh_audit_reference)
+    matched_value = sum(item["estimated_value_usd"] for item in matched)
+    matched_safe = sum(1 for item in matched if item["classification"] == "SAFE")
+    matched_nda = sum(1 for item in matched if "NDA" in item["classification"])
+
+    lines.extend(
+        [
+            "## gh-audit Reference",
+            f"- Source report: `{gh_audit_reference['source_report_path']}`",
+            f"- Source timestamp: {gh_audit_reference['source_timestamp'] or 'n/a'}",
+            f"- Portfolio reference: {portfolio['total_repos']} repos, ${portfolio['total_portfolio_value_usd']:,.0f} raw total, {portfolio['safe_count']} SAFE, {portfolio['nda_count']} NDA_REQUIRED",
+            f"- Method flags: {portfolio['loc_outlier_count']} LOC outliers, {portfolio['value_outlier_count']} value outliers, {portfolio['deep_scanned_count']} deep-scanned repos",
+            f"- Repos touched in this verified window that match gh-audit by name: {len(matched)}",
+            f"- Raw gh-audit reference across matched repos: ${matched_value:,.0f}",
+            f"- Matched classifications: {matched_safe} SAFE, {matched_nda} NDA-related",
+            "",
+            "## Matched Repo References",
+        ]
+    )
+    for item in matched[:12]:
+        lines.append(
+            f"- {item['name']}: {item['commit_count']} commits, {item['events']} top-project events, "
+            f"${item['estimated_value_usd']:,.0f} ref value, {item['leverage_rank']} leverage, "
+            f"{item['classification']}, staff/design/ai {item['staff_engineer']:.0f}/{item['design_engineer']:.0f}/{item['ai_ml_researcher']:.0f}"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Job-Ready Summary Bullets",
+        ]
+    )
+    if matched:
+        top_names = ", ".join(item["name"] for item in matched[:4])
+        lines.append(
+            f"- Built and evolved a multi-repo portfolio across {len(unique_repos)} verified repos / {total_commits} commits, with standardized external repo references available for {len(matched)} repos including {top_names}."
+        )
+        lines.append(
+            f"- Worked on repos that gh-audit currently tags mostly as SAFE and appraises at ${matched_value:,.0f} raw replacement-cost reference across the matched set; treat that as a repo-asset signal, not a compensation or company valuation claim."
+        )
+    lines.append(
+        f"- Ran a measured AI-assisted engineering workflow with {claude['thread_count'] + codex['thread_count']} total threads in-window, explicit review/checkpointing, and quantified prompt-pattern lift instead of anecdotal prompting."
+    )
+    lines.append(
+        f"- Demonstrated range across app/product work, research systems, and internal tooling, with top active repo clusters including {', '.join(project['project_name'] for project in claude['top_projects'][:5])}."
+    )
+
+    lines.extend(
+        [
+            "",
+            "## Method Caveats",
+        ]
+    )
+    for caveat in gh_audit_reference.get("method_caveats", []):
+        lines.append(f"- {caveat}")
+    lines.extend(
+        [
+            "- For hiring or portfolio use, the safest framing is output scale, repo breadth, commit evidence, and matched repo references, not a single portfolio-dollar headline.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 

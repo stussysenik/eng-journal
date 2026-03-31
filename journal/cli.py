@@ -13,11 +13,13 @@ from .checkpoints import (
     write_checkpoint,
 )
 from .config import default_paths, discover_sources
+from .gh_audit import gh_audit_reference_path, import_gh_audit_reference, load_gh_audit_reference
 from .reporting import (
     render_appraisal_markdown,
     render_core_value_markdown,
     render_dashboard_ascii,
     render_daily_markdown,
+    render_impact_markdown,
     render_learning_markdown,
     render_prompt_markdown,
     render_review_markdown,
@@ -123,6 +125,7 @@ def _review_artifact_paths(paths, start_date: str, end_date: str) -> dict[str, P
         "review": paths.reports_dir / f"review-{slug}.md",
         "stats_markdown": paths.reports_dir / f"stats-{slug}.md",
         "stats_json": paths.reports_dir / f"stats-{slug}.json",
+        "impact": paths.reports_dir / f"impact-{slug}.md",
         "dashboard": paths.reports_dir / f"dashboard-{slug}.txt",
         "roi": paths.reports_dir / f"roi-{slug}.md",
         "prompts_claude": paths.reports_dir / f"prompts-claude_code-{slug}.md",
@@ -143,6 +146,8 @@ def cmd_doctor(paths) -> int:
         "codex_logs": sources.codex_logs_db,
         "cc_config_logs": sources.cc_config_logs_dir,
         "cc_config_stats": sources.cc_config_stats_file,
+        "gh_audit_dir": paths.gh_audit_dir,
+        "gh_audit_reference": gh_audit_reference_path(paths) if gh_audit_reference_path(paths).exists() else None,
     }
     for name, path in checks.items():
         if path:
@@ -159,6 +164,15 @@ def cmd_ingest(paths, start_date: str, end_date: str) -> int:
     cache_path = paths.cache_dir / f"{_period_slug(start_date, end_date)}.json"
     print(cache_path)
     return 0
+
+
+def cmd_reference(paths, args) -> int:
+    if args.reference_kind == "gh-audit":
+        input_path = Path(args.input).expanduser().resolve() if args.input else None
+        target = import_gh_audit_reference(paths, input_path)
+        print(target)
+        return 0
+    raise ValueError(f"Unhandled reference kind: {args.reference_kind}")
 
 
 def cmd_stats(paths, args) -> int:
@@ -184,6 +198,7 @@ def cmd_review(paths, args) -> int:
         artifact_paths["review"],
         artifact_paths["stats_markdown"],
         artifact_paths["stats_json"],
+        artifact_paths["impact"],
         artifact_paths["dashboard"],
         artifact_paths["roi"],
         artifact_paths["prompts_claude"],
@@ -195,6 +210,7 @@ def cmd_review(paths, args) -> int:
     checkpoint_dataset = load_checkpoint_dataset(paths, start_date, end_date) if manifest else None
     if manifest and not args.refresh and _all_exist(existing_outputs) and checkpoint_dataset is not None and _dataset_matches_current_schema(checkpoint_dataset):
         dataset = checkpoint_dataset
+        gh_audit_reference = load_gh_audit_reference(paths)
         if dataset is not None:
             write_report(
                 artifact_paths["learning"],
@@ -203,6 +219,8 @@ def cmd_review(paths, args) -> int:
                     str(artifact_paths["review"].relative_to(paths.repo_root)),
                     str(artifact_paths["stats_markdown"].relative_to(paths.repo_root)),
                     str(artifact_paths["checkpoint_manifest"].relative_to(paths.repo_root)),
+                    str(artifact_paths["impact"].relative_to(paths.repo_root)),
+                    str(gh_audit_reference_path(paths).relative_to(paths.repo_root)) if gh_audit_reference else "",
                 ),
             )
         for path in existing_outputs:
@@ -210,10 +228,12 @@ def cmd_review(paths, args) -> int:
         return 0
 
     dataset = _build_and_cache_dataset(paths, start_date, end_date) if (args.refresh or manifest is None) else _load_review_dataset(paths, start_date, end_date)
+    gh_audit_reference = load_gh_audit_reference(paths)
     artifacts = {
         "review": write_report(artifact_paths["review"], render_review_markdown(dataset)),
         "stats_markdown": write_report(artifact_paths["stats_markdown"], render_stats_markdown(dataset)),
         "stats_json": write_report(artifact_paths["stats_json"], json.dumps(stats_payload(dataset), indent=2) + "\n"),
+        "impact": write_report(artifact_paths["impact"], render_impact_markdown(dataset, gh_audit_reference)),
         "dashboard": write_report(artifact_paths["dashboard"], render_dashboard_ascii(dataset)),
         "roi": write_report(artifact_paths["roi"], render_roi_markdown(paths.repo_root, dataset, start_date, end_date)),
         "prompts_claude": write_report(
@@ -233,6 +253,8 @@ def cmd_review(paths, args) -> int:
             str(artifact_paths["review"].relative_to(paths.repo_root)),
             str(artifact_paths["stats_markdown"].relative_to(paths.repo_root)),
             str(manifest_path.relative_to(paths.repo_root)),
+            str(artifact_paths["impact"].relative_to(paths.repo_root)),
+            str(gh_audit_reference_path(paths).relative_to(paths.repo_root)) if gh_audit_reference else "",
         ),
     )
     artifacts["learning"] = learning_path
@@ -241,6 +263,7 @@ def cmd_review(paths, args) -> int:
         artifacts["review"],
         artifacts["stats_markdown"],
         artifacts["stats_json"],
+        artifacts["impact"],
         artifacts["dashboard"],
         artifacts["roi"],
         artifacts["prompts_claude"],
@@ -280,6 +303,9 @@ def cmd_report(paths, args) -> int:
         elif args.kind == "dashboard":
             content = render_dashboard_ascii(dataset)
             target = write_report(paths.reports_dir / f"dashboard-{_period_slug(start_date, end_date)}.txt", content)
+        elif args.kind == "impact":
+            content = render_impact_markdown(dataset, load_gh_audit_reference(paths))
+            target = write_report(paths.reports_dir / f"impact-{_period_slug(start_date, end_date)}.md", content)
         else:
             raise ValueError(f"Unknown report kind: {args.kind}")
     print(target)
@@ -312,6 +338,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("doctor", help="Check local data sources")
+
+    reference = subparsers.add_parser("reference", help="Import external reference data")
+    reference_sub = reference.add_subparsers(dest="reference_kind", required=True)
+    gh_audit = reference_sub.add_parser("gh-audit", help="Import the latest gh-audit report into eng-journal references")
+    gh_audit.add_argument("--input")
 
     ingest = subparsers.add_parser("ingest", help="Build a normalized period dataset")
     ingest.add_argument("--start")
@@ -359,6 +390,9 @@ def build_parser() -> argparse.ArgumentParser:
     dashboard = report_sub.add_parser("dashboard", help="Render ASCII analytics dashboard")
     dashboard.add_argument("--start")
     dashboard.add_argument("--end")
+    impact = report_sub.add_parser("impact", help="Render job/application impact summary with gh-audit references")
+    impact.add_argument("--start")
+    impact.add_argument("--end")
 
     capture = subparsers.add_parser("capture", help="Generate screenshot assets")
     capture_sub = capture.add_subparsers(dest="capture_kind", required=True)
@@ -376,9 +410,12 @@ def main() -> int:
     paths.cache_dir.mkdir(exist_ok=True)
     paths.reports_dir.mkdir(exist_ok=True)
     paths.checkpoints_dir.mkdir(exist_ok=True)
+    paths.references_dir.mkdir(exist_ok=True)
 
     if args.command == "doctor":
         return cmd_doctor(paths)
+    if args.command == "reference":
+        return cmd_reference(paths, args)
     if args.command == "ingest":
         start_date, end_date = _resolve_window(paths, args.start, args.end)
         return cmd_ingest(paths, start_date, end_date)

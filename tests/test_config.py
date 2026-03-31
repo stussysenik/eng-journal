@@ -31,9 +31,11 @@ class ConfigDiscoveryTests(unittest.TestCase):
                 cache_dir=root / ".cache",
                 reports_dir=root / "reports",
                 checkpoints_dir=root / "checkpoints",
+                references_dir=root / "references",
                 claude_dir=claude_dir,
                 codex_dir=codex_dir,
                 cc_config_dir=cc_config_dir,
+                gh_audit_dir=root / "gh-audit",
             )
             sources = discover_sources(paths)
             self.assertEqual(sources.codex_state_db.name, "state_7.sqlite")

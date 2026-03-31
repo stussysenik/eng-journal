@@ -17,9 +17,11 @@ class Paths:
     cache_dir: Path
     reports_dir: Path
     checkpoints_dir: Path
+    references_dir: Path
     claude_dir: Path
     codex_dir: Path
     cc_config_dir: Path | None
+    gh_audit_dir: Path | None
 
 
 @dataclass(frozen=True)
@@ -63,6 +65,22 @@ def _discover_cc_config_dir(home: Path, repo_root: Path) -> Path | None:
     return _first_existing_dir(candidates)
 
 
+def _discover_gh_audit_dir(home: Path, repo_root: Path) -> Path | None:
+    explicit = _env_path("ENG_JOURNAL_GH_AUDIT_DIR")
+    if explicit and explicit.exists():
+        return explicit
+    candidates = [
+        repo_root.parent / "gh-audit",
+        Path.cwd() / "gh-audit",
+        home / "Desktop" / "gh-audit",
+        home / "Documents" / "gh-audit",
+        home / "Code" / "gh-audit",
+        home / "Projects" / "gh-audit",
+        home / "dev" / "gh-audit",
+    ]
+    return _first_existing_dir(candidates)
+
+
 def _discover_latest_sqlite(directory: Path, pattern: str) -> Path | None:
     candidates = sorted(directory.glob(pattern))
     if not candidates:
@@ -80,9 +98,11 @@ def default_paths(repo_root: Path | None = None) -> Paths:
         cache_dir=root / ".cache",
         reports_dir=root / "reports",
         checkpoints_dir=root / "checkpoints",
+        references_dir=root / "references",
         claude_dir=claude_dir,
         codex_dir=codex_dir,
         cc_config_dir=_discover_cc_config_dir(home, root),
+        gh_audit_dir=_discover_gh_audit_dir(home, root),
     )
 
 

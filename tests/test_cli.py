@@ -41,9 +41,11 @@ class CliWindowTests(unittest.TestCase):
                 cache_dir=root / ".cache",
                 reports_dir=root / "reports",
                 checkpoints_dir=checkpoints_dir,
+                references_dir=root / "references",
                 claude_dir=root / ".claude",
                 codex_dir=root / ".codex",
                 cc_config_dir=root / "cc-config",
+                gh_audit_dir=root / "gh-audit",
             )
             self.assertEqual(_resolve_window(paths, None, None), ("2025-10-01", "2026-03-31"))
 

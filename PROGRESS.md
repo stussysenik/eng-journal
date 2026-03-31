@@ -7,6 +7,7 @@
 - Reports currently ship as Markdown through the CLI.
 - Verified windows can now be checkpointed and reused through `review`.
 - Prompt-effectiveness and per-day prompt rows are auto-generated inside the verified dataset and reports.
+- gh-audit repo references can now be imported and used for repo-level impact summaries.
 - ROI scoring runs through SBCL and uses current public pricing references captured in code.
 - The current verified review window is `2025-10-01` through `2026-03-31`.
 
@@ -23,6 +24,7 @@
 - `report dashboard`
 - `review` verified window checkpointing
 - `stats` reusable metrics snapshots
+- `reference gh-audit` normalized repo-reference import
 - `capture screenshots`
 - Portable source discovery for Claude, Codex, and optional `cc-config`
 - Claude ingestion from native logs, `history.jsonl`, and `cc-config/logs/*.jsonl`
@@ -30,6 +32,7 @@
 - Source availability ranges surfaced per agent and per source kind
 - Prompt-effectiveness summaries and high-output prompt days
 - Daily report enrichment with prompt mix, directive signals, top projects, and execution breakdowns
+- `report impact` with job/application framing plus matched gh-audit repo references
 - Root `LEARNING.md` updated from the latest verified review
 - Git evidence correlation across touched repos
 - Corrected Claude Opus 4.5 pricing in `cc-config`
@@ -43,6 +46,7 @@
 - Semantic-release is configured but still needs the first tagged release cycle
 - GitHub Actions release flow assumes repository secrets and default branch protections exist
 - Claude prompt-effectiveness still measures correlation against execution-heavy days, not strict causal lift
+- gh-audit references still inherit gh-audit's LOC-sensitive COCOMO blind spots and should be treated as external reference, not direct valuation truth
 
 ## Next Moves
 
@@ -52,3 +56,4 @@
 - Expose source coverage directly in ROI and dashboard reports
 - Add checkpoint diffing so two verified windows can be compared directly
 - Add project-cluster reports so “what was worked on” is generated explicitly per repo cluster
+- Add first-party gh-audit confidence flags such as generated-code suppression and LOC sanity caps if the Julia model is revised

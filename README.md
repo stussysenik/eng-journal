@@ -11,6 +11,7 @@ The repo ingests raw local activity, normalizes both agents into one period data
 - weekly rollups
 - prompt-efficiency reports
 - prompt-effectiveness summaries and high-output day breakdowns
+- repo-level impact summaries with imported `gh-audit` references
 - ROI scorecards with subscription sensitivity tables
 - appraisal reports with conservative, base, and aggressive option-value bands
 - core-value reports for the observed builder window
@@ -21,10 +22,12 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 
 ```bash
 ./bin/journal doctor
+./bin/journal reference gh-audit
 ./bin/journal review --start 2025-10-01 --end 2026-03-31
 ./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
 ./bin/journal ingest --start 2025-10-01 --end 2026-03-31
 ./bin/journal report dashboard --start 2025-10-01 --end 2026-03-31
+./bin/journal report impact --start 2025-10-01 --end 2026-03-31
 ./bin/journal report roi --start 2025-10-01 --end 2026-03-31
 ./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31
 ./bin/journal report core-value --start 2026-02-12 --end 2026-03-31
@@ -40,6 +43,7 @@ Generated reports land in `reports/`.
 
 - rebuilds the verified dataset when needed
 - writes the base-zero review, stats, dashboard, ROI, and prompt reports
+- writes the impact report when a normalized `gh-audit` reference exists
 - freezes the window into `checkpoints/<window>/`
 - updates `LEARNING.md` so the repo keeps the current verified learnings
 - auto-maintains the latest verified window so later `review`, `stats`, `report`, and `capture` calls default to that checkpoint
@@ -65,6 +69,16 @@ Codex source precedence is:
 - latest `state_*.sqlite`
 - `history.jsonl` prompt history
 - latest `logs_*.sqlite` diagnostics
+
+## gh-audit Reference
+
+`eng-journal` can import repo-level asset references from the separate Julia repo [`gh-audit`](https://github.com/stussysenik/gh-audit).
+
+- `eng-journal` stays the usage/ROI/learning system
+- `gh-audit` stays the repo security/replacement-cost/portfolio-reference system
+- the bridge is a normalized import at `references/gh-audit/latest.json`
+
+That keeps Julia out of the core ingestion pipeline while still letting repo-level appraisals show up in the job/application impact report.
 
 ## ASCII Dashboard
 
@@ -123,6 +137,7 @@ Subscription payback is shown as a sensitivity table because local auth does not
 - `hyperdata.json`: structured repo metadata, current windows, report inventory, and appraisal framing
 - `CHANGELOG.md`: semantic-release changelog target
 - `checkpoints/<window>/manifest.json`: auto-maintained source-of-truth for the latest verified window
+- `references/gh-audit/latest.json`: normalized external repo-asset reference imported from `gh-audit`
 
 ## Valuation Scope
 
