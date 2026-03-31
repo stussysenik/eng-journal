@@ -1,0 +1,25 @@
+{
+  "name": "eng-journal",
+  "version": "0.0.0-semantically-released",
+  "private": true,
+  "description": "Cross-agent engineering journal and ROI analytics for Claude Code and Codex",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stussysenik/eng-journal.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "doctor": "./bin/journal doctor",
+    "test": "python3 -m unittest discover -s tests",
+    "report:roi": "./bin/journal report roi --start 2026-02-12 --end 2026-03-31",
+    "report:appraisal": "./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31",
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0",
+    "semantic-release": "^24.0.0"
+  }
+}
+

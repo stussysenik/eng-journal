@@ -1,0 +1,7 @@
+__pycache__/
+.cache/
+*.pyc
+*.pyo
+*.swp
+.DS_Store
+node_modules/

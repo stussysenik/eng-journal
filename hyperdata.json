@@ -1,0 +1,43 @@
+{
+  "name": "eng-journal",
+  "kind": "cross-agent-analytics-repo",
+  "versioning": {
+    "strategy": "semantic-release",
+    "current_version": "0.0.0-semantically-released"
+  },
+  "primary_interface": "cli_plus_markdown",
+  "analytics_core": "common_lisp",
+  "ingestion_bridge": "python",
+  "window_defaults": {
+    "start_date": "2026-02-12",
+    "end_date": "2026-03-31"
+  },
+  "data_sources": [
+    "~/.claude/projects/**/*.jsonl",
+    "~/.claude/history.jsonl",
+    "~/.codex/history.jsonl",
+    "~/.codex/state_5.sqlite",
+    "~/.codex/logs_1.sqlite"
+  ],
+  "reports": [
+    "daily",
+    "weekly",
+    "prompts",
+    "roi",
+    "appraisal"
+  ],
+  "valuation_policy": {
+    "keep_roi_and_appraisal_separate": true,
+    "roi_question": "Are Claude Code and Codex paying back subscription and compute-equivalent cost?",
+    "appraisal_question": "What are the delivered artifacts and portfolio options plausibly worth under explicit scenario bands?",
+    "appraisal_is_not_company_valuation": true
+  },
+  "latest_outputs": [
+    "reports/daily-2026-03-31.md",
+    "reports/weekly-2026-02-12_to_2026-03-31.md",
+    "reports/prompts-codex-2026-02-12_to_2026-03-31.md",
+    "reports/roi-2026-02-12_to_2026-03-31.md",
+    "reports/appraisal-2026-02-12_to_2026-03-31.md"
+  ]
+}
+

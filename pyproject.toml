@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eng-journal"
+version = "0.0.0-semantically-released"
+description = "Cross-agent engineering journal and ROI analytics for Claude Code and Codex."
+requires-python = ">=3.11"
+
+[project.scripts]
+eng-journal = "journal.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["journal*"]
