@@ -5,11 +5,11 @@
     "period_days": 182,
     "month_fraction": 5.979466119096509
   },
-  "verified_at": "2026-03-31T19:41:23.105520+00:00",
+  "verified_at": "2026-03-31T20:44:48.934926+00:00",
   "dataset": {
     "path": "checkpoints/2025-10-01_to_2026-03-31/dataset.json",
-    "sha256": "74c68781d04e4a0848fec2af3f256acb4cf86cc91478f0281f652075f8c3646e",
-    "generated_at": "2026-03-31T19:17:55.957273+00:00"
+    "sha256": "70c68bbfd0b41f87be42667b833b37f47004ce964cb377956edf812b238e825f",
+    "generated_at": "2026-03-31T20:44:48.711124+00:00"
   },
   "sources": {
     "claude_projects": {
@@ -21,26 +21,26 @@
     "claude_history": {
       "path": "/Users/s3nik/.claude/history.jsonl",
       "relative_path": "/Users/s3nik/.claude/history.jsonl",
-      "size_bytes": 3846206,
-      "modified_at": "2026-03-31T19:40:20.587638+00:00"
+      "size_bytes": 3852598,
+      "modified_at": "2026-03-31T20:43:15.250972+00:00"
     },
     "codex_history": {
       "path": "/Users/s3nik/.codex/history.jsonl",
       "relative_path": "/Users/s3nik/.codex/history.jsonl",
-      "size_bytes": 188600,
-      "modified_at": "2026-03-31T19:38:32.516606+00:00"
+      "size_bytes": 218100,
+      "modified_at": "2026-03-31T20:43:28.940066+00:00"
     },
     "codex_state": {
       "path": "/Users/s3nik/.codex/state_5.sqlite",
       "relative_path": "/Users/s3nik/.codex/state_5.sqlite",
-      "size_bytes": 6705152,
-      "modified_at": "2026-03-31T19:41:10.543016+00:00"
+      "size_bytes": 6729728,
+      "modified_at": "2026-03-31T20:32:26.603409+00:00"
     },
     "codex_logs": {
       "path": "/Users/s3nik/.codex/logs_1.sqlite",
       "relative_path": "/Users/s3nik/.codex/logs_1.sqlite",
-      "size_bytes": 17465344,
-      "modified_at": "2026-03-31T19:41:16.569231+00:00"
+      "size_bytes": 21635072,
+      "modified_at": "2026-03-31T20:44:44.464029+00:00"
     },
     "cc_config_logs": {
       "path": "/Users/s3nik/Desktop/cc-config/logs",
@@ -58,48 +58,53 @@
   "artifacts": {
     "review": {
       "path": "reports/review-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 5852,
-      "sha256": "70da62dc08d31e12228487e0f56b7e85987cd15490d4dcdf6f32400bcd0fe2bc"
+      "size_bytes": 5757,
+      "sha256": "f199e76764948a605f2e797e5940552bc4cb2a66351a59edb2cf236d8eab112a"
     },
     "stats_markdown": {
       "path": "reports/stats-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 2160,
-      "sha256": "9aaef602aa8e9f09b13f49446b109c6cf5b132a1f562753268d322f59264f7b1"
+      "size_bytes": 2166,
+      "sha256": "d5d904d83d87bd00a7becfa72286b2bbae4990bd84e48f3a9ec50034bb21a311"
     },
     "stats_json": {
       "path": "reports/stats-2025-10-01_to_2026-03-31.json",
-      "size_bytes": 153298,
-      "sha256": "2efa1247223262c3cfa31f0e153810d3b533554f5a2be33addc2765ff9a21d8e"
+      "size_bytes": 153167,
+      "sha256": "7908acb5ac572b106e360d8672f469de5fd7c000e9ecedb1c2f398ae30652ea0"
     },
     "impact": {
       "path": "reports/impact-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 4718,
-      "sha256": "6cb7c48be57205a677e8c79929cd6b61e5593a981f4e29e47501fefd9681e2c6"
+      "size_bytes": 5717,
+      "sha256": "ed5aff6b0afdce17c1fcc26468bd5ff260a8bb5ee6d9624fefcad0a5d5405fe3"
     },
     "dashboard": {
       "path": "reports/dashboard-2025-10-01_to_2026-03-31.txt",
-      "size_bytes": 3163,
-      "sha256": "2d7a7cf58512b31d93952f65b8b92d019716b8d64c62d3577cfe7b8e3c6c04dd"
+      "size_bytes": 3165,
+      "sha256": "de5c37219c79adce87d9ed7c0b7ce76330ac641af07a70bf1f7874fd15caf7ab"
     },
     "roi": {
       "path": "reports/roi-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 7829,
-      "sha256": "535c511ffcee7f03c2dd601d832fe53cee2592a43a8449b82384ccdf4aab5a6a"
+      "size_bytes": 7729,
+      "sha256": "a4542951f805f6e61d6e534a3f031488889b7c4f06a94895283ad2d70562851a"
     },
     "prompts_claude": {
       "path": "reports/prompts-claude_code-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 6160,
-      "sha256": "d6111f27016fe97d30bb585f0cc147a7aec9713a133e76183c83a842af81ae23"
+      "size_bytes": 6161,
+      "sha256": "e2b6e42ce91d6d31597e5d3664d3363057c2f0fd0a965fb6b90da1eac9231013"
     },
     "prompts_codex": {
       "path": "reports/prompts-codex-2025-10-01_to_2026-03-31.md",
-      "size_bytes": 8299,
-      "sha256": "8810c6522e78a6df862b1bb11544c0e959b5c051e4ab76230bc078aa8f4cacfa"
+      "size_bytes": 8198,
+      "sha256": "b1da2ec6d531251f9c117bee475af10d15f3a2fec1b37de083e2fa37243c57f2"
+    },
+    "scheduler_status": {
+      "path": "reports/scheduler-status.md",
+      "size_bytes": 779,
+      "sha256": "f1d3442bed7d0dca4a23051bc142e97d470e2014d342490a5719279a9e3c760c"
     },
     "learning": {
       "path": "LEARNING.md",
       "size_bytes": 2320,
-      "sha256": "267029342aec048115bffee33d38c29be0dc06767ac7e4c3c3c3c9229dfda3bd"
+      "sha256": "60df76babc1ebc3f47f0d144f5c6e7e1062d5c154ce69f0f7056c7dd83566e49"
     }
   }
 }

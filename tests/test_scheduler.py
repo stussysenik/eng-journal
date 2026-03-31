@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from journal.config import Paths
-from journal.scheduler import _strip_cron_block, build_refresh_command, schedule_runner
+from journal.scheduler import _strip_cron_block, build_refresh_command, load_refresh_state, schedule_runner, write_refresh_state
 
 
 class SchedulerTests(unittest.TestCase):
@@ -58,6 +58,27 @@ class SchedulerTests(unittest.TestCase):
             ]
         )
         self.assertEqual(_strip_cron_block(content), "MAILTO=\"\"\n0 12 * * * /tmp/keep")
+
+    def test_refresh_state_round_trip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            paths = Paths(
+                repo_root=root / "eng-journal",
+                cache_dir=root / ".cache",
+                reports_dir=root / "reports",
+                checkpoints_dir=root / "checkpoints",
+                references_dir=root / "references",
+                claude_dir=root / ".claude",
+                codex_dir=root / ".codex",
+                cc_config_dir=None,
+                gh_audit_dir=root / "gh-audit",
+            )
+            write_refresh_state(paths, {"status": "ok", "completed_at": "2026-03-31T22:00:00+00:00"})
+            payload = load_refresh_state(paths)
+            assert payload is not None
+            self.assertEqual(payload["status"], "ok")
+            self.assertEqual(payload["completed_at"], "2026-03-31T22:00:00+00:00")
+            self.assertIn("updated_at", payload)
 
 
 if __name__ == "__main__":

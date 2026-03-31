@@ -27,6 +27,7 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 ./bin/journal refresh --scan-gh-audit --user stussysenik
 ./bin/journal schedule install --cadence daily --hour 3 --minute 17
 ./bin/journal schedule status
+./bin/journal report scheduler-status
 ./bin/journal review --start 2025-10-01 --end 2026-03-31
 ./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
 ./bin/journal ingest --start 2025-10-01 --end 2026-03-31
@@ -65,6 +66,7 @@ The default window is no longer just a hardcoded date pair. If a verified checkp
 - `launchd` on macOS when `--runner auto`
 - `cron` on other systems when `--runner auto`
 - supports `install`, `status`, and `remove`
+- keeps `reports/scheduler-status.md` current with the installed schedule and last refresh result
 
 ## Portable Discovery
 
@@ -96,6 +98,7 @@ Codex source precedence is:
 - `./bin/journal reference gh-audit --scan` runs a fresh Julia portfolio scan and imports the resulting JSON in one step
 - `./bin/journal refresh --scan-gh-audit` runs the full local refresh loop in one command
 - `./bin/journal schedule install` makes that refresh loop run nightly or weekly without manual intervention
+- `./bin/journal report scheduler-status` renders the current local scheduler + last refresh state into the repo
 
 The imported reference keeps both:
 
@@ -159,6 +162,7 @@ Subscription payback is shown as a sensitivity table because local auth does not
 
 - `README.md`: repo purpose, commands, and source-of-truth usage
 - `LEARNING.md`: current learning framework and latest verified review pointers
+- `reports/scheduler-status.md`: current local automation status, installed cadence, and last refresh result
 - `PROGRESS.md`: current implementation status and next gaps
 - `hyperdata.json`: structured repo metadata, current windows, report inventory, and appraisal framing
 - `CHANGELOG.md`: semantic-release changelog target

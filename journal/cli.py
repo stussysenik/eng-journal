@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 from pathlib import Path
 
@@ -31,6 +32,7 @@ from .reporting import (
     render_prompt_markdown,
     render_review_markdown,
     render_roi_markdown,
+    render_scheduler_status_markdown,
     render_stats_markdown,
     render_weekly_markdown,
     stats_payload,
@@ -42,9 +44,12 @@ from .scheduler import (
     install_cron_schedule,
     install_launchd_schedule,
     launchd_schedule_status,
+    load_refresh_state,
     remove_cron_schedule,
     remove_launchd_schedule,
+    schedule_status,
     schedule_runner,
+    write_refresh_state,
 )
 from .screenshots import render_text_screenshot
 
@@ -147,14 +152,24 @@ def _review_artifact_paths(paths, start_date: str, end_date: str) -> dict[str, P
         "roi": paths.reports_dir / f"roi-{slug}.md",
         "prompts_claude": paths.reports_dir / f"prompts-claude_code-{slug}.md",
         "prompts_codex": paths.reports_dir / f"prompts-codex-{slug}.md",
+        "scheduler_status": paths.reports_dir / "scheduler-status.md",
         "learning": paths.repo_root / "LEARNING.md",
         "checkpoint_manifest": checkpoint_manifest_path(paths, start_date, end_date),
         "checkpoint_dataset": checkpoint_dataset_path(paths, start_date, end_date),
     }
 
 
+def _write_scheduler_status_report(paths, runner: str | None = None) -> Path:
+    return write_report(
+        paths.reports_dir / "scheduler-status.md",
+        render_scheduler_status_markdown(schedule_status(paths, runner), load_refresh_state(paths)),
+    )
+
+
 def cmd_doctor(paths) -> int:
     sources = discover_sources(paths)
+    scheduler = schedule_status(paths)
+    refresh_state = load_refresh_state(paths)
     checks = {
         "claude_projects": sources.claude_projects_dir,
         "claude_history": sources.claude_history_file,
@@ -171,6 +186,29 @@ def cmd_doctor(paths) -> int:
             print(f"{name}: ok ({path})")
         else:
             print(f"{name}: missing")
+    if scheduler.get("installed"):
+        hour = scheduler.get("hour")
+        minute = scheduler.get("minute")
+        time_text = (
+            f"{int(hour):02d}:{int(minute):02d}"
+            if isinstance(hour, int) and isinstance(minute, int)
+            else "n/a"
+        )
+        cadence = scheduler.get("cadence", "n/a")
+        weekday = scheduler.get("weekday", "")
+        if cadence == "weekly" and weekday:
+            cadence = f"{cadence}({weekday})"
+        print(f"scheduler: {scheduler.get('runner')} installed path={scheduler.get('path')} timing={cadence}@{time_text}")
+    else:
+        print(f"scheduler: {scheduler.get('runner')} not installed")
+    if refresh_state:
+        print(
+            "last_refresh: "
+            f"status={refresh_state.get('status', 'unknown')} "
+            f"completed_at={refresh_state.get('completed_at', 'n/a')}"
+        )
+    else:
+        print("last_refresh: none")
     has_claude = bool(sources.claude_projects_dir or sources.claude_history_file or sources.cc_config_logs_dir)
     has_codex = bool(sources.codex_state_db or sources.codex_history_file)
     return 0 if has_claude and has_codex else 1
@@ -201,16 +239,44 @@ def cmd_reference(paths, args) -> int:
 
 def cmd_refresh(paths, args) -> int:
     start_date, end_date = _resolve_window(paths, args.start, args.end)
-    if args.scan_gh_audit:
-        source_path = run_gh_audit_scan(
-            paths,
-            args.user,
-            Path(args.workdir).expanduser().resolve() if args.workdir else default_gh_audit_workdir(paths),
-            Path(args.output_dir).expanduser().resolve() if args.output_dir else default_gh_audit_output_dir(paths),
-        )
-        print(import_gh_audit_reference(paths, source_path))
-    review_args = argparse.Namespace(start=start_date, end=end_date, refresh=True)
-    return cmd_review(paths, review_args)
+    state_payload: dict[str, object] = {
+        "status": "running",
+        "started_at": dt.datetime.now(dt.UTC).isoformat(),
+        "completed_at": "",
+        "scan_gh_audit": bool(args.scan_gh_audit),
+        "window": {"start_date": start_date, "end_date": end_date},
+    }
+    write_refresh_state(paths, state_payload)
+    try:
+        if args.scan_gh_audit:
+            source_path = run_gh_audit_scan(
+                paths,
+                args.user,
+                Path(args.workdir).expanduser().resolve() if args.workdir else default_gh_audit_workdir(paths),
+                Path(args.output_dir).expanduser().resolve() if args.output_dir else default_gh_audit_output_dir(paths),
+            )
+            reference_path = import_gh_audit_reference(paths, source_path)
+            print(reference_path)
+            state_payload["gh_audit_source_path"] = str(source_path)
+            state_payload["reference_path"] = str(reference_path)
+        review_args = argparse.Namespace(start=start_date, end=end_date, refresh=True)
+        rc = cmd_review(paths, review_args)
+        state_payload["status"] = "ok"
+        state_payload["completed_at"] = dt.datetime.now(dt.UTC).isoformat()
+        scheduler_report_path = paths.reports_dir / "scheduler-status.md"
+        state_payload["scheduler_report_path"] = str(scheduler_report_path)
+        write_refresh_state(paths, state_payload)
+        _write_scheduler_status_report(paths)
+        return rc
+    except Exception as exc:
+        state_payload["status"] = "failed"
+        state_payload["completed_at"] = dt.datetime.now(dt.UTC).isoformat()
+        state_payload["error"] = str(exc)
+        scheduler_report_path = paths.reports_dir / "scheduler-status.md"
+        state_payload["scheduler_report_path"] = str(scheduler_report_path)
+        write_refresh_state(paths, state_payload)
+        _write_scheduler_status_report(paths)
+        raise
 
 
 def cmd_schedule(paths, args) -> int:
@@ -239,6 +305,7 @@ def cmd_schedule(paths, args) -> int:
                 weekday=args.weekday,
             )
             print(target)
+            print(_write_scheduler_status_report(paths, runner))
             return 0
         if runner == "cron":
             line = install_cron_schedule(
@@ -250,17 +317,21 @@ def cmd_schedule(paths, args) -> int:
                 weekday=args.weekday,
             )
             print(line)
+            print(_write_scheduler_status_report(paths, runner))
             return 0
     elif args.schedule_action == "remove":
         if runner == "launchd":
             print(remove_launchd_schedule(paths))
+            print(_write_scheduler_status_report(paths, runner))
             return 0
         if runner == "cron":
             print(remove_cron_schedule(paths))
+            print(_write_scheduler_status_report(paths, runner))
             return 0
     elif args.schedule_action == "status":
-        status = launchd_schedule_status(paths) if runner == "launchd" else cron_schedule_status(paths)
+        status = schedule_status(paths, runner)
         print(json.dumps(status, indent=2))
+        print(_write_scheduler_status_report(paths, runner))
         return 0
     raise ValueError(f"Unhandled schedule action: {args.schedule_action}")
 
@@ -293,6 +364,7 @@ def cmd_review(paths, args) -> int:
         artifact_paths["roi"],
         artifact_paths["prompts_claude"],
         artifact_paths["prompts_codex"],
+        artifact_paths["scheduler_status"],
         artifact_paths["learning"],
         artifact_paths["checkpoint_manifest"],
         artifact_paths["checkpoint_dataset"],
@@ -301,6 +373,7 @@ def cmd_review(paths, args) -> int:
     if manifest and not args.refresh and _all_exist(existing_outputs) and checkpoint_dataset is not None and _dataset_matches_current_schema(checkpoint_dataset):
         dataset = checkpoint_dataset
         gh_audit_reference = load_gh_audit_reference(paths)
+        _write_scheduler_status_report(paths)
         if dataset is not None:
             write_report(
                 artifact_paths["learning"],
@@ -334,6 +407,7 @@ def cmd_review(paths, args) -> int:
             artifact_paths["prompts_codex"],
             render_prompt_markdown(dataset, "codex"),
         ),
+        "scheduler_status": _write_scheduler_status_report(paths),
     }
     manifest_path = write_checkpoint(paths, start_date, end_date, dataset, artifacts)
     learning_path = write_report(
@@ -358,6 +432,7 @@ def cmd_review(paths, args) -> int:
         artifacts["roi"],
         artifacts["prompts_claude"],
         artifacts["prompts_codex"],
+        artifacts["scheduler_status"],
         learning_path,
         manifest_path,
         checkpoint_dataset_path(paths, start_date, end_date),
@@ -371,6 +446,9 @@ def cmd_report(paths, args) -> int:
         dataset = _load_or_build_dataset(paths, args.date, args.date)
         content = render_daily_markdown(dataset, args.date)
         target = write_report(paths.reports_dir / f"daily-{args.date}.md", content)
+    elif args.kind == "scheduler-status":
+        content = render_scheduler_status_markdown(schedule_status(paths), load_refresh_state(paths))
+        target = write_report(paths.reports_dir / "scheduler-status.md", content)
     else:
         start_date, end_date = _resolve_window(paths, args.start, args.end)
         dataset = _load_or_build_dataset(paths, start_date, end_date)
@@ -508,6 +586,7 @@ def build_parser() -> argparse.ArgumentParser:
     impact = report_sub.add_parser("impact", help="Render job/application impact summary with gh-audit references")
     impact.add_argument("--start")
     impact.add_argument("--end")
+    report_sub.add_parser("scheduler-status", help="Render local scheduler and refresh status")
 
     capture = subparsers.add_parser("capture", help="Generate screenshot assets")
     capture_sub = capture.add_subparsers(dest="capture_kind", required=True)

@@ -18,12 +18,12 @@ This file explains how verified review windows are structured so the same math a
 - gh-audit reference: `references/gh-audit/latest.json`
 
 ## Current Learnings
-- Claude Code value is strongest in execution breadth and continuity: 158 projects, 7744 threads, exact cost accounting, and heavy repo/file movement.
-- Codex value is strongest in concentrated deep threads: 137 threads, 2,230,568,770 tokens, and 58 subagent threads.
+- Claude Code value is strongest in execution breadth and continuity: 158 projects, 7746 threads, exact cost accounting, and heavy repo/file movement.
+- Codex value is strongest in concentrated deep threads: 153 threads, 2,998,727,144 tokens, and 73 subagent threads.
 - The learning/report layer is auto-generated from the verified window, including prompt-effectiveness and daily prompt rows.
 - Interview-before-action prompts appear 30 times in Claude and 10 times in Codex.
-- Verification-first prompts appear 1129 times in Claude and 27 times in Codex.
-- Parallel/subagent directives appear 481 times in Claude and 35 times in Codex.
+- Verification-first prompts appear 1132 times in Claude and 28 times in Codex.
+- Parallel/subagent directives appear 481 times in Claude and 38 times in Codex.
 
 ## Keep
 - Preserve source coverage and checkpoint verified windows instead of re-deriving them ad hoc.

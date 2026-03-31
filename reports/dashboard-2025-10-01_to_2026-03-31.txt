@@ -4,8 +4,8 @@
 +---------------------------------------------------------------------------------------------------------+
 | agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
 +---------------------------------------------------------------------------------------------------------+
-| Claude Code    | 87   | 158      | 7744    | 12,189,757,627 | $6,685     | $1,118     | exact           |
-| Codex          | 19   | 35       | 137     | 2,230,568,770  | $9,745     | $1,630     | estimated_range |
+| Claude Code    | 87   | 158      | 7746    | 12,285,309,914 | $6,728     | $1,125     | exact           |
+| Codex          | 19   | 36       | 153     | 2,998,727,144  | $13,586    | $2,272     | estimated_range |
 +---------------------------------------------------------------------------------------------------------+
 
 SOURCE COVERAGE
@@ -24,34 +24,34 @@ Claude Code:
   2026-W11  [###########.................]  $ 807.86
   2026-W12  [############################]  $1996.70
   2026-W13  [###########################.]  $1902.25
-  2026-W14  [#######.....................]  $ 465.16
+  2026-W14  [#######.....................]  $ 508.27
 
 Codex:
   2026-W07  [#...........................]  $  26.80
   2026-W08  [#...........................]  $  31.51
   2026-W09  [#...........................]  $  86.94
-  2026-W10  [#######.....................]  $1883.31
-  2026-W11  [###.........................]  $ 657.05
+  2026-W10  [#####.......................]  $1883.31
+  2026-W11  [##..........................]  $ 657.05
   2026-W12  [#...........................]  $   9.01
   2026-W13  [#...........................]  $  13.23
-  2026-W14  [############################]  $7037.55
+  2026-W14  [############################]  $10878.34
 
 TOP PROJECTS
 Claude Code:
   - breakdex-flutter          events=22723  cost=$  848.70  tokens=1,544,823,253
-  - portfolio-forever         events=11723  cost=$  495.65  tokens=1,087,622,628
+  - portfolio-forever         events=12060  cost=$  510.50  tokens=1,122,102,431
   - mit-ocw-reels             events=11685  cost=$  485.17  tokens=1,024,486,407
   - autoresearch-playground   events=10660  cost=$  433.51  tokens= 887,387,417
   - mymind-clone-web          events= 8518  cost=$  356.82  tokens= 460,627,282
 
 Codex:
-  - s3nik                     events=   35  cost=$ 3127.69  tokens= 745,222,172
-  - claude-code-elixir        events=   17  cost=$ 2031.03  tokens= 523,120,782
-  - breakdex-flutter          events=   14  cost=$ 1806.48  tokens= 364,245,228
-  - redwood-mymind-clone-web  events=    6  cost=$  653.20  tokens= 172,579,283
-  - MusicBrowser              events=    4  cost=$  392.26  tokens=  78,452,798
+  - s3nik                     events=   43  cost=$ 4696.42  tokens=1,058,968,625
+  - claude-code-elixir        events=   21  cost=$ 3327.56  tokens= 782,427,262
+  - breakdex-flutter          events=   14  cost=$ 1865.20  tokens= 375,989,857
+  - redwood-mymind-clone-web  events=    7  cost=$  930.33  tokens= 228,005,610
+  - MusicBrowser              events=    6  cost=$  897.58  tokens= 179,515,152
 
 BONUS :: CORE VALUE
-  conservative=330,451  base=827,052  aggressive=1,988,834
-  monthly-band=55,264 -> 332,611
+  conservative=371,390  base=911,030  aggressive=2,179,369
+  monthly-band=62,111 -> 364,476
   note=keep roi and appraisal separate; this is option value, not company valuation

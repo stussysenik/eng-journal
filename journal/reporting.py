@@ -686,6 +686,58 @@ def render_impact_markdown(dataset: dict, gh_audit_reference: dict | None) -> st
     return "\n".join(lines)
 
 
+def render_scheduler_status_markdown(schedule_status: dict, refresh_state: dict | None) -> str:
+    lines = [
+        "# Scheduler Status",
+        "",
+        "This report tracks the local auto-refresh loop for gh-audit imports and review regeneration.",
+        "",
+        "## Schedule",
+        f"- Runner: {schedule_status.get('runner', 'unknown')}",
+        f"- Installed: {'yes' if schedule_status.get('installed') else 'no'}",
+        f"- Path: `{schedule_status.get('path', '')}`" if schedule_status.get("path") else "- Path: n/a",
+        f"- Log: `{schedule_status.get('log_path', '')}`" if schedule_status.get("log_path") else "- Log: n/a",
+    ]
+    if schedule_status.get("installed"):
+        cadence = str(schedule_status.get("cadence", "") or "")
+        hour = schedule_status.get("hour")
+        minute = schedule_status.get("minute")
+        weekday = str(schedule_status.get("weekday", "") or "")
+        if cadence:
+            timing = f"{cadence}"
+            if cadence == "weekly" and weekday:
+                timing += f" on {weekday}"
+            if hour is not None and minute is not None:
+                timing += f" at {int(hour):02d}:{int(minute):02d}"
+            lines.append(f"- Timing: {timing}")
+        if schedule_status.get("state"):
+            lines.append(f"- Runtime state: {schedule_status['state']}")
+        if schedule_status.get("runs") is not None:
+            lines.append(f"- Launch count: {schedule_status['runs']}")
+        if schedule_status.get("command"):
+            lines.append(f"- Command: `{schedule_status['command']}`")
+    lines.extend(["", "## Last Refresh"])
+    if not refresh_state:
+        lines.append("- No refresh state recorded yet.")
+        return "\n".join(lines) + "\n"
+    lines.append(f"- Status: {refresh_state.get('status', 'unknown')}")
+    lines.append(f"- Started at: {refresh_state.get('started_at', 'n/a')}")
+    lines.append(f"- Completed at: {refresh_state.get('completed_at', 'n/a')}")
+    if refresh_state.get("window"):
+        window = refresh_state["window"]
+        lines.append(f"- Window: {window.get('start_date', 'n/a')} to {window.get('end_date', 'n/a')}")
+    lines.append(f"- gh-audit scan: {'yes' if refresh_state.get('scan_gh_audit') else 'no'}")
+    if refresh_state.get("gh_audit_source_path"):
+        lines.append(f"- gh-audit source: `{refresh_state['gh_audit_source_path']}`")
+    if refresh_state.get("reference_path"):
+        lines.append(f"- Imported reference: `{refresh_state['reference_path']}`")
+    if refresh_state.get("scheduler_report_path"):
+        lines.append(f"- Scheduler report: `{refresh_state['scheduler_report_path']}`")
+    if refresh_state.get("error"):
+        lines.append(f"- Error: {refresh_state['error']}")
+    return "\n".join(lines) + "\n"
+
+
 def _appraisal_metrics(dataset: dict) -> dict[str, float]:
     claude = dataset["agents"]["claude_code"]
     codex = dataset["agents"]["codex"]

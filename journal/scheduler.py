@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import os
 import platform
+import plistlib
 import shlex
 import subprocess
+import datetime as dt
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -30,6 +33,8 @@ WEEKDAY_TO_LAUNCHD = {
     "fri": 5,
     "sat": 6,
 }
+WEEKDAY_FROM_CRON = {value: key for key, value in WEEKDAY_TO_CRON.items()}
+WEEKDAY_FROM_LAUNCHD = {value: key for key, value in WEEKDAY_TO_LAUNCHD.items()}
 
 
 def schedule_runner(runner: str | None = None) -> str:
@@ -42,6 +47,10 @@ def refresh_log_path(paths: Paths) -> Path:
     return paths.cache_dir / "scheduled-refresh.log"
 
 
+def refresh_state_path(paths: Paths) -> Path:
+    return paths.cache_dir / "refresh-state.json"
+
+
 def schedule_label(paths: Paths) -> str:
     repo_slug = "".join(char if char.isalnum() else "-" for char in paths.repo_root.name.lower()).strip("-") or "eng-journal"
     return f"com.engjournal.{repo_slug}.refresh"
@@ -49,6 +58,24 @@ def schedule_label(paths: Paths) -> str:
 
 def launchd_plist_path(paths: Paths) -> Path:
     return Path.home() / "Library" / "LaunchAgents" / f"{schedule_label(paths)}.plist"
+
+
+def load_refresh_state(paths: Paths) -> dict | None:
+    target = refresh_state_path(paths)
+    if not target.exists():
+        return None
+    return json.loads(target.read_text(encoding="utf-8"))
+
+
+def write_refresh_state(paths: Paths, payload: dict) -> Path:
+    target = refresh_state_path(paths)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        **payload,
+        "updated_at": dt.datetime.now(dt.UTC).isoformat(),
+    }
+    target.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return target
 
 
 def build_refresh_command(
@@ -155,14 +182,52 @@ def remove_launchd_schedule(paths: Paths) -> Path:
     return plist_path
 
 
-def launchd_schedule_status(paths: Paths) -> dict[str, str | bool]:
+def _launchd_runtime_status(paths: Paths) -> tuple[str, int | None]:
+    result = subprocess.run(
+        ["launchctl", "print", f"gui/{os.getuid()}/{schedule_label(paths)}"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return ("not_loaded", None)
+    state = "unknown"
+    runs: int | None = None
+    for line in result.stdout.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("state = "):
+            state = stripped.removeprefix("state = ").strip()
+        elif stripped.startswith("runs = "):
+            try:
+                runs = int(stripped.removeprefix("runs = ").strip())
+            except ValueError:
+                runs = None
+    return (state, runs)
+
+
+def launchd_schedule_status(paths: Paths) -> dict[str, str | bool | int | None]:
     plist_path = launchd_plist_path(paths)
-    return {
+    payload: dict[str, str | bool | int | None] = {
         "runner": "launchd",
         "installed": plist_path.exists(),
         "path": str(plist_path),
         "log_path": str(refresh_log_path(paths)),
     }
+    if not plist_path.exists():
+        return payload
+    data = plistlib.loads(plist_path.read_bytes())
+    interval = data.get("StartCalendarInterval", {}) or {}
+    payload["hour"] = int(interval.get("Hour", 0) or 0)
+    payload["minute"] = int(interval.get("Minute", 0) or 0)
+    weekday_value = interval.get("Weekday")
+    payload["cadence"] = "weekly" if weekday_value is not None else "daily"
+    payload["weekday"] = WEEKDAY_FROM_LAUNCHD.get(int(weekday_value), "") if weekday_value is not None else ""
+    args = data.get("ProgramArguments", []) or []
+    payload["command"] = str(args[-1]) if args else ""
+    state, runs = _launchd_runtime_status(paths)
+    payload["state"] = state
+    payload["runs"] = runs
+    return payload
 
 
 def _current_crontab() -> str:
@@ -223,12 +288,50 @@ def remove_cron_schedule(paths: Paths) -> str:
     return "removed"
 
 
-def cron_schedule_status(paths: Paths) -> dict[str, str | bool]:
+def _managed_cron_line() -> str:
+    current = _current_crontab()
+    lines = current.splitlines()
+    inside = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped == CRON_MARKER_BEGIN:
+            inside = True
+            continue
+        if stripped == CRON_MARKER_END:
+            break
+        if inside and stripped:
+            return stripped
+    return ""
+
+
+def cron_schedule_status(paths: Paths) -> dict[str, str | bool | int | None]:
     current = _current_crontab()
     installed = CRON_MARKER_BEGIN in current and CRON_MARKER_END in current
-    return {
+    payload: dict[str, str | bool | int | None] = {
         "runner": "cron",
         "installed": installed,
         "path": "crontab",
         "log_path": str(refresh_log_path(paths)),
     }
+    if not installed:
+        return payload
+    cron_line = _managed_cron_line()
+    payload["command"] = cron_line
+    fields = cron_line.split(maxsplit=5)
+    if len(fields) >= 6:
+        minute, hour, _dom, _month, weekday_field, command = fields
+        try:
+            payload["minute"] = int(minute)
+            payload["hour"] = int(hour)
+        except ValueError:
+            payload["minute"] = None
+            payload["hour"] = None
+        payload["cadence"] = "weekly" if weekday_field != "*" else "daily"
+        payload["weekday"] = WEEKDAY_FROM_CRON.get(int(weekday_field), "") if weekday_field not in ("*", "") else ""
+        payload["command"] = command
+    return payload
+
+
+def schedule_status(paths: Paths, runner: str | None = None) -> dict[str, str | bool | int | None]:
+    resolved = schedule_runner(runner)
+    return launchd_schedule_status(paths) if resolved == "launchd" else cron_schedule_status(paths)
