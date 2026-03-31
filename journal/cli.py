@@ -36,6 +36,16 @@ from .reporting import (
     stats_payload,
     write_report,
 )
+from .scheduler import (
+    build_refresh_command,
+    cron_schedule_status,
+    install_cron_schedule,
+    install_launchd_schedule,
+    launchd_schedule_status,
+    remove_cron_schedule,
+    remove_launchd_schedule,
+    schedule_runner,
+)
 from .screenshots import render_text_screenshot
 
 
@@ -187,6 +197,72 @@ def cmd_reference(paths, args) -> int:
         print(target)
         return 0
     raise ValueError(f"Unhandled reference kind: {args.reference_kind}")
+
+
+def cmd_refresh(paths, args) -> int:
+    start_date, end_date = _resolve_window(paths, args.start, args.end)
+    if args.scan_gh_audit:
+        source_path = run_gh_audit_scan(
+            paths,
+            args.user,
+            Path(args.workdir).expanduser().resolve() if args.workdir else default_gh_audit_workdir(paths),
+            Path(args.output_dir).expanduser().resolve() if args.output_dir else default_gh_audit_output_dir(paths),
+        )
+        print(import_gh_audit_reference(paths, source_path))
+    review_args = argparse.Namespace(start=start_date, end=end_date, refresh=True)
+    return cmd_review(paths, review_args)
+
+
+def cmd_schedule(paths, args) -> int:
+    runner = schedule_runner(args.runner)
+    start_date = args.start
+    end_date = args.end
+    workdir = Path(args.workdir).expanduser().resolve() if args.workdir else default_gh_audit_workdir(paths)
+    output_dir = Path(args.output_dir).expanduser().resolve() if args.output_dir else default_gh_audit_output_dir(paths)
+    command = build_refresh_command(
+        paths,
+        scan_gh_audit=True,
+        user=args.user,
+        workdir=workdir,
+        output_dir=output_dir,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    if args.schedule_action == "install":
+        if runner == "launchd":
+            target = install_launchd_schedule(
+                paths,
+                command=command,
+                hour=args.hour,
+                minute=args.minute,
+                cadence=args.cadence,
+                weekday=args.weekday,
+            )
+            print(target)
+            return 0
+        if runner == "cron":
+            line = install_cron_schedule(
+                paths,
+                command=command,
+                hour=args.hour,
+                minute=args.minute,
+                cadence=args.cadence,
+                weekday=args.weekday,
+            )
+            print(line)
+            return 0
+    elif args.schedule_action == "remove":
+        if runner == "launchd":
+            print(remove_launchd_schedule(paths))
+            return 0
+        if runner == "cron":
+            print(remove_cron_schedule(paths))
+            return 0
+    elif args.schedule_action == "status":
+        status = launchd_schedule_status(paths) if runner == "launchd" else cron_schedule_status(paths)
+        print(json.dumps(status, indent=2))
+        return 0
+    raise ValueError(f"Unhandled schedule action: {args.schedule_action}")
 
 
 def cmd_stats(paths, args) -> int:
@@ -378,6 +454,27 @@ def build_parser() -> argparse.ArgumentParser:
     review.add_argument("--end")
     review.add_argument("--refresh", action="store_true")
 
+    refresh = subparsers.add_parser("refresh", help="Refresh gh-audit references and rebuild review outputs")
+    refresh.add_argument("--start")
+    refresh.add_argument("--end")
+    refresh.add_argument("--scan-gh-audit", action="store_true")
+    refresh.add_argument("--user", default="stussysenik")
+    refresh.add_argument("--workdir")
+    refresh.add_argument("--output-dir")
+
+    schedule = subparsers.add_parser("schedule", help="Install or inspect local scheduled refresh jobs")
+    schedule.add_argument("schedule_action", choices=["install", "status", "remove"])
+    schedule.add_argument("--runner", choices=["auto", "launchd", "cron"], default="auto")
+    schedule.add_argument("--cadence", choices=["daily", "weekly"], default="daily")
+    schedule.add_argument("--weekday", choices=["sun", "mon", "tue", "wed", "thu", "fri", "sat"], default="mon")
+    schedule.add_argument("--hour", type=int, default=3)
+    schedule.add_argument("--minute", type=int, default=17)
+    schedule.add_argument("--start")
+    schedule.add_argument("--end")
+    schedule.add_argument("--user", default="stussysenik")
+    schedule.add_argument("--workdir")
+    schedule.add_argument("--output-dir")
+
     report = subparsers.add_parser("report", help="Render Markdown reports")
     report_sub = report.add_subparsers(dest="kind", required=True)
 
@@ -441,11 +538,15 @@ def main() -> int:
         return cmd_stats(paths, args)
     if args.command == "review":
         return cmd_review(paths, args)
+    if args.command == "refresh":
+        return cmd_refresh(paths, args)
     if args.command == "report":
         return cmd_report(paths, args)
     if args.command == "capture":
         if args.capture_kind == "screenshots":
             return cmd_capture(paths, args)
+    if args.command == "schedule":
+        return cmd_schedule(paths, args)
     raise ValueError(f"Unhandled command: {args.command}")
 
 

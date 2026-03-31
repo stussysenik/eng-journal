@@ -24,6 +24,9 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 ./bin/journal doctor
 ./bin/journal reference gh-audit
 ./bin/journal reference gh-audit --scan --user stussysenik
+./bin/journal refresh --scan-gh-audit --user stussysenik
+./bin/journal schedule install --cadence daily --hour 3 --minute 17
+./bin/journal schedule status
 ./bin/journal review --start 2025-10-01 --end 2026-03-31
 ./bin/journal stats --start 2025-10-01 --end 2026-03-31 --format markdown
 ./bin/journal ingest --start 2025-10-01 --end 2026-03-31
@@ -50,6 +53,18 @@ Generated reports land in `reports/`.
 - auto-maintains the latest verified window so later `review`, `stats`, `report`, and `capture` calls default to that checkpoint
 
 The default window is no longer just a hardcoded date pair. If a verified checkpoint exists, the CLI uses that latest verified window automatically.
+
+`refresh` is the automation command:
+
+- optionally runs a fresh `gh-audit` Julia scan and imports the newest JSON reference
+- rebuilds the verified review window with `--refresh`
+- updates the impact report so the job-facing layer stays current
+
+`schedule` installs a local recurring refresh:
+
+- `launchd` on macOS when `--runner auto`
+- `cron` on other systems when `--runner auto`
+- supports `install`, `status`, and `remove`
 
 ## Portable Discovery
 
@@ -79,6 +94,8 @@ Codex source precedence is:
 - `gh-audit` stays the repo security/replacement-cost/portfolio-reference system
 - the bridge is a normalized import at `references/gh-audit/latest.json`
 - `./bin/journal reference gh-audit --scan` runs a fresh Julia portfolio scan and imports the resulting JSON in one step
+- `./bin/journal refresh --scan-gh-audit` runs the full local refresh loop in one command
+- `./bin/journal schedule install` makes that refresh loop run nightly or weekly without manual intervention
 
 The imported reference keeps both:
 
