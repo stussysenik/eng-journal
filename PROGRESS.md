@@ -5,8 +5,9 @@
 - Cross-agent ingestion works for local Claude Code and Codex data.
 - Source discovery now works across machines via env overrides and latest-file discovery.
 - Reports currently ship as Markdown through the CLI.
+- Verified windows can now be checkpointed and reused through `review`.
 - ROI scoring runs through SBCL and uses current public pricing references captured in code.
-- The initial aligned comparison window is `2026-02-12` through `2026-03-31`.
+- The current verified review window is `2026-01-01` through `2026-03-31`.
 
 ## Shipped
 
@@ -19,10 +20,13 @@
 - `report appraisal`
 - `report core-value`
 - `report dashboard`
+- `review` verified window checkpointing
+- `stats` reusable metrics snapshots
 - `capture screenshots`
 - Portable source discovery for Claude, Codex, and optional `cc-config`
 - Claude ingestion from native logs, `history.jsonl`, and `cc-config/logs/*.jsonl`
 - Dynamic Codex discovery for `state_*.sqlite` and `logs_*.sqlite`
+- Root `LEARNING.md` updated from the latest verified review
 - Git evidence correlation across touched repos
 - Corrected Claude Opus 4.5 pricing in `cc-config`
 
@@ -31,12 +35,14 @@
 - Claude prompt-quality filtering still needs more aggressive suppression of command/internal traffic
 - `cc-config` stats are discovered but not yet used as a synthetic cost fallback when native usage is missing
 - Codex cost estimates are still range-based because local telemetry does not expose exact input/output token splits
+- Codex execution metrics are still thin because local telemetry does not yet expose file/tool events the way Claude does
 - Semantic-release is configured but still needs the first tagged release cycle
 - GitHub Actions release flow assumes repository secrets and default branch protections exist
 
 ## Next Moves
 
 - Tighten prompt-noise suppression rules for Claude history and backfilled journal prompts
-- Add JSON export mode for every report type
+- Add JSON export mode for every report type beyond `stats`
 - Add richer project continuity scoring across windows
 - Expose source coverage directly in ROI and dashboard reports
+- Add checkpoint diffing so two verified windows can be compared directly

@@ -9,7 +9,7 @@
   "analytics_core": "common_lisp",
   "ingestion_bridge": "python",
   "window_defaults": {
-    "start_date": "2026-02-12",
+    "start_date": "2026-01-01",
     "end_date": "2026-03-31"
   },
   "data_sources": [
@@ -29,7 +29,14 @@
     ],
     "portable": true
   },
+  "checkpointing": {
+    "enabled": true,
+    "verified_window": "2026-01-01_to_2026-03-31",
+    "root": "checkpoints/"
+  },
   "reports": [
+    "review",
+    "stats",
     "dashboard",
     "daily",
     "weekly",
@@ -45,7 +52,16 @@
     "appraisal_is_not_company_valuation": true
   },
   "latest_outputs": [
+    "LEARNING.md",
+    "checkpoints/2026-01-01_to_2026-03-31/manifest.json",
+    "checkpoints/2026-01-01_to_2026-03-31/dataset.json",
+    "reports/review-2026-01-01_to_2026-03-31.md",
+    "reports/stats-2026-01-01_to_2026-03-31.md",
+    "reports/stats-2026-01-01_to_2026-03-31.json",
     "reports/roi-2026-01-01_to_2026-03-31.md",
+    "reports/prompts-claude_code-2026-01-01_to_2026-03-31.md",
+    "reports/prompts-codex-2026-01-01_to_2026-03-31.md",
+    "reports/dashboard-2026-01-01_to_2026-03-31.txt",
     "reports/dashboard-2026-02-12_to_2026-03-31.txt",
     "reports/daily-2026-03-31.md",
     "reports/weekly-2026-02-12_to_2026-03-31.md",

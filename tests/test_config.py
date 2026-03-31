@@ -30,6 +30,7 @@ class ConfigDiscoveryTests(unittest.TestCase):
                 repo_root=root,
                 cache_dir=root / ".cache",
                 reports_dir=root / "reports",
+                checkpoints_dir=root / "checkpoints",
                 claude_dir=claude_dir,
                 codex_dir=codex_dir,
                 cc_config_dir=cc_config_dir,

@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 from .serialization import write_sexp
-from .util import compact_text
+from .util import compact_text, safe_div
 
 
 def render_daily_markdown(dataset: dict, date_str: str) -> str:
@@ -57,6 +57,8 @@ def render_prompt_markdown(dataset: dict, agent_filter: str | None = None) -> st
         lines.append(f"- Duplicate prompt instances: {prompt_metrics['duplicate_prompt_instances']}")
         if prompt_metrics["tags"]:
             lines.append("- Top semantic tags: " + ", ".join(f"{item['name']} ({item['count']})" for item in prompt_metrics["tags"]))
+        if prompt_metrics.get("directive_signals"):
+            lines.append("- Directive signals: " + ", ".join(f"{item['name']} ({item['count']})" for item in prompt_metrics["directive_signals"]))
         lines.append("")
         lines.append("### Repeated prompts")
         if prompt_metrics["duplicates"]:
@@ -77,6 +79,265 @@ def render_prompt_markdown(dataset: dict, agent_filter: str | None = None) -> st
                 )
             lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _signal_counts(prompt_metrics: dict) -> dict[str, int]:
+    return {item["name"]: item["count"] for item in prompt_metrics.get("directive_signals", [])}
+
+
+def stats_payload(dataset: dict, agent_filter: str | None = None) -> dict:
+    payload = {
+        "window": dataset["window"],
+        "generated_at": dataset["generated_at"],
+        "agents": {},
+    }
+    for agent_name, agent in dataset["agents"].items():
+        if agent_filter and agent_name != agent_filter:
+            continue
+        prompt_metrics = agent["prompt_metrics"]
+        execution_metrics = agent["execution_metrics"]
+        friction_metrics = agent["friction_metrics"]
+        payload["agents"][agent_name] = {
+            "display_name": agent["display_name"],
+            "source_coverage": agent.get("source_coverage", []),
+            "cost_confidence": agent["cost_confidence"],
+            "active_days": agent["active_days"],
+            "first_activity_date": agent.get("first_activity_date", ""),
+            "last_activity_date": agent.get("last_activity_date", ""),
+            "event_count": agent.get("event_count", 0),
+            "thread_count": agent["thread_count"],
+            "project_count": agent["project_count"],
+            "work_unit_count": agent["work_unit_count"],
+            "total_tokens": agent["total_tokens"],
+            "cost_low": agent["cost_low"],
+            "cost_mid": agent["cost_mid"],
+            "cost_high": agent["cost_high"],
+            "monthly_cost_low": agent["monthly_cost_low"],
+            "monthly_cost_mid": agent["monthly_cost_mid"],
+            "monthly_cost_high": agent["monthly_cost_high"],
+            "prompt_metrics": prompt_metrics,
+            "execution_metrics": execution_metrics,
+            "friction_metrics": friction_metrics,
+            "git_evidence": {
+                "repo_count": agent["git_evidence"]["repo_count"],
+                "commit_count": agent["git_evidence"]["commit_count"],
+            },
+            "derived": {
+                "tokens_per_thread": round(safe_div(agent["total_tokens"], agent["thread_count"]), 2),
+                "tokens_per_project": round(safe_div(agent["total_tokens"], agent["project_count"]), 2),
+                "prompts_per_active_day": round(safe_div(prompt_metrics["total_prompts"], agent["active_days"]), 2),
+                "mega_prompt_rate": round(safe_div(prompt_metrics["mega_prompt_count"], max(prompt_metrics["total_prompts"], 1)), 4),
+                "duplicate_prompt_rate": round(safe_div(prompt_metrics["duplicate_prompt_instances"], max(prompt_metrics["total_prompts"], 1)), 4),
+                "cost_per_work_unit_mid": round(safe_div(agent["cost_mid"], max(agent["work_unit_count"], 1)), 4),
+            },
+            "top_projects": agent["top_projects"][:8],
+            "sample_threads": agent["sample_threads"][:8],
+        }
+    return payload
+
+
+def render_stats_markdown(dataset: dict, agent_filter: str | None = None) -> str:
+    payload = stats_payload(dataset, agent_filter)
+    lines = [
+        f"# Stats Snapshot - {payload['window']['start_date']} to {payload['window']['end_date']}",
+        "",
+    ]
+    for _, agent in payload["agents"].items():
+        lines.append(f"## {agent['display_name']}")
+        lines.append("- Source coverage: " + (", ".join(agent["source_coverage"]) or "none"))
+        lines.append(f"- Cost confidence: {agent['cost_confidence']}")
+        lines.append(
+            f"- Activity span: {agent['first_activity_date'] or 'n/a'} to {agent['last_activity_date'] or 'n/a'} "
+            f"across {agent['active_days']} active days"
+        )
+        lines.append(
+            f"- Surface: {agent['event_count']} events, {agent['thread_count']} threads, "
+            f"{agent['project_count']} projects, {agent['work_unit_count']} work units"
+        )
+        lines.append(
+            f"- Cost: ${agent['cost_mid']:,.2f} period midpoint, ${agent['monthly_cost_mid']:,.2f} monthly midpoint"
+        )
+        lines.append(
+            f"- Prompt shape: {agent['prompt_metrics']['total_prompts']} prompts, "
+            f"{agent['prompt_metrics']['mega_prompt_count']} mega, "
+            f"{agent['prompt_metrics']['duplicate_prompt_instances']} duplicate instances"
+        )
+        if agent["prompt_metrics"].get("directive_signals"):
+            lines.append(
+                "- Directive signals: "
+                + ", ".join(f"{item['name']} ({item['count']})" for item in agent["prompt_metrics"]["directive_signals"])
+            )
+        lines.append(
+            f"- Derived: {agent['derived']['tokens_per_thread']:,.0f} tokens/thread, "
+            f"{agent['derived']['tokens_per_project']:,.0f} tokens/project, "
+            f"{agent['derived']['cost_per_work_unit_mid']:,.2f} cost/work-unit"
+        )
+        if any(agent["execution_metrics"].values()):
+            lines.append(
+                f"- Execution: created {agent['execution_metrics']['created_file']}, "
+                f"modified {agent['execution_metrics']['modified_file']}, "
+                f"read {agent['execution_metrics']['read_file']}, "
+                f"commands {agent['execution_metrics']['ran_command']}, "
+                f"delegated {agent['execution_metrics']['delegated']}, "
+                f"web {agent['execution_metrics']['web_search']}"
+            )
+        lines.append(
+            f"- Friction: errors {agent['friction_metrics']['error_count']}, "
+            f"warnings {agent['friction_metrics']['warning_count']}, "
+            f"patch failures {agent['friction_metrics']['apply_patch_failures']}, "
+            f"subagent threads {agent['friction_metrics']['subagent_threads']}"
+        )
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _agent_strength_lines(agent_name: str, agent: dict) -> list[str]:
+    lines: list[str] = []
+    prompt_metrics = agent["prompt_metrics"]
+    execution = agent["execution_metrics"]
+    derived = stats_payload({"window": {"start_date": "", "end_date": ""}, "generated_at": "", "agents": {agent_name: agent}})["agents"][agent_name]["derived"]
+    signals = _signal_counts(prompt_metrics)
+    if agent["project_count"] >= 25:
+        lines.append(f"- Cross-project continuity is strong: {agent['project_count']} projects and {agent['work_unit_count']} work units in-window.")
+    if execution.get("created_file", 0) + execution.get("modified_file", 0) >= 1000:
+        lines.append(
+            f"- Direct execution is real, not just chat: {execution['created_file']} files created and {execution['modified_file']} modified."
+        )
+    if derived["tokens_per_thread"] >= 5_000_000:
+        lines.append(f"- Thread depth is high: roughly {derived['tokens_per_thread']:,.0f} tokens per thread on average.")
+    if signals.get("interview_before_action", 0):
+        lines.append(f"- Interview-before-action prompting is present in {signals['interview_before_action']} prompts.")
+    if signals.get("verification_first", 0):
+        lines.append(f"- Verification-first behavior shows up in {signals['verification_first']} prompts.")
+    if signals.get("parallel_agents", 0):
+        lines.append(f"- Parallel/subagent orchestration appears in {signals['parallel_agents']} prompts.")
+    if not lines:
+        lines.append("- The strongest current signal is sustained activity across multiple projects with stable source coverage.")
+    return lines
+
+
+def _agent_tighten_lines(agent: dict) -> list[str]:
+    lines: list[str] = []
+    prompt_metrics = agent["prompt_metrics"]
+    friction = agent["friction_metrics"]
+    duplicate_rate = safe_div(prompt_metrics["duplicate_prompt_instances"], max(prompt_metrics["total_prompts"], 1))
+    mega_rate = safe_div(prompt_metrics["mega_prompt_count"], max(prompt_metrics["total_prompts"], 1))
+    if duplicate_rate >= 0.1:
+        lines.append(
+            f"- Duplicate prompt churn is high enough to tighten: {prompt_metrics['duplicate_prompt_instances']} duplicate instances."
+        )
+    if mega_rate >= 0.15:
+        lines.append(f"- Mega-prompt usage is heavy: {prompt_metrics['mega_prompt_count']} mega prompts.")
+    if friction["warning_count"] > 0:
+        lines.append(f"- Warning volume is non-zero: {friction['warning_count']} warnings in-window.")
+    if friction["apply_patch_failures"] > 0:
+        lines.append(f"- Patch verification failed {friction['apply_patch_failures']} times; tighten edit/validation loops.")
+    if not lines:
+        lines.append("- The main next step is keeping this shape stable while compressing prompt noise.")
+    return lines
+
+
+def render_review_markdown(dataset: dict) -> str:
+    lines = [
+        f"# Base-Zero Review - {dataset['window']['start_date']} to {dataset['window']['end_date']}",
+        "",
+        "This review is the canonical high-signal summary for the window. It is intended to be checkpointed and reused instead of re-deriving the same conclusions from scratch.",
+        "",
+        "## Trust",
+    ]
+    for agent_name, agent in dataset["agents"].items():
+        lines.append(
+            f"- {agent['display_name']}: source coverage {', '.join(agent.get('source_coverage', [])) or 'none'}, "
+            f"cost confidence {agent['cost_confidence']}, active span {agent.get('first_activity_date', 'n/a')} to {agent.get('last_activity_date', 'n/a')}"
+        )
+    lines.extend(["", "## Agent Reviews"])
+
+    for agent_name, agent in dataset["agents"].items():
+        prompt_metrics = agent["prompt_metrics"]
+        lines.append(f"### {agent['display_name']}")
+        lines.append(
+            f"- Base summary: {agent['active_days']} active days, {agent['thread_count']} threads, {agent['project_count']} projects, "
+            f"{agent['work_unit_count']} work units, {agent['total_tokens']:,} tokens, ${agent['monthly_cost_mid']:,.2f} monthly midpoint."
+        )
+        lines.append("What moved:")
+        for project in agent["top_projects"][:5]:
+            lines.append(
+                f"- {project['project_name']}: {project['events']} events, ${project['cost']:,.2f}, {project['tokens']:,} tokens"
+            )
+        lines.append("Strong signals:")
+        lines.extend(_agent_strength_lines(agent_name, agent))
+        lines.append("Tighten next:")
+        lines.extend(_agent_tighten_lines(agent))
+        lines.append("Representative threads:")
+        for thread in agent["sample_threads"][:5]:
+            title = thread.get("title", "")
+            if title:
+                lines.append(
+                    f"- {thread['project_name']}: ${thread['usage_cost']:,.2f}, {thread['tokens_total']:,} tokens, {title}"
+                )
+            else:
+                lines.append(f"- {thread['project_name']}: ${thread['usage_cost']:,.2f}, {thread['tokens_total']:,} tokens")
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Cross-Agent Read",
+            f"- Claude Code currently reads as the breadth/execution engine: {dataset['agents']['claude_code']['project_count']} projects, exact usage accounting, and heavy file/command activity.",
+            f"- Codex currently reads as the deep-focus/concentrated thread engine: {dataset['agents']['codex']['thread_count']} threads with high per-thread token depth and visible subagent usage.",
+            "- The review question should stay stable: what compounds, what repeats, what creates leverage, and what should be compressed next.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def render_learning_markdown(
+    dataset: dict,
+    review_relpath: str,
+    stats_relpath: str,
+    checkpoint_relpath: str,
+) -> str:
+    claude = dataset["agents"]["claude_code"]
+    codex = dataset["agents"]["codex"]
+    claude_signals = _signal_counts(claude["prompt_metrics"])
+    codex_signals = _signal_counts(codex["prompt_metrics"])
+    lines = [
+        "# Learning",
+        "",
+        "This file explains how verified review windows are structured so the same math and interpretation do not need to be regenerated every time.",
+        "",
+        "## Architecture",
+        "1. Raw sources stay in local Claude/Codex data stores plus optional `cc-config` logs.",
+        "2. Mutable normalized datasets live in `.cache/` and are allowed to refresh.",
+        "3. Verified windows are frozen into `checkpoints/<window>/dataset.json` plus `manifest.json`.",
+        "4. Human-facing outputs for a verified window are the review, stats, ROI, prompt, and dashboard reports.",
+        "5. `review` is the checkpointing command. `stats` is the quick metrics command. `report` remains the lower-level renderer.",
+        "",
+        "## Latest Verified Window",
+        f"- Window: {dataset['window']['start_date']} to {dataset['window']['end_date']}",
+        f"- Review: `{review_relpath}`",
+        f"- Stats: `{stats_relpath}`",
+        f"- Checkpoint: `{checkpoint_relpath}`",
+        "",
+        "## Current Learnings",
+        f"- Claude Code value is strongest in execution breadth and continuity: {claude['project_count']} projects, {claude['thread_count']} threads, exact cost accounting, and heavy repo/file movement.",
+        f"- Codex value is strongest in concentrated deep threads: {codex['thread_count']} threads, {codex['total_tokens']:,} tokens, and {codex['friction_metrics']['subagent_threads']} subagent threads.",
+        f"- Interview-before-action prompts appear {claude_signals.get('interview_before_action', 0)} times in Claude and {codex_signals.get('interview_before_action', 0)} times in Codex.",
+        f"- Verification-first prompts appear {claude_signals.get('verification_first', 0)} times in Claude and {codex_signals.get('verification_first', 0)} times in Codex.",
+        f"- Parallel/subagent directives appear {claude_signals.get('parallel_agents', 0)} times in Claude and {codex_signals.get('parallel_agents', 0)} times in Codex.",
+        "",
+        "## Keep",
+        "- Preserve source coverage and checkpoint verified windows instead of re-deriving them ad hoc.",
+        "- Treat review files as durable base-zero summaries and stats files as machine-readable checkpoints.",
+        "- Keep ROI and appraisal separate from learning and workflow analysis.",
+        "",
+        "## Tighten",
+        "- Reduce duplicate prompt churn before adding more modeling complexity.",
+        "- Continue suppressing command/history prompt noise so directive-signal metrics become cleaner.",
+        "- Add more structured execution signals for Codex if future local logs expose them.",
+        "",
+    ]
+    return "\n".join(lines)
 
 
 def _appraisal_metrics(dataset: dict) -> dict[str, float]:

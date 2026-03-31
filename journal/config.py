@@ -16,6 +16,7 @@ class Paths:
     repo_root: Path
     cache_dir: Path
     reports_dir: Path
+    checkpoints_dir: Path
     claude_dir: Path
     codex_dir: Path
     cc_config_dir: Path | None
@@ -78,6 +79,7 @@ def default_paths(repo_root: Path | None = None) -> Paths:
         repo_root=root,
         cache_dir=root / ".cache",
         reports_dir=root / "reports",
+        checkpoints_dir=root / "checkpoints",
         claude_dir=claude_dir,
         codex_dir=codex_dir,
         cc_config_dir=_discover_cc_config_dir(home, root),

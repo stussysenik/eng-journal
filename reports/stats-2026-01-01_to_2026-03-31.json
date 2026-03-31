@@ -1,0 +1,637 @@
+{
+  "window": {
+    "start_date": "2026-01-01",
+    "end_date": "2026-03-31",
+    "period_days": 90,
+    "month_fraction": 2.9568788501026693
+  },
+  "generated_at": "2026-03-31T18:42:51.621702+00:00",
+  "agents": {
+    "claude_code": {
+      "display_name": "Claude Code",
+      "source_coverage": [
+        "native_log",
+        "history",
+        "journal_log"
+      ],
+      "cost_confidence": "exact",
+      "active_days": 53,
+      "first_activity_date": "2026-01-15",
+      "last_activity_date": "2026-03-31",
+      "event_count": 353748,
+      "thread_count": 7744,
+      "project_count": 151,
+      "work_unit_count": 325,
+      "total_tokens": 12175250867,
+      "cost_low": 6676.2033,
+      "cost_mid": 6676.2033,
+      "cost_high": 6676.2033,
+      "monthly_cost_low": 2257.8549,
+      "monthly_cost_mid": 2257.8549,
+      "monthly_cost_high": 2257.8549,
+      "prompt_metrics": {
+        "total_prompts": 14846,
+        "avg_prompt_length": 8512.1,
+        "mega_prompt_count": 7764,
+        "duplicate_prompt_instances": 4208,
+        "duplicates": [
+          {
+            "count": 23,
+            "prompt": "/usage"
+          },
+          {
+            "count": 17,
+            "prompt": "/rate-limit-options"
+          },
+          {
+            "count": 16,
+            "prompt": "yes"
+          },
+          {
+            "count": 10,
+            "prompt": "Let's do it"
+          },
+          {
+            "count": 10,
+            "prompt": "/model"
+          },
+          {
+            "count": 9,
+            "prompt": "here you go"
+          },
+          {
+            "count": 8,
+            "prompt": "/login"
+          },
+          {
+            "count": 8,
+            "prompt": "[SUGGESTION MODE: Suggest what the user might naturally type next into Claude Code.] FIRST: Look at the user's recent messages and original request. Your job..."
+          },
+          {
+            "count": 7,
+            "prompt": "[Image: original 2560x1426, displayed at 2000x1114. Multiply coordinates by 1.28 to map to original image.]"
+          },
+          {
+            "count": 7,
+            "prompt": "[Pasted text #1 +6 lines]"
+          }
+        ],
+        "longest": [
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "breakdex-flutter",
+            "prompt_length": 298448,
+            "prompt": "Showing Recent Issues Build target Runner of project Runner with configuration Debug warning: Run script build phase 'Re-sign Native Asset Frameworks' will be run during every build because it does..."
+          }
+        ],
+        "tags": [
+          {
+            "name": "design",
+            "count": 9796
+          },
+          {
+            "name": "build",
+            "count": 9313
+          },
+          {
+            "name": "plan",
+            "count": 9187
+          },
+          {
+            "name": "research",
+            "count": 8075
+          },
+          {
+            "name": "test",
+            "count": 2324
+          },
+          {
+            "name": "debug",
+            "count": 2246
+          },
+          {
+            "name": "agents",
+            "count": 1085
+          },
+          {
+            "name": "refactor",
+            "count": 308
+          }
+        ],
+        "directive_signals": [
+          {
+            "name": "verification_first",
+            "count": 1005
+          },
+          {
+            "name": "parallel_agents",
+            "count": 481
+          },
+          {
+            "name": "system_directive",
+            "count": 42
+          },
+          {
+            "name": "step_by_step",
+            "count": 39
+          },
+          {
+            "name": "interview_before_action",
+            "count": 30
+          },
+          {
+            "name": "implement_direct",
+            "count": 20
+          }
+        ]
+      },
+      "execution_metrics": {
+        "created_file": 6482,
+        "modified_file": 8657,
+        "read_file": 38886,
+        "delegated": 2062,
+        "ran_command": 28789,
+        "web_search": 4535
+      },
+      "friction_metrics": {
+        "error_count": 0,
+        "warning_count": 0,
+        "apply_patch_failures": 0,
+        "subagent_threads": 0
+      },
+      "git_evidence": {
+        "repo_count": 69,
+        "commit_count": 1904
+      },
+      "derived": {
+        "tokens_per_thread": 1572217.31,
+        "tokens_per_project": 80630800.44,
+        "prompts_per_active_day": 280.11,
+        "mega_prompt_rate": 0.523,
+        "duplicate_prompt_rate": 0.2834,
+        "cost_per_work_unit_mid": 20.5422
+      },
+      "top_projects": [
+        {
+          "project_name": "breakdex-flutter",
+          "events": 22723,
+          "cost": 848.7001600000087,
+          "tokens": 1544823253
+        },
+        {
+          "project_name": "portfolio-forever",
+          "events": 11701,
+          "cost": 494.2039649999999,
+          "tokens": 1084837057
+        },
+        {
+          "project_name": "mit-ocw-reels",
+          "events": 11685,
+          "cost": 485.17002900000296,
+          "tokens": 1024486407
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "events": 10660,
+          "cost": 433.50804899999946,
+          "tokens": 887387417
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "events": 8518,
+          "cost": 356.82102699999956,
+          "tokens": 460627282
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "events": 7175,
+          "cost": 326.4678299999992,
+          "tokens": 773946631
+        },
+        {
+          "project_name": "clean-writer",
+          "events": 6210,
+          "cost": 242.36248800000007,
+          "tokens": 389049766
+        },
+        {
+          "project_name": "tag-calibration",
+          "events": 3568,
+          "cost": 236.90618100000083,
+          "tokens": 172722393
+        }
+      ],
+      "sample_threads": [
+        {
+          "project_name": "portfolio-forever",
+          "thread_id": "b3f2354c-14ef-4762-a561-f385a9c14793",
+          "tokens_total": 492148703,
+          "usage_cost": 190.2679
+        },
+        {
+          "project_name": "mit-ocw-reels",
+          "thread_id": "4b9872fe-9dba-4d29-b280-1fe528f7dce2",
+          "tokens_total": 383567658,
+          "usage_cost": 170.0381
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "bbe25e0c-b9cb-40b8-b5ac-b99a92d45e94",
+          "tokens_total": 361598836,
+          "usage_cost": 140.1297
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "thread_id": "b5f47d3b-82d6-4a65-b074-19e6e7660a6b",
+          "tokens_total": 324989195,
+          "usage_cost": 131.6831
+        },
+        {
+          "project_name": "redwood-rewrite-clean-writer",
+          "thread_id": "961ce024-1575-4786-b272-c0892c44c24e",
+          "tokens_total": 245949349,
+          "usage_cost": 113.1588
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "thread_id": "46a7400d-cb06-4ecd-b7ca-46980d86e7b2",
+          "tokens_total": 261343936,
+          "usage_cost": 106.884
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "028e31bc-3339-45c5-a716-bc2b5d0c0512",
+          "tokens_total": 212710268,
+          "usage_cost": 101.8599
+        },
+        {
+          "project_name": "math-explainer-redwood",
+          "thread_id": "df87e51d-e85e-4c4e-9b74-8a497aaa2e97",
+          "tokens_total": 203693868,
+          "usage_cost": 94.5891
+        }
+      ]
+    },
+    "codex": {
+      "display_name": "Codex",
+      "source_coverage": [
+        "history",
+        "sqlite_thread",
+        "native_log"
+      ],
+      "cost_confidence": "estimated_range",
+      "active_days": 19,
+      "first_activity_date": "2026-02-12",
+      "last_activity_date": "2026-03-31",
+      "event_count": 129,
+      "thread_count": 129,
+      "project_count": 35,
+      "work_unit_count": 48,
+      "total_tokens": 1735284986,
+      "cost_low": 3750.8496,
+      "cost_mid": 7501.6993,
+      "cost_high": 22505.0979,
+      "monthly_cost_low": 1268.5165,
+      "monthly_cost_mid": 2537.033,
+      "monthly_cost_high": 7611.0991,
+      "prompt_metrics": {
+        "total_prompts": 446,
+        "avg_prompt_length": 1549.5,
+        "mega_prompt_count": 69,
+        "duplicate_prompt_instances": 75,
+        "duplicates": [
+          {
+            "count": 20,
+            "prompt": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-write blender best parts in zig and run i..."
+          },
+          {
+            "count": 15,
+            "prompt": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate this and build me the best parts optimi..."
+          },
+          {
+            "count": 13,
+            "prompt": "Implement the plan."
+          },
+          {
+            "count": 9,
+            "prompt": "i've been thinking about this idea could we use a ralph loop to build our own convex database that will have aspects of surrealdb, postgress sql, sqlite real..."
+          },
+          {
+            "count": 6,
+            "prompt": "[Image #1] here you go"
+          },
+          {
+            "count": 6,
+            "prompt": "use chrome-devtools and test on mobile why the links cannot be archived and also figure out why posts and links don't have images... each asset except for no..."
+          },
+          {
+            "count": 4,
+            "prompt": "could we make the graph view very functional in this application and also figure out why the application export results in an error! Also I like minimal tigh..."
+          },
+          {
+            "count": 3,
+            "prompt": "Now launch two agents in iteration loops serially. Agent 1: Validator, always facing a following request \"please validate whole diff and double check, if eve..."
+          },
+          {
+            "count": 2,
+            "prompt": "continue"
+          },
+          {
+            "count": 2,
+            "prompt": "I want you to create me a 40k $ per month paying for its back application that you can test thoroughly with cypress/playwright, maestro and such suite but bu..."
+          }
+        ],
+        "longest": [
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 66764,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: windmill-chain-01 - **Tags**: inversion, floor-contact, power - **Notes**: Should stress left-right consistency and floor contact. ## Context from ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 47909,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: flare-cycle-01 - **Tags**: extreme-articulation, rotation, power - **Notes**: Large leg arcs and intermittent self-occlusion. ## Context from Previ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 43745,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: headspin-loop-01 - **Tags**: inversion, rotation, power - **Notes**: Continuous axial rotation with heavy motion blur. ## Signatures from Other Age..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 30911,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: windmill-chain-01 - **Tags**: inversion, floor-contact, power - **Notes**: Should stress left-right consistency and floor contact. ## Context from ..."
+          },
+          {
+            "project_name": "MusicBrowser",
+            "prompt_length": 22039,
+            "prompt": "applicationQueuePlayer _establishConnectionIfNeeded timeout [ping did not pong] CoreData: error: Attempting to retrieve an NSManagedObjectModel version checksum while the model is still editable. T..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 19790,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: flare-cycle-01 - **Tags**: extreme-articulation, rotation, power - **Notes**: Large leg arcs and intermittent self-occlusion. ## Context from Previ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 17136,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: headspin-loop-01 - **Tags**: inversion, rotation, power - **Notes**: Continuous axial rotation with heavy motion blur. ## Signatures from Other Age..."
+          },
+          {
+            "project_name": "CRE-10",
+            "prompt_length": 15796,
+            "prompt": "You are working on a Linear ticket `CRE-10` for the **mymind-clone-web** project. Continuation context: - This is retry attempt #16 because the ticket is still in an active state. - Resume from the..."
+          },
+          {
+            "project_name": "CRE-6",
+            "prompt_length": 15083,
+            "prompt": "You are working on a Linear ticket `CRE-6` for the **mymind-clone-web** project. Issue context: Identifier: CRE-6 Title: Instagram tags still default to the default ones imo Current status: Merging..."
+          },
+          {
+            "project_name": "CRE-6",
+            "prompt_length": 15080,
+            "prompt": "You are working on a Linear ticket `CRE-6` for the **mymind-clone-web** project. Issue context: Identifier: CRE-6 Title: Instagram tags still default to the default ones imo Current status: Todo La..."
+          }
+        ],
+        "tags": [
+          {
+            "name": "design",
+            "count": 149
+          },
+          {
+            "name": "build",
+            "count": 145
+          },
+          {
+            "name": "plan",
+            "count": 85
+          },
+          {
+            "name": "debug",
+            "count": 74
+          },
+          {
+            "name": "test",
+            "count": 73
+          },
+          {
+            "name": "research",
+            "count": 66
+          },
+          {
+            "name": "agents",
+            "count": 58
+          },
+          {
+            "name": "refactor",
+            "count": 12
+          }
+        ],
+        "directive_signals": [
+          {
+            "name": "parallel_agents",
+            "count": 32
+          },
+          {
+            "name": "verification_first",
+            "count": 26
+          },
+          {
+            "name": "implement_direct",
+            "count": 13
+          },
+          {
+            "name": "interview_before_action",
+            "count": 10
+          },
+          {
+            "name": "step_by_step",
+            "count": 3
+          },
+          {
+            "name": "system_directive",
+            "count": 3
+          }
+        ]
+      },
+      "execution_metrics": {
+        "created_file": 0,
+        "modified_file": 0,
+        "read_file": 0,
+        "delegated": 0,
+        "ran_command": 0,
+        "web_search": 0
+      },
+      "friction_metrics": {
+        "error_count": 1,
+        "warning_count": 28,
+        "apply_patch_failures": 2,
+        "subagent_threads": 50
+      },
+      "git_evidence": {
+        "repo_count": 23,
+        "commit_count": 1886
+      },
+      "derived": {
+        "tokens_per_thread": 13451821.6,
+        "tokens_per_project": 49579571.03,
+        "prompts_per_active_day": 23.47,
+        "mega_prompt_rate": 0.1547,
+        "duplicate_prompt_rate": 0.1682,
+        "cost_per_work_unit_mid": 156.2854
+      },
+      "top_projects": [
+        {
+          "project_name": "s3nik",
+          "events": 31,
+          "cost": 2109.326249,
+          "tokens": 541550334
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "events": 15,
+          "cost": 1489.233376,
+          "tokens": 368218268
+        },
+        {
+          "project_name": "breakdex-flutter",
+          "events": 12,
+          "cost": 1399.130819,
+          "tokens": 282775917
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "events": 6,
+          "cost": 557.313454,
+          "tokens": 153401387
+        },
+        {
+          "project_name": "v0-ipod",
+          "events": 4,
+          "cost": 344.213725,
+          "tokens": 68842745
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "events": 2,
+          "cost": 330.514825,
+          "tokens": 66102965
+        },
+        {
+          "project_name": "MusicBrowser",
+          "events": 4,
+          "cost": 300.64549,
+          "tokens": 60129098
+        },
+        {
+          "project_name": "clean-writer",
+          "events": 4,
+          "cost": 217.32434,
+          "tokens": 43464868
+        }
+      ],
+      "sample_threads": [
+        {
+          "project_name": "breakdex-flutter",
+          "thread_id": "019ccd08-773f-7fb2-9f56-a50fbd825794",
+          "tokens_total": 199612198,
+          "usage_cost": 998.061,
+          "title": "I want you in the Review page -> Deck functionality for each of the created deck the user needs to from the principle..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d4485-d033-7501-85c5-9520e65fff86",
+          "tokens_total": 60382679,
+          "usage_cost": 301.9134,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d4522-c6e2-7e31-8fe1-1224ebdd3386",
+          "tokens_total": 58644393,
+          "usage_cost": 293.222,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d450b-d3ad-7fb0-8242-f7d89bad51eb",
+          "tokens_total": 52873871,
+          "usage_cost": 264.3694,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "thread_id": "019cce0b-11d9-75f1-ba01-be6f5664120e",
+          "tokens_total": 51139664,
+          "usage_cost": 255.6983,
+          "title": "Make sure on the biggest desktop you're showing 5x cards and then 4x and then 3x - but remove the load 20 guardrail f..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d4476-4df5-7d02-b6c5-b9ae49ba4ce4",
+          "tokens_total": 46136991,
+          "usage_cost": 230.685,
+          "title": "i've been thinking about this idea could we use a ralph loop to build our own convex database that will have aspects ..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d44b2-2cb3-74e0-aa2f-f915944a6dfa",
+          "tokens_total": 43788307,
+          "usage_cost": 218.9415,
+          "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d451e-1f02-7df0-9678-92bae00fd488",
+          "tokens_total": 35803013,
+          "usage_cost": 179.0151,
+          "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
+        }
+      ]
+    }
+  }
+}

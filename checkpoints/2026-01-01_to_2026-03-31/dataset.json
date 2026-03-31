@@ -1,0 +1,2373 @@
+{
+  "generated_at": "2026-03-31T18:42:51.621702+00:00",
+  "window": {
+    "start_date": "2026-01-01",
+    "end_date": "2026-03-31",
+    "period_days": 90,
+    "month_fraction": 2.9568788501026693
+  },
+  "subscription_scenarios": [
+    {
+      "label": "Seat $20",
+      "monthly_cost": 20.0
+    },
+    {
+      "label": "Seat $100",
+      "monthly_cost": 100.0
+    },
+    {
+      "label": "Seat $200",
+      "monthly_cost": 200.0
+    }
+  ],
+  "agents": {
+    "claude_code": {
+      "name": "claude_code",
+      "display_name": "Claude Code",
+      "cost_confidence": "exact",
+      "source_coverage": [
+        "native_log",
+        "history",
+        "journal_log"
+      ],
+      "active_days": 53,
+      "first_activity_date": "2026-01-15",
+      "last_activity_date": "2026-03-31",
+      "event_count": 353748,
+      "thread_count": 7744,
+      "project_count": 151,
+      "work_unit_count": 325,
+      "total_tokens": 12175250867,
+      "cost_low": 6676.2033,
+      "cost_mid": 6676.2033,
+      "cost_high": 6676.2033,
+      "monthly_cost_low": 2257.8549,
+      "monthly_cost_mid": 2257.8549,
+      "monthly_cost_high": 2257.8549,
+      "prompt_metrics": {
+        "total_prompts": 14846,
+        "avg_prompt_length": 8512.1,
+        "mega_prompt_count": 7764,
+        "duplicate_prompt_instances": 4208,
+        "duplicates": [
+          {
+            "count": 23,
+            "prompt": "/usage"
+          },
+          {
+            "count": 17,
+            "prompt": "/rate-limit-options"
+          },
+          {
+            "count": 16,
+            "prompt": "yes"
+          },
+          {
+            "count": 10,
+            "prompt": "Let's do it"
+          },
+          {
+            "count": 10,
+            "prompt": "/model"
+          },
+          {
+            "count": 9,
+            "prompt": "here you go"
+          },
+          {
+            "count": 8,
+            "prompt": "/login"
+          },
+          {
+            "count": 8,
+            "prompt": "[SUGGESTION MODE: Suggest what the user might naturally type next into Claude Code.] FIRST: Look at the user's recent messages and original request. Your job..."
+          },
+          {
+            "count": 7,
+            "prompt": "[Image: original 2560x1426, displayed at 2000x1114. Multiply coordinates by 1.28 to map to original image.]"
+          },
+          {
+            "count": 7,
+            "prompt": "[Pasted text #1 +6 lines]"
+          }
+        ],
+        "longest": [
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 491764,
+            "prompt": "You are a systems architect specializing in real-time ML inference pipelines, edge computing, and low-latency video processing. You are designing the production architecture for a breakdancing batt..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "bboy-battle-analysis",
+            "prompt_length": 317821,
+            "prompt": "You are a breakdancing technical analyst and movement scientist. You have deep knowledge of b-boy/b-girl culture, competition rules, and biomechanics. You are creating the formal move taxonomy and ..."
+          },
+          {
+            "project_name": "breakdex-flutter",
+            "prompt_length": 298448,
+            "prompt": "Showing Recent Issues Build target Runner of project Runner with configuration Debug warning: Run script build phase 'Re-sign Native Asset Frameworks' will be run during every build because it does..."
+          }
+        ],
+        "tags": [
+          {
+            "name": "design",
+            "count": 9796
+          },
+          {
+            "name": "build",
+            "count": 9313
+          },
+          {
+            "name": "plan",
+            "count": 9187
+          },
+          {
+            "name": "research",
+            "count": 8075
+          },
+          {
+            "name": "test",
+            "count": 2324
+          },
+          {
+            "name": "debug",
+            "count": 2246
+          },
+          {
+            "name": "agents",
+            "count": 1085
+          },
+          {
+            "name": "refactor",
+            "count": 308
+          }
+        ],
+        "directive_signals": [
+          {
+            "name": "verification_first",
+            "count": 1005
+          },
+          {
+            "name": "parallel_agents",
+            "count": 481
+          },
+          {
+            "name": "system_directive",
+            "count": 42
+          },
+          {
+            "name": "step_by_step",
+            "count": 39
+          },
+          {
+            "name": "interview_before_action",
+            "count": 30
+          },
+          {
+            "name": "implement_direct",
+            "count": 20
+          }
+        ]
+      },
+      "model_mix": [
+        {
+          "name": "claude-opus-4-6",
+          "count": 112453
+        },
+        {
+          "name": "claude-haiku-4-5-20251001",
+          "count": 47687
+        },
+        {
+          "name": "claude-sonnet-4-6",
+          "count": 5066
+        },
+        {
+          "name": "claude-sonnet-4-5-20250929",
+          "count": 3810
+        },
+        {
+          "name": "claude-opus-4-5-20251101",
+          "count": 1114
+        }
+      ],
+      "reasoning_mix": [],
+      "execution_metrics": {
+        "created_file": 6482,
+        "modified_file": 8657,
+        "read_file": 38886,
+        "delegated": 2062,
+        "ran_command": 28789,
+        "web_search": 4535
+      },
+      "friction_metrics": {
+        "error_count": 0,
+        "warning_count": 0,
+        "apply_patch_failures": 0,
+        "subagent_threads": 0
+      },
+      "git_evidence": {
+        "repo_count": 69,
+        "commit_count": 1904,
+        "repos": [
+          {
+            "repo_root": "/Users/s3nik/Desktop/MusicBrowser",
+            "commit_count": 21
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/Perplexica",
+            "commit_count": 10
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/apple-text-sync",
+            "commit_count": 3
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/autoresearch-c",
+            "commit_count": 12
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/autoresearch-playground",
+            "commit_count": 63
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/autoresearch-playground/ghost-tracks",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/breakdex",
+            "commit_count": 6
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/breakdex-flutter",
+            "commit_count": 73
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/cc-config",
+            "commit_count": 28
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/chrono-type",
+            "commit_count": 41
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/clean-writer",
+            "commit_count": 106
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/common-lisp-koan",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/conways-game-of-life",
+            "commit_count": 3
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/copy-paste-iphone",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/daily",
+            "commit_count": 9
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/dance-hit-audio-signature-matlab-playground",
+            "commit_count": 6
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/demoforge",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/diagram-creator",
+            "commit_count": 11
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/dont-hold-back",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/e-ink-mac-screen",
+            "commit_count": 16
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/export-tab-urls",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/fastest-music-vol-2",
+            "commit_count": 2
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/free-cad-toothbrush-idea",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/fulala-live-menu",
+            "commit_count": 50
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/fulala-reel",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/fulala-ruby",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/fulala.cz",
+            "commit_count": 31
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/golden-ratio-redwood",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/graphql-playground/graphql-koans",
+            "commit_count": 2
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/hardcaml-playground",
+            "commit_count": 5
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/journal-capture-physical-form",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/journaling-rhapsody",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/juggle-math",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/kimi-playground",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/lua-breaking",
+            "commit_count": 3
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/lua-shaders",
+            "commit_count": 18
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/math-explainer-redwood",
+            "commit_count": 2
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/mit-ocw-reels",
+            "commit_count": 40
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/mymind-clone-web",
+            "commit_count": 199
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/mymind-clone-web-dark",
+            "commit_count": 145
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/mymind-clone-web-readme",
+            "commit_count": 147
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/onlook-ruby-elixir-clone",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/open-ai-symphony/symphony",
+            "commit_count": 7
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/open-ai-symphony/symphony-mirror",
+            "commit_count": 11
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/organization/cc-setup",
+            "commit_count": 17
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/organization/mymind-clone-web",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/organization/v0-clone",
+            "commit_count": 14
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/own-net",
+            "commit_count": 2
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/pico-8-playground",
+            "commit_count": 3
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/pixel-to-ascii-zig",
+            "commit_count": 3
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/playbit-gravity",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/portfolio-forever",
+            "commit_count": 84
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/putter-playground",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/recap",
+            "commit_count": 12
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/recursive-universe-playground",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/redwood-mymind-clone-web",
+            "commit_count": 29
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/redwood-rewrite-clean-writer",
+            "commit_count": 47
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/redwood-shopfiy-e-commerce",
+            "commit_count": 2
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-hub",
+            "commit_count": 13
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-10",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-8",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/token-control-visualizer",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/trello-clone-swift-ui",
+            "commit_count": 8
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/v0-ipod",
+            "commit_count": 51
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/web-scraping-email-export/outlook-exodus",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/windmill-portfolio",
+            "commit_count": 10
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/zig-elixir-math-katex",
+            "commit_count": 30
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/zig-image-carousel",
+            "commit_count": 10
+          },
+          {
+            "repo_root": "/Users/s3nik/dcal",
+            "commit_count": 8
+          }
+        ]
+      },
+      "top_projects": [
+        {
+          "project_name": "breakdex-flutter",
+          "events": 22723,
+          "cost": 848.7001600000087,
+          "tokens": 1544823253
+        },
+        {
+          "project_name": "portfolio-forever",
+          "events": 11701,
+          "cost": 494.2039649999999,
+          "tokens": 1084837057
+        },
+        {
+          "project_name": "mit-ocw-reels",
+          "events": 11685,
+          "cost": 485.17002900000296,
+          "tokens": 1024486407
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "events": 10660,
+          "cost": 433.50804899999946,
+          "tokens": 887387417
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "events": 8518,
+          "cost": 356.82102699999956,
+          "tokens": 460627282
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "events": 7175,
+          "cost": 326.4678299999992,
+          "tokens": 773946631
+        },
+        {
+          "project_name": "clean-writer",
+          "events": 6210,
+          "cost": 242.36248800000007,
+          "tokens": 389049766
+        },
+        {
+          "project_name": "tag-calibration",
+          "events": 3568,
+          "cost": 236.90618100000083,
+          "tokens": 172722393
+        },
+        {
+          "project_name": "redwood-rewrite-clean-writer",
+          "events": 5462,
+          "cost": 211.8236579999993,
+          "tokens": 455369901
+        },
+        {
+          "project_name": "MusicBrowser",
+          "events": 5182,
+          "cost": 178.76979100000082,
+          "tokens": 303887695
+        }
+      ],
+      "daily_rows": [
+        {
+          "date": "2026-01-15",
+          "agent": "claude_code",
+          "events": 406,
+          "thread_count": 7,
+          "project_count": 4,
+          "cost": 19.8043
+        },
+        {
+          "date": "2026-01-16",
+          "agent": "claude_code",
+          "events": 202,
+          "thread_count": 4,
+          "project_count": 3,
+          "cost": 6.5068
+        },
+        {
+          "date": "2026-01-17",
+          "agent": "claude_code",
+          "events": 950,
+          "thread_count": 16,
+          "project_count": 5,
+          "cost": 51.4644
+        },
+        {
+          "date": "2026-01-18",
+          "agent": "claude_code",
+          "events": 225,
+          "thread_count": 6,
+          "project_count": 4,
+          "cost": 12.7467
+        },
+        {
+          "date": "2026-01-19",
+          "agent": "claude_code",
+          "events": 687,
+          "thread_count": 16,
+          "project_count": 5,
+          "cost": 40.1933
+        },
+        {
+          "date": "2026-01-20",
+          "agent": "claude_code",
+          "events": 818,
+          "thread_count": 14,
+          "project_count": 4,
+          "cost": 46.6239
+        },
+        {
+          "date": "2026-01-21",
+          "agent": "claude_code",
+          "events": 606,
+          "thread_count": 9,
+          "project_count": 4,
+          "cost": 31.4578
+        },
+        {
+          "date": "2026-01-22",
+          "agent": "claude_code",
+          "events": 837,
+          "thread_count": 11,
+          "project_count": 2,
+          "cost": 41.6098
+        },
+        {
+          "date": "2026-01-24",
+          "agent": "claude_code",
+          "events": 373,
+          "thread_count": 3,
+          "project_count": 1,
+          "cost": 25.7461
+        },
+        {
+          "date": "2026-01-25",
+          "agent": "claude_code",
+          "events": 1012,
+          "thread_count": 15,
+          "project_count": 3,
+          "cost": 62.6943
+        },
+        {
+          "date": "2026-02-01",
+          "agent": "claude_code",
+          "events": 348,
+          "thread_count": 9,
+          "project_count": 2,
+          "cost": 26.1457
+        },
+        {
+          "date": "2026-02-02",
+          "agent": "claude_code",
+          "events": 230,
+          "thread_count": 5,
+          "project_count": 2,
+          "cost": 10.7684
+        },
+        {
+          "date": "2026-02-04",
+          "agent": "claude_code",
+          "events": 87,
+          "thread_count": 3,
+          "project_count": 2,
+          "cost": 1.4177
+        },
+        {
+          "date": "2026-02-06",
+          "agent": "claude_code",
+          "events": 369,
+          "thread_count": 3,
+          "project_count": 2,
+          "cost": 11.599
+        },
+        {
+          "date": "2026-02-07",
+          "agent": "claude_code",
+          "events": 893,
+          "thread_count": 10,
+          "project_count": 3,
+          "cost": 36.5185
+        },
+        {
+          "date": "2026-02-08",
+          "agent": "claude_code",
+          "events": 77,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 3.7045
+        },
+        {
+          "date": "2026-02-10",
+          "agent": "claude_code",
+          "events": 1270,
+          "thread_count": 8,
+          "project_count": 1,
+          "cost": 31.052
+        },
+        {
+          "date": "2026-02-11",
+          "agent": "claude_code",
+          "events": 162,
+          "thread_count": 4,
+          "project_count": 2,
+          "cost": 11.2693
+        },
+        {
+          "date": "2026-02-12",
+          "agent": "claude_code",
+          "events": 371,
+          "thread_count": 4,
+          "project_count": 1,
+          "cost": 20.6344
+        },
+        {
+          "date": "2026-02-13",
+          "agent": "claude_code",
+          "events": 157,
+          "thread_count": 2,
+          "project_count": 1,
+          "cost": 4.4695
+        },
+        {
+          "date": "2026-02-23",
+          "agent": "claude_code",
+          "events": 1067,
+          "thread_count": 11,
+          "project_count": 5,
+          "cost": 27.5451
+        },
+        {
+          "date": "2026-02-24",
+          "agent": "claude_code",
+          "events": 276,
+          "thread_count": 4,
+          "project_count": 2,
+          "cost": 5.7385
+        },
+        {
+          "date": "2026-02-25",
+          "agent": "claude_code",
+          "events": 2110,
+          "thread_count": 28,
+          "project_count": 3,
+          "cost": 67.19
+        },
+        {
+          "date": "2026-02-27",
+          "agent": "claude_code",
+          "events": 682,
+          "thread_count": 9,
+          "project_count": 2,
+          "cost": 22.4453
+        },
+        {
+          "date": "2026-03-01",
+          "agent": "claude_code",
+          "events": 44,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 1.0033
+        },
+        {
+          "date": "2026-03-03",
+          "agent": "claude_code",
+          "events": 804,
+          "thread_count": 4,
+          "project_count": 4,
+          "cost": 22.2217
+        },
+        {
+          "date": "2026-03-04",
+          "agent": "claude_code",
+          "events": 7077,
+          "thread_count": 55,
+          "project_count": 16,
+          "cost": 217.8053
+        },
+        {
+          "date": "2026-03-05",
+          "agent": "claude_code",
+          "events": 7937,
+          "thread_count": 67,
+          "project_count": 8,
+          "cost": 249.6082
+        },
+        {
+          "date": "2026-03-06",
+          "agent": "claude_code",
+          "events": 2357,
+          "thread_count": 23,
+          "project_count": 6,
+          "cost": 86.1344
+        },
+        {
+          "date": "2026-03-07",
+          "agent": "claude_code",
+          "events": 8070,
+          "thread_count": 56,
+          "project_count": 9,
+          "cost": 270.8298
+        },
+        {
+          "date": "2026-03-08",
+          "agent": "claude_code",
+          "events": 1310,
+          "thread_count": 9,
+          "project_count": 1,
+          "cost": 45.7567
+        },
+        {
+          "date": "2026-03-13",
+          "agent": "claude_code",
+          "events": 10153,
+          "thread_count": 72,
+          "project_count": 24,
+          "cost": 330.2307
+        },
+        {
+          "date": "2026-03-14",
+          "agent": "claude_code",
+          "events": 9217,
+          "thread_count": 111,
+          "project_count": 18,
+          "cost": 276.6572
+        },
+        {
+          "date": "2026-03-15",
+          "agent": "claude_code",
+          "events": 5318,
+          "thread_count": 41,
+          "project_count": 11,
+          "cost": 200.9752
+        },
+        {
+          "date": "2026-03-16",
+          "agent": "claude_code",
+          "events": 3423,
+          "thread_count": 35,
+          "project_count": 4,
+          "cost": 110.7942
+        },
+        {
+          "date": "2026-03-18",
+          "agent": "claude_code",
+          "events": 8817,
+          "thread_count": 56,
+          "project_count": 9,
+          "cost": 307.004
+        },
+        {
+          "date": "2026-03-19",
+          "agent": "claude_code",
+          "events": 1393,
+          "thread_count": 9,
+          "project_count": 2,
+          "cost": 51.1901
+        },
+        {
+          "date": "2026-03-20",
+          "agent": "claude_code",
+          "events": 145,
+          "thread_count": 8,
+          "project_count": 4,
+          "cost": 6.0205
+        },
+        {
+          "date": "2026-03-21",
+          "agent": "claude_code",
+          "events": 22536,
+          "thread_count": 1605,
+          "project_count": 18,
+          "cost": 1018.3503
+        },
+        {
+          "date": "2026-03-22",
+          "agent": "claude_code",
+          "events": 10631,
+          "thread_count": 162,
+          "project_count": 9,
+          "cost": 503.345
+        },
+        {
+          "date": "2026-03-23",
+          "agent": "claude_code",
+          "events": 12389,
+          "thread_count": 132,
+          "project_count": 6,
+          "cost": 543.4955
+        },
+        {
+          "date": "2026-03-24",
+          "agent": "claude_code",
+          "events": 8271,
+          "thread_count": 17,
+          "project_count": 9,
+          "cost": 332.8853
+        },
+        {
+          "date": "2026-03-25",
+          "agent": "claude_code",
+          "events": 380,
+          "thread_count": 15,
+          "project_count": 3,
+          "cost": 19.9531
+        },
+        {
+          "date": "2026-03-27",
+          "agent": "claude_code",
+          "events": 572,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 23.4537
+        },
+        {
+          "date": "2026-03-28",
+          "agent": "claude_code",
+          "events": 5368,
+          "thread_count": 8,
+          "project_count": 10,
+          "cost": 200.6031
+        },
+        {
+          "date": "2026-03-29",
+          "agent": "claude_code",
+          "events": 18366,
+          "thread_count": 17,
+          "project_count": 26,
+          "cost": 781.8613
+        },
+        {
+          "date": "2026-03-30",
+          "agent": "claude_code",
+          "events": 3344,
+          "thread_count": 9,
+          "project_count": 14,
+          "cost": 178.7014
+        },
+        {
+          "date": "2026-03-31",
+          "agent": "claude_code",
+          "events": 7993,
+          "thread_count": 14,
+          "project_count": 10,
+          "cost": 277.9779
+        }
+      ],
+      "weekly_rows": [
+        {
+          "week": "2026-W03",
+          "agent": "claude_code",
+          "days_active": 4,
+          "events": 1783,
+          "threads": 33,
+          "projects": 5,
+          "cost": 90.5222
+        },
+        {
+          "week": "2026-W04",
+          "agent": "claude_code",
+          "days_active": 6,
+          "events": 4333,
+          "threads": 68,
+          "projects": 5,
+          "cost": 248.3252
+        },
+        {
+          "week": "2026-W05",
+          "agent": "claude_code",
+          "days_active": 1,
+          "events": 348,
+          "threads": 9,
+          "projects": 2,
+          "cost": 26.1457
+        },
+        {
+          "week": "2026-W06",
+          "agent": "claude_code",
+          "days_active": 5,
+          "events": 1656,
+          "threads": 22,
+          "projects": 3,
+          "cost": 64.0081
+        },
+        {
+          "week": "2026-W07",
+          "agent": "claude_code",
+          "days_active": 4,
+          "events": 1960,
+          "threads": 18,
+          "projects": 2,
+          "cost": 67.4252
+        },
+        {
+          "week": "2026-W09",
+          "agent": "claude_code",
+          "days_active": 5,
+          "events": 4179,
+          "threads": 53,
+          "projects": 5,
+          "cost": 123.9222
+        },
+        {
+          "week": "2026-W10",
+          "agent": "claude_code",
+          "days_active": 6,
+          "events": 27555,
+          "threads": 214,
+          "projects": 16,
+          "cost": 892.3561
+        },
+        {
+          "week": "2026-W11",
+          "agent": "claude_code",
+          "days_active": 3,
+          "events": 24688,
+          "threads": 224,
+          "projects": 24,
+          "cost": 807.8630999999999
+        },
+        {
+          "week": "2026-W12",
+          "agent": "claude_code",
+          "days_active": 6,
+          "events": 46945,
+          "threads": 1875,
+          "projects": 18,
+          "cost": 1996.7041
+        },
+        {
+          "week": "2026-W13",
+          "agent": "claude_code",
+          "days_active": 6,
+          "events": 45346,
+          "threads": 190,
+          "projects": 26,
+          "cost": 1902.252
+        },
+        {
+          "week": "2026-W14",
+          "agent": "claude_code",
+          "days_active": 2,
+          "events": 11337,
+          "threads": 23,
+          "projects": 14,
+          "cost": 456.6793
+        }
+      ],
+      "sample_threads": [
+        {
+          "project_name": "portfolio-forever",
+          "thread_id": "b3f2354c-14ef-4762-a561-f385a9c14793",
+          "tokens_total": 492148703,
+          "usage_cost": 190.2679
+        },
+        {
+          "project_name": "mit-ocw-reels",
+          "thread_id": "4b9872fe-9dba-4d29-b280-1fe528f7dce2",
+          "tokens_total": 383567658,
+          "usage_cost": 170.0381
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "bbe25e0c-b9cb-40b8-b5ac-b99a92d45e94",
+          "tokens_total": 361598836,
+          "usage_cost": 140.1297
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "thread_id": "b5f47d3b-82d6-4a65-b074-19e6e7660a6b",
+          "tokens_total": 324989195,
+          "usage_cost": 131.6831
+        },
+        {
+          "project_name": "redwood-rewrite-clean-writer",
+          "thread_id": "961ce024-1575-4786-b272-c0892c44c24e",
+          "tokens_total": 245949349,
+          "usage_cost": 113.1588
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "thread_id": "46a7400d-cb06-4ecd-b7ca-46980d86e7b2",
+          "tokens_total": 261343936,
+          "usage_cost": 106.884
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "028e31bc-3339-45c5-a716-bc2b5d0c0512",
+          "tokens_total": 212710268,
+          "usage_cost": 101.8599
+        },
+        {
+          "project_name": "math-explainer-redwood",
+          "thread_id": "df87e51d-e85e-4c4e-9b74-8a497aaa2e97",
+          "tokens_total": 203693868,
+          "usage_cost": 94.5891
+        },
+        {
+          "project_name": "chrono-type",
+          "thread_id": "476a01c6-4236-47e6-ac3e-b7cf65e75cce",
+          "tokens_total": 216575474,
+          "usage_cost": 93.2536
+        },
+        {
+          "project_name": "autoresearch-playground",
+          "thread_id": "fed54e4d-6b21-4032-b820-01c7c58c218c",
+          "tokens_total": 185760489,
+          "usage_cost": 78.859
+        }
+      ]
+    },
+    "codex": {
+      "name": "codex",
+      "display_name": "Codex",
+      "cost_confidence": "estimated_range",
+      "source_coverage": [
+        "history",
+        "sqlite_thread",
+        "native_log"
+      ],
+      "active_days": 19,
+      "first_activity_date": "2026-02-12",
+      "last_activity_date": "2026-03-31",
+      "event_count": 129,
+      "thread_count": 129,
+      "project_count": 35,
+      "work_unit_count": 48,
+      "total_tokens": 1735284986,
+      "cost_low": 3750.8496,
+      "cost_mid": 7501.6993,
+      "cost_high": 22505.0979,
+      "monthly_cost_low": 1268.5165,
+      "monthly_cost_mid": 2537.033,
+      "monthly_cost_high": 7611.0991,
+      "prompt_metrics": {
+        "total_prompts": 446,
+        "avg_prompt_length": 1549.5,
+        "mega_prompt_count": 69,
+        "duplicate_prompt_instances": 75,
+        "duplicates": [
+          {
+            "count": 20,
+            "prompt": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-write blender best parts in zig and run i..."
+          },
+          {
+            "count": 15,
+            "prompt": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate this and build me the best parts optimi..."
+          },
+          {
+            "count": 13,
+            "prompt": "Implement the plan."
+          },
+          {
+            "count": 9,
+            "prompt": "i've been thinking about this idea could we use a ralph loop to build our own convex database that will have aspects of surrealdb, postgress sql, sqlite real..."
+          },
+          {
+            "count": 6,
+            "prompt": "[Image #1] here you go"
+          },
+          {
+            "count": 6,
+            "prompt": "use chrome-devtools and test on mobile why the links cannot be archived and also figure out why posts and links don't have images... each asset except for no..."
+          },
+          {
+            "count": 4,
+            "prompt": "could we make the graph view very functional in this application and also figure out why the application export results in an error! Also I like minimal tigh..."
+          },
+          {
+            "count": 3,
+            "prompt": "Now launch two agents in iteration loops serially. Agent 1: Validator, always facing a following request \"please validate whole diff and double check, if eve..."
+          },
+          {
+            "count": 2,
+            "prompt": "continue"
+          },
+          {
+            "count": 2,
+            "prompt": "I want you to create me a 40k $ per month paying for its back application that you can test thoroughly with cypress/playwright, maestro and such suite but bu..."
+          }
+        ],
+        "longest": [
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 66764,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: windmill-chain-01 - **Tags**: inversion, floor-contact, power - **Notes**: Should stress left-right consistency and floor contact. ## Context from ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 47909,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: flare-cycle-01 - **Tags**: extreme-articulation, rotation, power - **Notes**: Large leg arcs and intermittent self-occlusion. ## Context from Previ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 43745,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: headspin-loop-01 - **Tags**: inversion, rotation, power - **Notes**: Continuous axial rotation with heavy motion blur. ## Signatures from Other Age..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 30911,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: windmill-chain-01 - **Tags**: inversion, floor-contact, power - **Notes**: Should stress left-right consistency and floor contact. ## Context from ..."
+          },
+          {
+            "project_name": "MusicBrowser",
+            "prompt_length": 22039,
+            "prompt": "applicationQueuePlayer _establishConnectionIfNeeded timeout [ping did not pong] CoreData: error: Attempting to retrieve an NSManagedObjectModel version checksum while the model is still editable. T..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 19790,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: flare-cycle-01 - **Tags**: extreme-articulation, rotation, power - **Notes**: Large leg arcs and intermittent self-occlusion. ## Context from Previ..."
+          },
+          {
+            "project_name": "overnight-v2",
+            "prompt_length": 17136,
+            "prompt": "# Scenario Analysis Request ## Scenario - **ID**: headspin-loop-01 - **Tags**: inversion, rotation, power - **Notes**: Continuous axial rotation with heavy motion blur. ## Signatures from Other Age..."
+          },
+          {
+            "project_name": "CRE-10",
+            "prompt_length": 15796,
+            "prompt": "You are working on a Linear ticket `CRE-10` for the **mymind-clone-web** project. Continuation context: - This is retry attempt #16 because the ticket is still in an active state. - Resume from the..."
+          },
+          {
+            "project_name": "CRE-6",
+            "prompt_length": 15083,
+            "prompt": "You are working on a Linear ticket `CRE-6` for the **mymind-clone-web** project. Issue context: Identifier: CRE-6 Title: Instagram tags still default to the default ones imo Current status: Merging..."
+          },
+          {
+            "project_name": "CRE-6",
+            "prompt_length": 15080,
+            "prompt": "You are working on a Linear ticket `CRE-6` for the **mymind-clone-web** project. Issue context: Identifier: CRE-6 Title: Instagram tags still default to the default ones imo Current status: Todo La..."
+          }
+        ],
+        "tags": [
+          {
+            "name": "design",
+            "count": 149
+          },
+          {
+            "name": "build",
+            "count": 145
+          },
+          {
+            "name": "plan",
+            "count": 85
+          },
+          {
+            "name": "debug",
+            "count": 74
+          },
+          {
+            "name": "test",
+            "count": 73
+          },
+          {
+            "name": "research",
+            "count": 66
+          },
+          {
+            "name": "agents",
+            "count": 58
+          },
+          {
+            "name": "refactor",
+            "count": 12
+          }
+        ],
+        "directive_signals": [
+          {
+            "name": "parallel_agents",
+            "count": 32
+          },
+          {
+            "name": "verification_first",
+            "count": 26
+          },
+          {
+            "name": "implement_direct",
+            "count": 13
+          },
+          {
+            "name": "interview_before_action",
+            "count": 10
+          },
+          {
+            "name": "step_by_step",
+            "count": 3
+          },
+          {
+            "name": "system_directive",
+            "count": 3
+          }
+        ]
+      },
+      "model_mix": [
+        {
+          "name": "gpt-5.4",
+          "count": 44
+        },
+        {
+          "name": "gpt-5.4-mini",
+          "count": 16
+        }
+      ],
+      "reasoning_mix": [
+        {
+          "name": "xhigh",
+          "count": 42
+        },
+        {
+          "name": "high",
+          "count": 14
+        },
+        {
+          "name": "medium",
+          "count": 4
+        }
+      ],
+      "execution_metrics": {
+        "created_file": 0,
+        "modified_file": 0,
+        "read_file": 0,
+        "delegated": 0,
+        "ran_command": 0,
+        "web_search": 0
+      },
+      "friction_metrics": {
+        "error_count": 1,
+        "warning_count": 28,
+        "apply_patch_failures": 2,
+        "subagent_threads": 50
+      },
+      "git_evidence": {
+        "repo_count": 23,
+        "commit_count": 1886,
+        "repos": [
+          {
+            "repo_root": "/Users/s3nik/Desktop/MusicBrowser",
+            "commit_count": 21
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/autoresearch-playground",
+            "commit_count": 63
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/breakdex",
+            "commit_count": 6
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/breakdex-flutter",
+            "commit_count": 73
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/bubbletea-zig",
+            "commit_count": 44
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/cc-config",
+            "commit_count": 28
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/claude-code-elixir",
+            "commit_count": 26
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/clean-writer",
+            "commit_count": 106
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/dance-hit-audio-signature-matlab-playground",
+            "commit_count": 6
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/kimi-playground",
+            "commit_count": 4
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/mymind-clone-web",
+            "commit_count": 199
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/orthographic-projections-zig",
+            "commit_count": 1
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/redwood-mymind-clone-web",
+            "commit_count": 29
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-hub",
+            "commit_count": 13
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-10",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-11",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-12",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-13",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-14",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-15",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-8",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/symphony-setup/workspaces/mymind-clone-web/CRE-9",
+            "commit_count": 152
+          },
+          {
+            "repo_root": "/Users/s3nik/Desktop/v0-ipod",
+            "commit_count": 51
+          }
+        ]
+      },
+      "top_projects": [
+        {
+          "project_name": "s3nik",
+          "events": 31,
+          "cost": 2109.326249,
+          "tokens": 541550334
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "events": 15,
+          "cost": 1489.233376,
+          "tokens": 368218268
+        },
+        {
+          "project_name": "breakdex-flutter",
+          "events": 12,
+          "cost": 1399.130819,
+          "tokens": 282775917
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "events": 6,
+          "cost": 557.313454,
+          "tokens": 153401387
+        },
+        {
+          "project_name": "v0-ipod",
+          "events": 4,
+          "cost": 344.213725,
+          "tokens": 68842745
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "events": 2,
+          "cost": 330.514825,
+          "tokens": 66102965
+        },
+        {
+          "project_name": "MusicBrowser",
+          "events": 4,
+          "cost": 300.64549,
+          "tokens": 60129098
+        },
+        {
+          "project_name": "clean-writer",
+          "events": 4,
+          "cost": 217.32434,
+          "tokens": 43464868
+        },
+        {
+          "project_name": "cc-config",
+          "events": 1,
+          "cost": 157.69758,
+          "tokens": 31539516
+        },
+        {
+          "project_name": "electrobun-playground",
+          "events": 2,
+          "cost": 137.144285,
+          "tokens": 27428857
+        }
+      ],
+      "daily_rows": [
+        {
+          "date": "2026-02-12",
+          "agent": "codex",
+          "events": 1,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 26.8017
+        },
+        {
+          "date": "2026-02-19",
+          "agent": "codex",
+          "events": 2,
+          "thread_count": 2,
+          "project_count": 2,
+          "cost": 28.8706
+        },
+        {
+          "date": "2026-02-20",
+          "agent": "codex",
+          "events": 1,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 0.1608
+        },
+        {
+          "date": "2026-02-21",
+          "agent": "codex",
+          "events": 2,
+          "thread_count": 2,
+          "project_count": 1,
+          "cost": 2.4797
+        },
+        {
+          "date": "2026-02-25",
+          "agent": "codex",
+          "events": 4,
+          "thread_count": 4,
+          "project_count": 2,
+          "cost": 77.2365
+        },
+        {
+          "date": "2026-02-27",
+          "agent": "codex",
+          "events": 1,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 9.7055
+        },
+        {
+          "date": "2026-03-05",
+          "agent": "codex",
+          "events": 1,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 0.7252
+        },
+        {
+          "date": "2026-03-06",
+          "agent": "codex",
+          "events": 4,
+          "thread_count": 4,
+          "project_count": 1,
+          "cost": 189.3157
+        },
+        {
+          "date": "2026-03-07",
+          "agent": "codex",
+          "events": 5,
+          "thread_count": 5,
+          "project_count": 4,
+          "cost": 275.6957
+        },
+        {
+          "date": "2026-03-08",
+          "agent": "codex",
+          "events": 4,
+          "thread_count": 4,
+          "project_count": 3,
+          "cost": 1417.5771
+        },
+        {
+          "date": "2026-03-11",
+          "agent": "codex",
+          "events": 3,
+          "thread_count": 3,
+          "project_count": 2,
+          "cost": 282.8774
+        },
+        {
+          "date": "2026-03-12",
+          "agent": "codex",
+          "events": 1,
+          "thread_count": 1,
+          "project_count": 1,
+          "cost": 64.491
+        },
+        {
+          "date": "2026-03-13",
+          "agent": "codex",
+          "events": 4,
+          "thread_count": 4,
+          "project_count": 4,
+          "cost": 85.542
+        },
+        {
+          "date": "2026-03-14",
+          "agent": "codex",
+          "events": 5,
+          "thread_count": 5,
+          "project_count": 2,
+          "cost": 29.2335
+        },
+        {
+          "date": "2026-03-15",
+          "agent": "codex",
+          "events": 10,
+          "thread_count": 10,
+          "project_count": 9,
+          "cost": 194.9079
+        },
+        {
+          "date": "2026-03-22",
+          "agent": "codex",
+          "events": 2,
+          "thread_count": 2,
+          "project_count": 2,
+          "cost": 9.0072
+        },
+        {
+          "date": "2026-03-24",
+          "agent": "codex",
+          "events": 12,
+          "thread_count": 12,
+          "project_count": 1,
+          "cost": 10.9488
+        },
+        {
+          "date": "2026-03-25",
+          "agent": "codex",
+          "events": 7,
+          "thread_count": 7,
+          "project_count": 1,
+          "cost": 2.2829
+        },
+        {
+          "date": "2026-03-31",
+          "agent": "codex",
+          "events": 60,
+          "thread_count": 60,
+          "project_count": 9,
+          "cost": 4793.8403
+        }
+      ],
+      "weekly_rows": [
+        {
+          "week": "2026-W07",
+          "agent": "codex",
+          "days_active": 1,
+          "events": 1,
+          "threads": 1,
+          "projects": 1,
+          "cost": 26.8017
+        },
+        {
+          "week": "2026-W08",
+          "agent": "codex",
+          "days_active": 3,
+          "events": 5,
+          "threads": 5,
+          "projects": 2,
+          "cost": 31.5111
+        },
+        {
+          "week": "2026-W09",
+          "agent": "codex",
+          "days_active": 2,
+          "events": 5,
+          "threads": 5,
+          "projects": 2,
+          "cost": 86.94200000000001
+        },
+        {
+          "week": "2026-W10",
+          "agent": "codex",
+          "days_active": 4,
+          "events": 14,
+          "threads": 14,
+          "projects": 4,
+          "cost": 1883.3137
+        },
+        {
+          "week": "2026-W11",
+          "agent": "codex",
+          "days_active": 5,
+          "events": 23,
+          "threads": 23,
+          "projects": 9,
+          "cost": 657.0518
+        },
+        {
+          "week": "2026-W12",
+          "agent": "codex",
+          "days_active": 1,
+          "events": 2,
+          "threads": 2,
+          "projects": 2,
+          "cost": 9.0072
+        },
+        {
+          "week": "2026-W13",
+          "agent": "codex",
+          "days_active": 2,
+          "events": 19,
+          "threads": 19,
+          "projects": 1,
+          "cost": 13.2317
+        },
+        {
+          "week": "2026-W14",
+          "agent": "codex",
+          "days_active": 1,
+          "events": 60,
+          "threads": 60,
+          "projects": 9,
+          "cost": 4793.8403
+        }
+      ],
+      "sample_threads": [
+        {
+          "project_name": "breakdex-flutter",
+          "thread_id": "019ccd08-773f-7fb2-9f56-a50fbd825794",
+          "tokens_total": 199612198,
+          "usage_cost": 998.061,
+          "title": "I want you in the Review page -> Deck functionality for each of the created deck the user needs to from the principle..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d4485-d033-7501-85c5-9520e65fff86",
+          "tokens_total": 60382679,
+          "usage_cost": 301.9134,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d4522-c6e2-7e31-8fe1-1224ebdd3386",
+          "tokens_total": 58644393,
+          "usage_cost": 293.222,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d450b-d3ad-7fb0-8242-f7d89bad51eb",
+          "tokens_total": 52873871,
+          "usage_cost": 264.3694,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "mymind-clone-web",
+          "thread_id": "019cce0b-11d9-75f1-ba01-be6f5664120e",
+          "tokens_total": 51139664,
+          "usage_cost": 255.6983,
+          "title": "Make sure on the biggest desktop you're showing 5x cards and then 4x and then 3x - but remove the load 20 guardrail f..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d4476-4df5-7d02-b6c5-b9ae49ba4ce4",
+          "tokens_total": 46136991,
+          "usage_cost": 230.685,
+          "title": "i've been thinking about this idea could we use a ralph loop to build our own convex database that will have aspects ..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d44b2-2cb3-74e0-aa2f-f915944a6dfa",
+          "tokens_total": 43788307,
+          "usage_cost": 218.9415,
+          "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d451e-1f02-7df0-9678-92bae00fd488",
+          "tokens_total": 35803013,
+          "usage_cost": 179.0151,
+          "title": "https://github.com/stussysenik/blender could you use omx https://github.com/Yeachan-Heo/oh-my-codex approach and re-w..."
+        },
+        {
+          "project_name": "clean-writer",
+          "thread_id": "019ccdf8-620a-76b2-9fdc-0aeafaadbb3f",
+          "tokens_total": 32586887,
+          "usage_cost": 162.9344,
+          "title": "[Image #1] [Image #2] [Image #3] [Image #4] and delete the extra grey dots from the color dots theme togglers! use /o..."
+        },
+        {
+          "project_name": "s3nik",
+          "thread_id": "019d44e2-c91a-7421-ad86-4988cc511c86",
+          "tokens_total": 32512710,
+          "usage_cost": 162.5635,
+          "title": "i've been thinking about this idea could we use a ralph loop to build our own convex database that will have aspects ..."
+        },
+        {
+          "project_name": "claude-code-elixir",
+          "thread_id": "019d44f1-13fb-7d72-905e-09588e4a24f8",
+          "tokens_total": 32485048,
+          "usage_cost": 162.4252,
+          "title": "I want you to use symphony and build out the claude-code in elixir https://github.com/stussysenik/claw-code translate..."
+        },
+        {
+          "project_name": "redwood-mymind-clone-web",
+          "thread_id": "019d44f1-0979-7452-8166-4247c8282580",
+          "tokens_total": 32453618,
+          "usage_cost": 162.2681,
+          "title": "use chrome-devtools and test on mobile why the links cannot be archived and also figure out why posts and links don't..."
+        }
+      ]
+    }
+  },
+  "daily_rows": [
+    {
+      "date": "2026-01-15",
+      "agent": "claude_code",
+      "events": 406,
+      "thread_count": 7,
+      "project_count": 4,
+      "cost": 19.8043
+    },
+    {
+      "date": "2026-01-16",
+      "agent": "claude_code",
+      "events": 202,
+      "thread_count": 4,
+      "project_count": 3,
+      "cost": 6.5068
+    },
+    {
+      "date": "2026-01-17",
+      "agent": "claude_code",
+      "events": 950,
+      "thread_count": 16,
+      "project_count": 5,
+      "cost": 51.4644
+    },
+    {
+      "date": "2026-01-18",
+      "agent": "claude_code",
+      "events": 225,
+      "thread_count": 6,
+      "project_count": 4,
+      "cost": 12.7467
+    },
+    {
+      "date": "2026-01-19",
+      "agent": "claude_code",
+      "events": 687,
+      "thread_count": 16,
+      "project_count": 5,
+      "cost": 40.1933
+    },
+    {
+      "date": "2026-01-20",
+      "agent": "claude_code",
+      "events": 818,
+      "thread_count": 14,
+      "project_count": 4,
+      "cost": 46.6239
+    },
+    {
+      "date": "2026-01-21",
+      "agent": "claude_code",
+      "events": 606,
+      "thread_count": 9,
+      "project_count": 4,
+      "cost": 31.4578
+    },
+    {
+      "date": "2026-01-22",
+      "agent": "claude_code",
+      "events": 837,
+      "thread_count": 11,
+      "project_count": 2,
+      "cost": 41.6098
+    },
+    {
+      "date": "2026-01-24",
+      "agent": "claude_code",
+      "events": 373,
+      "thread_count": 3,
+      "project_count": 1,
+      "cost": 25.7461
+    },
+    {
+      "date": "2026-01-25",
+      "agent": "claude_code",
+      "events": 1012,
+      "thread_count": 15,
+      "project_count": 3,
+      "cost": 62.6943
+    },
+    {
+      "date": "2026-02-01",
+      "agent": "claude_code",
+      "events": 348,
+      "thread_count": 9,
+      "project_count": 2,
+      "cost": 26.1457
+    },
+    {
+      "date": "2026-02-02",
+      "agent": "claude_code",
+      "events": 230,
+      "thread_count": 5,
+      "project_count": 2,
+      "cost": 10.7684
+    },
+    {
+      "date": "2026-02-04",
+      "agent": "claude_code",
+      "events": 87,
+      "thread_count": 3,
+      "project_count": 2,
+      "cost": 1.4177
+    },
+    {
+      "date": "2026-02-06",
+      "agent": "claude_code",
+      "events": 369,
+      "thread_count": 3,
+      "project_count": 2,
+      "cost": 11.599
+    },
+    {
+      "date": "2026-02-07",
+      "agent": "claude_code",
+      "events": 893,
+      "thread_count": 10,
+      "project_count": 3,
+      "cost": 36.5185
+    },
+    {
+      "date": "2026-02-08",
+      "agent": "claude_code",
+      "events": 77,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 3.7045
+    },
+    {
+      "date": "2026-02-10",
+      "agent": "claude_code",
+      "events": 1270,
+      "thread_count": 8,
+      "project_count": 1,
+      "cost": 31.052
+    },
+    {
+      "date": "2026-02-11",
+      "agent": "claude_code",
+      "events": 162,
+      "thread_count": 4,
+      "project_count": 2,
+      "cost": 11.2693
+    },
+    {
+      "date": "2026-02-12",
+      "agent": "claude_code",
+      "events": 371,
+      "thread_count": 4,
+      "project_count": 1,
+      "cost": 20.6344
+    },
+    {
+      "date": "2026-02-12",
+      "agent": "codex",
+      "events": 1,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 26.8017
+    },
+    {
+      "date": "2026-02-13",
+      "agent": "claude_code",
+      "events": 157,
+      "thread_count": 2,
+      "project_count": 1,
+      "cost": 4.4695
+    },
+    {
+      "date": "2026-02-19",
+      "agent": "codex",
+      "events": 2,
+      "thread_count": 2,
+      "project_count": 2,
+      "cost": 28.8706
+    },
+    {
+      "date": "2026-02-20",
+      "agent": "codex",
+      "events": 1,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 0.1608
+    },
+    {
+      "date": "2026-02-21",
+      "agent": "codex",
+      "events": 2,
+      "thread_count": 2,
+      "project_count": 1,
+      "cost": 2.4797
+    },
+    {
+      "date": "2026-02-23",
+      "agent": "claude_code",
+      "events": 1067,
+      "thread_count": 11,
+      "project_count": 5,
+      "cost": 27.5451
+    },
+    {
+      "date": "2026-02-24",
+      "agent": "claude_code",
+      "events": 276,
+      "thread_count": 4,
+      "project_count": 2,
+      "cost": 5.7385
+    },
+    {
+      "date": "2026-02-25",
+      "agent": "claude_code",
+      "events": 2110,
+      "thread_count": 28,
+      "project_count": 3,
+      "cost": 67.19
+    },
+    {
+      "date": "2026-02-25",
+      "agent": "codex",
+      "events": 4,
+      "thread_count": 4,
+      "project_count": 2,
+      "cost": 77.2365
+    },
+    {
+      "date": "2026-02-27",
+      "agent": "claude_code",
+      "events": 682,
+      "thread_count": 9,
+      "project_count": 2,
+      "cost": 22.4453
+    },
+    {
+      "date": "2026-02-27",
+      "agent": "codex",
+      "events": 1,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 9.7055
+    },
+    {
+      "date": "2026-03-01",
+      "agent": "claude_code",
+      "events": 44,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 1.0033
+    },
+    {
+      "date": "2026-03-03",
+      "agent": "claude_code",
+      "events": 804,
+      "thread_count": 4,
+      "project_count": 4,
+      "cost": 22.2217
+    },
+    {
+      "date": "2026-03-04",
+      "agent": "claude_code",
+      "events": 7077,
+      "thread_count": 55,
+      "project_count": 16,
+      "cost": 217.8053
+    },
+    {
+      "date": "2026-03-05",
+      "agent": "claude_code",
+      "events": 7937,
+      "thread_count": 67,
+      "project_count": 8,
+      "cost": 249.6082
+    },
+    {
+      "date": "2026-03-05",
+      "agent": "codex",
+      "events": 1,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 0.7252
+    },
+    {
+      "date": "2026-03-06",
+      "agent": "claude_code",
+      "events": 2357,
+      "thread_count": 23,
+      "project_count": 6,
+      "cost": 86.1344
+    },
+    {
+      "date": "2026-03-06",
+      "agent": "codex",
+      "events": 4,
+      "thread_count": 4,
+      "project_count": 1,
+      "cost": 189.3157
+    },
+    {
+      "date": "2026-03-07",
+      "agent": "claude_code",
+      "events": 8070,
+      "thread_count": 56,
+      "project_count": 9,
+      "cost": 270.8298
+    },
+    {
+      "date": "2026-03-07",
+      "agent": "codex",
+      "events": 5,
+      "thread_count": 5,
+      "project_count": 4,
+      "cost": 275.6957
+    },
+    {
+      "date": "2026-03-08",
+      "agent": "claude_code",
+      "events": 1310,
+      "thread_count": 9,
+      "project_count": 1,
+      "cost": 45.7567
+    },
+    {
+      "date": "2026-03-08",
+      "agent": "codex",
+      "events": 4,
+      "thread_count": 4,
+      "project_count": 3,
+      "cost": 1417.5771
+    },
+    {
+      "date": "2026-03-11",
+      "agent": "codex",
+      "events": 3,
+      "thread_count": 3,
+      "project_count": 2,
+      "cost": 282.8774
+    },
+    {
+      "date": "2026-03-12",
+      "agent": "codex",
+      "events": 1,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 64.491
+    },
+    {
+      "date": "2026-03-13",
+      "agent": "claude_code",
+      "events": 10153,
+      "thread_count": 72,
+      "project_count": 24,
+      "cost": 330.2307
+    },
+    {
+      "date": "2026-03-13",
+      "agent": "codex",
+      "events": 4,
+      "thread_count": 4,
+      "project_count": 4,
+      "cost": 85.542
+    },
+    {
+      "date": "2026-03-14",
+      "agent": "claude_code",
+      "events": 9217,
+      "thread_count": 111,
+      "project_count": 18,
+      "cost": 276.6572
+    },
+    {
+      "date": "2026-03-14",
+      "agent": "codex",
+      "events": 5,
+      "thread_count": 5,
+      "project_count": 2,
+      "cost": 29.2335
+    },
+    {
+      "date": "2026-03-15",
+      "agent": "claude_code",
+      "events": 5318,
+      "thread_count": 41,
+      "project_count": 11,
+      "cost": 200.9752
+    },
+    {
+      "date": "2026-03-15",
+      "agent": "codex",
+      "events": 10,
+      "thread_count": 10,
+      "project_count": 9,
+      "cost": 194.9079
+    },
+    {
+      "date": "2026-03-16",
+      "agent": "claude_code",
+      "events": 3423,
+      "thread_count": 35,
+      "project_count": 4,
+      "cost": 110.7942
+    },
+    {
+      "date": "2026-03-18",
+      "agent": "claude_code",
+      "events": 8817,
+      "thread_count": 56,
+      "project_count": 9,
+      "cost": 307.004
+    },
+    {
+      "date": "2026-03-19",
+      "agent": "claude_code",
+      "events": 1393,
+      "thread_count": 9,
+      "project_count": 2,
+      "cost": 51.1901
+    },
+    {
+      "date": "2026-03-20",
+      "agent": "claude_code",
+      "events": 145,
+      "thread_count": 8,
+      "project_count": 4,
+      "cost": 6.0205
+    },
+    {
+      "date": "2026-03-21",
+      "agent": "claude_code",
+      "events": 22536,
+      "thread_count": 1605,
+      "project_count": 18,
+      "cost": 1018.3503
+    },
+    {
+      "date": "2026-03-22",
+      "agent": "claude_code",
+      "events": 10631,
+      "thread_count": 162,
+      "project_count": 9,
+      "cost": 503.345
+    },
+    {
+      "date": "2026-03-22",
+      "agent": "codex",
+      "events": 2,
+      "thread_count": 2,
+      "project_count": 2,
+      "cost": 9.0072
+    },
+    {
+      "date": "2026-03-23",
+      "agent": "claude_code",
+      "events": 12389,
+      "thread_count": 132,
+      "project_count": 6,
+      "cost": 543.4955
+    },
+    {
+      "date": "2026-03-24",
+      "agent": "claude_code",
+      "events": 8271,
+      "thread_count": 17,
+      "project_count": 9,
+      "cost": 332.8853
+    },
+    {
+      "date": "2026-03-24",
+      "agent": "codex",
+      "events": 12,
+      "thread_count": 12,
+      "project_count": 1,
+      "cost": 10.9488
+    },
+    {
+      "date": "2026-03-25",
+      "agent": "claude_code",
+      "events": 380,
+      "thread_count": 15,
+      "project_count": 3,
+      "cost": 19.9531
+    },
+    {
+      "date": "2026-03-25",
+      "agent": "codex",
+      "events": 7,
+      "thread_count": 7,
+      "project_count": 1,
+      "cost": 2.2829
+    },
+    {
+      "date": "2026-03-27",
+      "agent": "claude_code",
+      "events": 572,
+      "thread_count": 1,
+      "project_count": 1,
+      "cost": 23.4537
+    },
+    {
+      "date": "2026-03-28",
+      "agent": "claude_code",
+      "events": 5368,
+      "thread_count": 8,
+      "project_count": 10,
+      "cost": 200.6031
+    },
+    {
+      "date": "2026-03-29",
+      "agent": "claude_code",
+      "events": 18366,
+      "thread_count": 17,
+      "project_count": 26,
+      "cost": 781.8613
+    },
+    {
+      "date": "2026-03-30",
+      "agent": "claude_code",
+      "events": 3344,
+      "thread_count": 9,
+      "project_count": 14,
+      "cost": 178.7014
+    },
+    {
+      "date": "2026-03-31",
+      "agent": "claude_code",
+      "events": 7993,
+      "thread_count": 14,
+      "project_count": 10,
+      "cost": 277.9779
+    },
+    {
+      "date": "2026-03-31",
+      "agent": "codex",
+      "events": 60,
+      "thread_count": 60,
+      "project_count": 9,
+      "cost": 4793.8403
+    }
+  ]
+}

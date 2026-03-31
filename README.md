@@ -5,6 +5,8 @@ Standalone engineering journal and ROI analytics for local Claude Code and Codex
 The repo ingests raw local activity, normalizes both agents into one period dataset, and produces:
 
 - CHARM-style ASCII dashboards
+- verified base-zero reviews
+- reusable stats snapshots
 - daily Markdown journals
 - weekly rollups
 - prompt-efficiency reports
@@ -18,18 +20,27 @@ The ingestion layer is Python-only and uses the standard library. The ROI scorin
 
 ```bash
 ./bin/journal doctor
-./bin/journal ingest --start 2026-02-12 --end 2026-03-31
-./bin/journal report dashboard --start 2026-02-12 --end 2026-03-31
-./bin/journal report roi --start 2026-02-12 --end 2026-03-31
+./bin/journal review --start 2026-01-01 --end 2026-03-31
+./bin/journal stats --start 2026-01-01 --end 2026-03-31 --format markdown
+./bin/journal ingest --start 2026-01-01 --end 2026-03-31
+./bin/journal report dashboard --start 2026-01-01 --end 2026-03-31
+./bin/journal report roi --start 2026-01-01 --end 2026-03-31
 ./bin/journal report appraisal --start 2026-02-12 --end 2026-03-31
 ./bin/journal report core-value --start 2026-02-12 --end 2026-03-31
 ./bin/journal report weekly --start 2026-02-12 --end 2026-03-31
-./bin/journal report prompts --start 2026-02-12 --end 2026-03-31 --agent codex
+./bin/journal report prompts --start 2026-01-01 --end 2026-03-31 --agent codex
 ./bin/journal report daily --date 2026-03-31
 ./bin/journal capture screenshots --start 2026-02-12 --end 2026-03-31
 ```
 
 Generated reports land in `reports/`.
+
+`review` is the high-level command:
+
+- rebuilds the verified dataset when needed
+- writes the base-zero review, stats, dashboard, ROI, and prompt reports
+- freezes the window into `checkpoints/<window>/`
+- updates `LEARNING.md` so the repo keeps the current verified learnings
 
 ## Portable Discovery
 
@@ -56,14 +67,23 @@ Codex source precedence is:
 ```text
 +---------------------------------------------------------------------------------------------------------+
 | eng-journal :: ascii analytics dashboard                                                                |
-| window 2026-02-12 -> 2026-03-31                                                                         |
+| window 2026-01-01 -> 2026-03-31                                                                         |
 +---------------------------------------------------------------------------------------------------------+
 | agent          | days | projects | threads | tokens         | mid cost   | month mid  | confidence      |
 +---------------------------------------------------------------------------------------------------------+
-| Claude Code    | 33   | 134      | 7602    | 11,719,242,476 | $6,205     | $3,935     | exact           |
-| Codex          | 19   | 34       | 114     | 1,244,895,837  | $5,719     | $3,627     | estimated_range |
+| Claude Code    | 53   | 151      | 7744    | 12,175,250,867 | $6,676     | $2,258     | exact           |
+| Codex          | 19   | 34       | 128     | 1,705,537,774  | $7,353     | $2,487     | estimated_range |
 +---------------------------------------------------------------------------------------------------------+
 ```
+
+## Checkpoints
+
+Verified windows are frozen into:
+
+- `checkpoints/<window>/dataset.json`
+- `checkpoints/<window>/manifest.json`
+
+That gives the repo a durable base summary layer. Mutable cache files in `.cache/` can refresh; verified checkpoints are the canonical reviewed snapshots.
 
 ## Screenshots
 
@@ -94,6 +114,7 @@ Subscription payback is shown as a sensitivity table because local auth does not
 ## Repo Files
 
 - `README.md`: repo purpose, commands, and source-of-truth usage
+- `LEARNING.md`: current learning framework and latest verified review pointers
 - `PROGRESS.md`: current implementation status and next gaps
 - `hyperdata.json`: structured repo metadata, current windows, report inventory, and appraisal framing
 - `CHANGELOG.md`: semantic-release changelog target

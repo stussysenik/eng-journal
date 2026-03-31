@@ -1,0 +1,100 @@
+{
+  "window": {
+    "start_date": "2026-01-01",
+    "end_date": "2026-03-31",
+    "period_days": 90,
+    "month_fraction": 2.9568788501026693
+  },
+  "verified_at": "2026-03-31T18:42:51.848351+00:00",
+  "dataset": {
+    "path": "checkpoints/2026-01-01_to_2026-03-31/dataset.json",
+    "sha256": "98409ba29d0d3ddc57b72b295a464b3fa00443d4e7297fa44fcea9f3ef6b2f08",
+    "generated_at": "2026-03-31T18:42:51.621702+00:00"
+  },
+  "sources": {
+    "claude_projects": {
+      "path": "/Users/s3nik/.claude/projects",
+      "relative_path": "/Users/s3nik/.claude/projects",
+      "size_bytes": 2688,
+      "modified_at": "2026-03-31T16:24:18.673438+00:00"
+    },
+    "claude_history": {
+      "path": "/Users/s3nik/.claude/history.jsonl",
+      "relative_path": "/Users/s3nik/.claude/history.jsonl",
+      "size_bytes": 3844483,
+      "modified_at": "2026-03-31T16:58:07.748288+00:00"
+    },
+    "codex_history": {
+      "path": "/Users/s3nik/.codex/history.jsonl",
+      "relative_path": "/Users/s3nik/.codex/history.jsonl",
+      "size_bytes": 176584,
+      "modified_at": "2026-03-31T18:42:43.755787+00:00"
+    },
+    "codex_state": {
+      "path": "/Users/s3nik/.codex/state_5.sqlite",
+      "relative_path": "/Users/s3nik/.codex/state_5.sqlite",
+      "size_bytes": 6664192,
+      "modified_at": "2026-03-31T18:40:53.158310+00:00"
+    },
+    "codex_logs": {
+      "path": "/Users/s3nik/.codex/logs_1.sqlite",
+      "relative_path": "/Users/s3nik/.codex/logs_1.sqlite",
+      "size_bytes": 15400960,
+      "modified_at": "2026-03-31T18:40:03.494494+00:00"
+    },
+    "cc_config_logs": {
+      "path": "/Users/s3nik/Desktop/cc-config/logs",
+      "relative_path": "/Users/s3nik/Desktop/cc-config/logs",
+      "size_bytes": 1696,
+      "modified_at": "2026-03-31T17:07:02.224902+00:00"
+    },
+    "cc_config_stats": {
+      "path": "/Users/s3nik/Desktop/cc-config/logs/.stats.json",
+      "relative_path": "/Users/s3nik/Desktop/cc-config/logs/.stats.json",
+      "size_bytes": 35870,
+      "modified_at": "2026-03-31T17:07:02.440197+00:00"
+    }
+  },
+  "artifacts": {
+    "review": {
+      "path": "reports/review-2026-01-01_to_2026-03-31.md",
+      "size_bytes": 4096,
+      "sha256": "e48fadd81a69e1ef6be37ac0f46422790c73a2dcec4d14c667650a3b0c7d5c37"
+    },
+    "stats_markdown": {
+      "path": "reports/stats-2026-01-01_to_2026-03-31.md",
+      "size_bytes": 1482,
+      "sha256": "2e20fa7939e2b9646511a408c07952f299d0dab88b956ead1a34e1177cc1dfc6"
+    },
+    "stats_json": {
+      "path": "reports/stats-2026-01-01_to_2026-03-31.json",
+      "size_bytes": 22587,
+      "sha256": "ead865b2852e35c924ff156430503b9c415ec2b73cfc7d170fe496b3a8d1e135"
+    },
+    "dashboard": {
+      "path": "reports/dashboard-2026-01-01_to_2026-03-31.txt",
+      "size_bytes": 3164,
+      "sha256": "b2c3c12ded492378c37c87a28f3770bc7e5292466427641367f70679a91e6d72"
+    },
+    "roi": {
+      "path": "reports/roi-2026-01-01_to_2026-03-31.md",
+      "size_bytes": 8090,
+      "sha256": "9a0d50d267a7352b32fa8fd1cdccd7323a8d5ad2dbd62b79486e7dd7782fa312"
+    },
+    "prompts_claude": {
+      "path": "reports/prompts-claude_code-2026-01-01_to_2026-03-31.md",
+      "size_bytes": 3340,
+      "sha256": "d23596f8b785d587e303ea03312a9d156904680e03e0d9a505a80e686baaff7f"
+    },
+    "prompts_codex": {
+      "path": "reports/prompts-codex-2026-01-01_to_2026-03-31.md",
+      "size_bytes": 5778,
+      "sha256": "710777fe6a77e1e8cebc655b52db8ee01964a07fe6f37202ccd596213aba3aed"
+    },
+    "learning": {
+      "path": "LEARNING.md",
+      "size_bytes": 1965,
+      "sha256": "2010843e52790c69945c4aff494f4d2921a80ba6f9a3ab3529ab22264abad091"
+    }
+  }
+}

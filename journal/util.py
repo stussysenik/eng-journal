@@ -76,6 +76,14 @@ def dedupe_key(text: str) -> str:
     return hashlib.sha1(collapsed.encode("utf-8")).hexdigest()
 
 
+def sha256_text(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
 def month_fraction(start_date: str, end_date: str) -> float:
     start = parse_date(start_date)
     end = parse_date(end_date)

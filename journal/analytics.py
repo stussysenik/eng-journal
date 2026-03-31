@@ -12,6 +12,16 @@ from .git_insights import gather_git_evidence
 from .util import compact_text, dedupe_key, is_mega_prompt, keyword_tags, mean, month_fraction
 
 
+DIRECTIVE_SIGNAL_PATTERNS = {
+    "system_directive": ("system directive", "system prompt"),
+    "step_by_step": ("step by step", "think step by step", "slowly for accuracy"),
+    "interview_before_action": ("interview me", "95% sure of what i want", "95% sure", "what i want and not what you think i want"),
+    "parallel_agents": ("launch two agents", "parallel", "subagent", "worker", "explorer"),
+    "verification_first": ("verify", "double check", "validate whole diff", "test thoroughly", "verification"),
+    "implement_direct": ("implement the plan", "execute all edits now"),
+}
+
+
 def _top_counter(counter: Counter, limit: int = 8) -> list[dict]:
     return [{"name": name, "count": count} for name, count in counter.most_common(limit)]
 
@@ -21,16 +31,21 @@ def summarize_prompt_events(prompt_events: list[dict]) -> dict:
     duplicate_counter: Counter[str] = Counter()
     duplicate_texts: dict[str, str] = {}
     tag_counter: Counter[str] = Counter()
+    directive_counts: Counter[str] = Counter()
 
     for event in prompt_events:
         text = (event.get("prompt_text") or "").strip()
         if not text:
             continue
+        lowered = text.lower()
         key = dedupe_key(text)
         duplicate_counter[key] += 1
         duplicate_texts.setdefault(key, text)
         for tag in keyword_tags(text):
             tag_counter[tag] += 1
+        for signal_name, patterns in DIRECTIVE_SIGNAL_PATTERNS.items():
+            if any(pattern in lowered for pattern in patterns):
+                directive_counts[signal_name] += 1
 
     duplicate_instances = sum(max(count - 1, 0) for count in duplicate_counter.values())
     duplicates = [
@@ -56,6 +71,7 @@ def summarize_prompt_events(prompt_events: list[dict]) -> dict:
         "duplicates": duplicates,
         "longest": longest,
         "tags": _top_counter(tag_counter),
+        "directive_signals": _top_counter(directive_counts),
     }
 
 
@@ -145,13 +161,17 @@ def _summarize_claude(paths: Paths, start_date: str, end_date: str, data: dict) 
     total_tokens = sum(int(event.get("total_tokens", 0) or 0) for event in usage_events)
     work_units = len({(event.get("project_name"), event.get("date")) for event in all_events if event.get("project_name") and event.get("date")})
     cost_confidence = "exact" if usage_events else ("history_only" if all_events else "no_data")
+    activity_dates = sorted({event.get("date") for event in all_events if event.get("date")})
 
     return {
         "name": "claude_code",
         "display_name": "Claude Code",
         "cost_confidence": cost_confidence,
         "source_coverage": data.get("source_coverage", []),
-        "active_days": len({event.get("date") for event in all_events if event.get("date")}),
+        "active_days": len(activity_dates),
+        "first_activity_date": activity_dates[0] if activity_dates else "",
+        "last_activity_date": activity_dates[-1] if activity_dates else "",
+        "event_count": len(all_events),
         "thread_count": len({thread["thread_id"] for thread in threads}),
         "project_count": len({event.get("project_name") for event in all_events if event.get("project_name")}),
         "work_unit_count": work_units,
@@ -211,13 +231,17 @@ def _summarize_codex(paths: Paths, start_date: str, end_date: str, data: dict) -
     total_high = round(sum(float(thread.get("cost_high", 0.0) or 0.0) for thread in threads), 4)
     work_units = len({(thread.get("project_name"), thread.get("date")) for thread in threads if thread.get("project_name") and thread.get("date")})
     cost_confidence = "estimated_range" if threads else ("history_only" if prompt_events else "no_data")
+    activity_dates = sorted({thread.get("date") for thread in threads if thread.get("date")})
 
     return {
         "name": "codex",
         "display_name": "Codex",
         "cost_confidence": cost_confidence,
         "source_coverage": data.get("source_coverage", []),
-        "active_days": len({thread.get("date") for thread in threads if thread.get("date")}),
+        "active_days": len(activity_dates),
+        "first_activity_date": activity_dates[0] if activity_dates else "",
+        "last_activity_date": activity_dates[-1] if activity_dates else "",
+        "event_count": len(thread_events),
         "thread_count": len(threads),
         "project_count": len({thread.get("project_name") for thread in threads if thread.get("project_name")}),
         "work_unit_count": work_units,

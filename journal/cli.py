@@ -5,22 +5,33 @@ import json
 from pathlib import Path
 
 from .analytics import build_period_dataset, write_period_dataset
+from .checkpoints import (
+    checkpoint_dataset_path,
+    checkpoint_manifest_path,
+    load_checkpoint_dataset,
+    load_checkpoint_manifest,
+    write_checkpoint,
+)
 from .config import default_paths, discover_sources
 from .reporting import (
     render_appraisal_markdown,
     render_core_value_markdown,
     render_dashboard_ascii,
     render_daily_markdown,
+    render_learning_markdown,
     render_prompt_markdown,
+    render_review_markdown,
     render_roi_markdown,
+    render_stats_markdown,
     render_weekly_markdown,
+    stats_payload,
     write_report,
 )
 from .screenshots import render_text_screenshot
 
 
 def _default_start() -> str:
-    return "2026-02-12"
+    return "2026-01-01"
 
 
 def _default_end() -> str:
@@ -31,13 +42,61 @@ def _period_slug(start_date: str, end_date: str) -> str:
     return f"{start_date}_to_{end_date}"
 
 
+def _dataset_matches_current_schema(dataset: dict) -> bool:
+    agents = dataset.get("agents", {})
+    if not agents:
+        return False
+    for agent in agents.values():
+        if "first_activity_date" not in agent or "last_activity_date" not in agent or "event_count" not in agent:
+            return False
+        if "directive_signals" not in agent.get("prompt_metrics", {}):
+            return False
+    return True
+
+
 def _load_or_build_dataset(paths, start_date: str, end_date: str) -> dict:
     cache_path = paths.cache_dir / f"{_period_slug(start_date, end_date)}.json"
     if cache_path.exists():
-        return json.loads(cache_path.read_text(encoding="utf-8"))
+        dataset = json.loads(cache_path.read_text(encoding="utf-8"))
+        if _dataset_matches_current_schema(dataset):
+            return dataset
     dataset = build_period_dataset(paths, start_date, end_date)
     write_period_dataset(paths, start_date, end_date, dataset)
     return dataset
+
+
+def _build_and_cache_dataset(paths, start_date: str, end_date: str) -> dict:
+    dataset = build_period_dataset(paths, start_date, end_date)
+    write_period_dataset(paths, start_date, end_date, dataset)
+    return dataset
+
+
+def _load_review_dataset(paths, start_date: str, end_date: str, refresh: bool = False) -> dict:
+    if not refresh:
+        checkpoint_dataset = load_checkpoint_dataset(paths, start_date, end_date)
+        if checkpoint_dataset is not None and _dataset_matches_current_schema(checkpoint_dataset):
+            return checkpoint_dataset
+    return _build_and_cache_dataset(paths, start_date, end_date) if refresh else _load_or_build_dataset(paths, start_date, end_date)
+
+
+def _all_exist(paths: list[Path]) -> bool:
+    return all(path.exists() for path in paths)
+
+
+def _review_artifact_paths(paths, start_date: str, end_date: str) -> dict[str, Path]:
+    slug = _period_slug(start_date, end_date)
+    return {
+        "review": paths.reports_dir / f"review-{slug}.md",
+        "stats_markdown": paths.reports_dir / f"stats-{slug}.md",
+        "stats_json": paths.reports_dir / f"stats-{slug}.json",
+        "dashboard": paths.reports_dir / f"dashboard-{slug}.txt",
+        "roi": paths.reports_dir / f"roi-{slug}.md",
+        "prompts_claude": paths.reports_dir / f"prompts-claude_code-{slug}.md",
+        "prompts_codex": paths.reports_dir / f"prompts-codex-{slug}.md",
+        "learning": paths.repo_root / "LEARNING.md",
+        "checkpoint_manifest": checkpoint_manifest_path(paths, start_date, end_date),
+        "checkpoint_dataset": checkpoint_dataset_path(paths, start_date, end_date),
+    }
 
 
 def cmd_doctor(paths) -> int:
@@ -62,9 +121,103 @@ def cmd_doctor(paths) -> int:
 
 
 def cmd_ingest(paths, start_date: str, end_date: str) -> int:
-    dataset = build_period_dataset(paths, start_date, end_date)
-    cache_path = write_period_dataset(paths, start_date, end_date, dataset)
+    dataset = _build_and_cache_dataset(paths, start_date, end_date)
+    cache_path = paths.cache_dir / f"{_period_slug(start_date, end_date)}.json"
     print(cache_path)
+    return 0
+
+
+def cmd_stats(paths, args) -> int:
+    start_date = args.start or _default_start()
+    end_date = args.end or _default_end()
+    dataset = _load_review_dataset(paths, start_date, end_date, refresh=args.refresh)
+    slug = _period_slug(start_date, end_date)
+    suffix = f"-{args.agent}" if args.agent else ""
+    if args.format == "json":
+        content = json.dumps(stats_payload(dataset, args.agent), indent=2) + "\n"
+        target = write_report(paths.reports_dir / f"stats{suffix}-{slug}.json", content)
+    else:
+        content = render_stats_markdown(dataset, args.agent)
+        target = write_report(paths.reports_dir / f"stats{suffix}-{slug}.md", content)
+    print(target)
+    return 0
+
+
+def cmd_review(paths, args) -> int:
+    start_date = args.start or _default_start()
+    end_date = args.end or _default_end()
+    artifact_paths = _review_artifact_paths(paths, start_date, end_date)
+    manifest = load_checkpoint_manifest(paths, start_date, end_date)
+    existing_outputs = [
+        artifact_paths["review"],
+        artifact_paths["stats_markdown"],
+        artifact_paths["stats_json"],
+        artifact_paths["dashboard"],
+        artifact_paths["roi"],
+        artifact_paths["prompts_claude"],
+        artifact_paths["prompts_codex"],
+        artifact_paths["learning"],
+        artifact_paths["checkpoint_manifest"],
+        artifact_paths["checkpoint_dataset"],
+    ]
+    checkpoint_dataset = load_checkpoint_dataset(paths, start_date, end_date) if manifest else None
+    if manifest and not args.refresh and _all_exist(existing_outputs) and checkpoint_dataset is not None and _dataset_matches_current_schema(checkpoint_dataset):
+        dataset = checkpoint_dataset
+        if dataset is not None:
+            write_report(
+                artifact_paths["learning"],
+                render_learning_markdown(
+                    dataset,
+                    str(artifact_paths["review"].relative_to(paths.repo_root)),
+                    str(artifact_paths["stats_markdown"].relative_to(paths.repo_root)),
+                    str(artifact_paths["checkpoint_manifest"].relative_to(paths.repo_root)),
+                ),
+            )
+        for path in existing_outputs:
+            print(path)
+        return 0
+
+    dataset = _build_and_cache_dataset(paths, start_date, end_date) if (args.refresh or manifest is None) else _load_review_dataset(paths, start_date, end_date)
+    artifacts = {
+        "review": write_report(artifact_paths["review"], render_review_markdown(dataset)),
+        "stats_markdown": write_report(artifact_paths["stats_markdown"], render_stats_markdown(dataset)),
+        "stats_json": write_report(artifact_paths["stats_json"], json.dumps(stats_payload(dataset), indent=2) + "\n"),
+        "dashboard": write_report(artifact_paths["dashboard"], render_dashboard_ascii(dataset)),
+        "roi": write_report(artifact_paths["roi"], render_roi_markdown(paths.repo_root, dataset, start_date, end_date)),
+        "prompts_claude": write_report(
+            artifact_paths["prompts_claude"],
+            render_prompt_markdown(dataset, "claude_code"),
+        ),
+        "prompts_codex": write_report(
+            artifact_paths["prompts_codex"],
+            render_prompt_markdown(dataset, "codex"),
+        ),
+    }
+    manifest_path = write_checkpoint(paths, start_date, end_date, dataset, artifacts)
+    learning_path = write_report(
+        artifact_paths["learning"],
+        render_learning_markdown(
+            dataset,
+            str(artifact_paths["review"].relative_to(paths.repo_root)),
+            str(artifact_paths["stats_markdown"].relative_to(paths.repo_root)),
+            str(manifest_path.relative_to(paths.repo_root)),
+        ),
+    )
+    artifacts["learning"] = learning_path
+    manifest_path = write_checkpoint(paths, start_date, end_date, dataset, artifacts)
+    for path in [
+        artifacts["review"],
+        artifacts["stats_markdown"],
+        artifacts["stats_json"],
+        artifacts["dashboard"],
+        artifacts["roi"],
+        artifacts["prompts_claude"],
+        artifacts["prompts_codex"],
+        learning_path,
+        manifest_path,
+        checkpoint_dataset_path(paths, start_date, end_date),
+    ]:
+        print(path)
     return 0
 
 
@@ -134,6 +287,18 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument("--start", default=_default_start())
     ingest.add_argument("--end", default=_default_end())
 
+    stats = subparsers.add_parser("stats", help="Render reusable stats snapshots")
+    stats.add_argument("--start", default=_default_start())
+    stats.add_argument("--end", default=_default_end())
+    stats.add_argument("--agent", choices=["claude_code", "codex"])
+    stats.add_argument("--format", choices=["markdown", "json"], default="markdown")
+    stats.add_argument("--refresh", action="store_true")
+
+    review = subparsers.add_parser("review", help="Freeze a verified review window and generate durable outputs")
+    review.add_argument("--start", default=_default_start())
+    review.add_argument("--end", default=_default_end())
+    review.add_argument("--refresh", action="store_true")
+
     report = subparsers.add_parser("report", help="Render Markdown reports")
     report_sub = report.add_subparsers(dest="kind", required=True)
 
@@ -180,11 +345,16 @@ def main() -> int:
     paths = default_paths()
     paths.cache_dir.mkdir(exist_ok=True)
     paths.reports_dir.mkdir(exist_ok=True)
+    paths.checkpoints_dir.mkdir(exist_ok=True)
 
     if args.command == "doctor":
         return cmd_doctor(paths)
     if args.command == "ingest":
         return cmd_ingest(paths, args.start, args.end)
+    if args.command == "stats":
+        return cmd_stats(paths, args)
+    if args.command == "review":
+        return cmd_review(paths, args)
     if args.command == "report":
         return cmd_report(paths, args)
     if args.command == "capture":
